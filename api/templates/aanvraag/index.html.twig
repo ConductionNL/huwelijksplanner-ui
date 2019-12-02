@@ -1,0 +1,142 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}     
+            <!-- .row -->
+            <div class="row animation" {% if app.session.flashbag.peekAll|length > 0 %}data-animation="animation-fade-in" data-delay="3400"{% endif %}>
+                
+                <div class="d-none d-md-block col-md-4 col-md-offset-0 hidden-xs hidden-sm">
+                	<figure class="margin-bottom40 animation animated animation-fade-in-left" data-animation="animation-fade-in-left">
+                    	<img src="images/content/elements/Gellukig.png" alt="Image">
+                    </figure>
+                </div>
+                
+                <div class="col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-0">
+                	<div class="col-text20 margin-bottom20">
+                    	<div class="post-heading-left">
+                            <h4>Wat is al gedaan en wat moet er nog gebeuren?</h4>
+                            <h2>En, zijn jullie er al klaar voor?</h2>
+                            <p>We kunnen ons goed voorstellen dat er nogal wat op jullie afkomt bij het plannen van een huwelijk, daarom hebben we alles op een rij gezet voor jullie. Een handig overzicht van wat er moet gebeuren, maar ook wat er al is gedaan.</p>
+                            <p>Legenda
+                            	<i class="fa far fa-square"></i> Nog te doen
+                            	<i class="fa fas fa-circle-notch fa-spin"></i> In afwachting van reactie
+                            	<i class="fa fas fa-check"></i> Gedaan
+                            	<i class="fa fas fa-times"></i> (Nog) niet gelukt
+                            </p>
+                        </div>
+                        
+                        <div class="list-row">
+                        	<div class="list-col">
+                        		Uw perfecte dag
+                                <ul class="list-icon">  
+                                    <!--  Trouwdatum -->                        
+                                    <li>
+                                    	<i class="fa fas"></i>
+                                    	{% if huwelijk is defined and huwelijk.trouwdatum is defined and huwelijk.trouwdatum %}
+                                    	<span>{{ huwelijk.trouwdatum |date("Y-d-m") }}</span>
+                                    	{% else %}
+                                    	<span>Kies <a href="{{ path('app_datum_index') }}" >hier</a> uw boogde huwelijks datum</span>    
+                                    	{% endif %}                                 	
+                                   	</li>
+                                    <!--  Type -->
+                                    <li>
+                                    	<i class="fa fas" ></i>
+                                    	{% if huwelijk is defined and huwelijk.type is defined and huwelijk.type%}
+                                    	<span>Type huwelijk : {{ huwelijk.type }}</span>
+                                    	{% else %}
+                                    	<span>Kies <a href="{{ path('app_huwelijk_index') }}">hier</a> uw type huwelijk of partnerschap </span> 
+                                    	{% endif %}
+                                    	
+                                    </li>
+                                    <!-- Product -->
+                                    <li>
+                                    	<i class="fa fas"></i>
+                                    	{% if huwelijk is defined and huwelijk.primairProduct is defined and huwelijk.primairProduct %}
+                                    	<span>Soort huwelijk: : {{ huwelijk.primairProduct.naam }}</span>
+                                    	{% else %}
+                                    	<span>Kies <a href="{{ path('app_huwelijk_index') }}" >hier</a> uw soort huwelijk door </span>    
+                                    	{% endif %}                                 	
+                                    </li>
+                                   
+                                    <!-- Partners -->
+                                    <li><i class="far fa-square" ></i> Nodig <a href="{{ path('app_partner_index') }}">hier</a> uw partner uit</li>
+                                    <!-- locatie -->
+                                    <li>
+                                    	<i class="fa fas" ></i>
+                                    	{% if huwelijk is defined and huwelijk.locatie is defined and huwelijk.locatie %}
+                                    	<span> Locatie: {{ huwelijk.locatie.locatie.naam }}</span>
+                                    	{% else %}
+                                    	<span>U heeft nog  geen locatie doorgegeven, doe dat <a href="{{ path('app_locatie_index') }}">hier</a></span>
+                                    	{% endif %}
+                                    </li>
+                                    <!-- Trouw Ambtenaar -->
+                                    <li>
+                                    	<i class="fa fas" ></i>
+                                    	{% if huwelijk is defined and huwelijk.trouwAmbtenaar is defined and huwelijk.trouwAmbtenaar %}
+                                    	<span>Ambtenaar: {{  huwelijk.trouwAmbtenaar.ambtenaar.voornamen }} {{ huwelijk.trouwAmbtenaar.ambtenaar.geslachtsnaam }}</span>
+                                    	{% else %}
+                                    	<span>U heeft nog  geen trouwambtenaar doorgegeven, doe dat <a href="{{ path('app_ambtenaar_index') }}">hier</a></span>
+                                    	{% endif %}
+                                    </li>
+                                    
+                                	</ul>
+                            	</div>   
+                            
+                            <div class="list-col">
+                            	<!-- 
+                            	<span>Uw Getuigen</span>            
+                            	<ul class="list-icon">
+                                    <li>
+                                    	<i class="fa far fa-square" ></i> U heeft nog (te) weinig getuigen doorgegeven, voeg ze <a href="{{ path('app_getuigen_index') }}">hier</a> toe
+                                    </li>
+                                    <li>
+                                    </li>
+                                </ul>
+                                 -->
+                            	Uw Verplichtingen
+                            	<ul class="list-icon">
+                                    <li>
+                                    	<i class="fa fas" </i>
+                                    	{% if huwelijk is defined and huwelijk.melding is defined and huwelijk.melding %}
+                                    	<span> De status van uw melding: {{ huwelijk.melding.status }} </span>
+                                    	{% else %}s
+                                    	<span> U heeft nog  geen melding gedaan</span>
+                                    	{% endif %}
+                                    </li>
+                                    <li>
+                                    	<i class="fa fas" ></i>
+                                    	{% if huwelijk is defined and huwelijk.aanvraag is defined  and huwelijk.aanvraag %}
+                                    	<span> De status van uw reservering: {{ huwelijk.aanvraag.status }} </span>
+                                    	{% else %}
+                                    	<span> U heeft nog  geen reservering gedaan</span>
+                                    	{% endif %}
+                                    </li>
+                                    <li>
+                                    	<i class="fa fas"></i>
+                                    	{% if huwelijk is defined and huwelijk.betaling is defined and huwelijk.betaling  %}
+                                    	<span> De status van uw betaling: {{ huwelijk.aanvraag.status }} </span>
+                                    	{% else %}
+                                    	<span> U heeft nog geen betaling gedaan</span>
+                                    	{% endif %}
+                                    </li>
+                                </ul>
+                            </div>                         
+                        </div>                            
+                        </div><!-- /.list-row -->
+                        <!-- 
+                         <div class="btn-section textcenter animation" data-animation="animation-fade-in-up">
+		                	<a href="#" class="btn-custom btn-icon">
+		                		<i class="fas fa-share-square"></i>
+		                		Meld je huwelijk
+		                	</a>
+		                    <a href="#" class="btn-custom btn-icon" >
+								<i class="fas fa-share-square"></i> 
+			                    Maak een reservering
+		                    </a>
+                    </div> 
+                    -->
+                </div>
+            </div>
+            <!-- .row end -->    
+{% endblock %}

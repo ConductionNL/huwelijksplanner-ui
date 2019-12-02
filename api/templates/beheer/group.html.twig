@@ -1,0 +1,58 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+
+	
+	<!-- Lets run summernote for the description fields -->
+	
+     <form class="form-horizontal" role="form" method="post" action="{{ path('app_beheer_group', {id:group.id})}}">
+         <div class="form-group">
+        	{{ form_label(form.name) }}
+         	<div class="col-sm-10">
+            	{{ form_widget(form.name) }}
+            </div>
+          </div>
+         <div class="form-group">
+        	{{ form_label(form.description) }}
+         	<div class="col-sm-10">
+            	{{ form_widget(form.description) }}
+            </div>
+          </div>
+         <div class="form-group">
+         	<div class="col-sm-12">
+                {{ form_row(form.save) }}
+            </div>
+          </div>
+          {{ form_rest(form) }}	
+     </form>
+                      
+            	<table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Naam</th>
+                      <th scope="col">Prijs</th>
+                      <th scope="col"><a href="{{ path('app_beheer_product') }}" class="btn btn-success" role="button">Product toevoegen</a></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                 	 {% for product in group._embedded.products %}
+                    <tr>
+                      <th scope="row">{{ loop.index }}</th>
+                      <td>{{ product.name }} </td>
+                      <td></td>
+                      <td><a href="{{ path('app_beheer_product',{'id':product.id}) }}" class="btn btn-primary" role="button">Bewerk</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>   
+    
+	<script>
+	$(document).ready(function() {
+      $('#ambtenaar_samenvatting').summernote();
+      $('#ambtenaar_beschrijving').summernote();
+    });
+	</script>
+{% endblock %}

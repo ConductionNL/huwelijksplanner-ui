@@ -1,0 +1,56 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+
+	
+	<!-- Lets run summernote for the description fields -->
+	
+     <form class="form-horizontal" role="form" method="post" action="{{ path('app_beheer_employee', {id:employee.id})}}">
+         <div class="form-group">
+        	{{ form_label(form.aanhef) }}
+         	<div class="col-sm-10">
+            	{{ form_widget(form.aanhef) }}
+            </div>
+          </div>
+         <div class="form-group">
+        	{{ form_label(form.given_name) }}
+         	<div class="col-sm-10">
+            	{{ form_widget(form.given_name) }}
+            </div>
+          </div>
+         <div class="form-group">
+        	{{ form_label(form.family_name) }}
+         	<div class="col-sm-10">
+            	{{ form_widget(form.family_name) }}
+            </div>
+          </div>
+         <div class="form-group">
+        	{{ form_label(form.description) }}
+         	<div class="col-sm-10">
+            	{{ form_widget(form.description) }}
+            </div>
+          </div>
+         <div class="form-group">
+        	{{ form_label(form.beschrijving) }}
+         	<div class="col-sm-10">
+            	{{ form_widget(form.beschrijving) }}
+            </div>
+          </div>
+         <div class="form-group">
+         	<div class="col-sm-12">
+                {{ form_row(form.opslaan) }}
+            </div>
+          </div>
+          {{ form_rest(form) }}	
+     </form>
+    
+    
+	<script>
+	$(document).ready(function() {
+      $('#ambtenaar_samenvatting').summernote();
+      $('#ambtenaar_beschrijving').summernote();
+    });
+	</script>
+{% endblock %}

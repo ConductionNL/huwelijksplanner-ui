@@ -1,0 +1,23 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row -->
+            <div class="row" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                    	
+                    	<div class="post-heading-center ">
+                            <h2>Getuigen</h2>
+                        </div>
+                <div class="col-sm-10 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                    <p>Als u trouwt of een geregistreerd partnerschap aangaat, heeft u als bruidspaar minimaal 2 en maximaal 4 getuigen nodig. Een getuige moet tenminste 18 jaar zijn. Meld de getuigen uiterlijk 6 weken voor de ceremoniedatum aan.</p>
+             	</div><!-- /.col -->
+            	<div class="col-sm-2 col-md-6  col-lg-5  col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs">
+                	<div class="margin-bottom40">           
+	                	<figure >
+	                        <img src="images/content/elements/Feest.png" alt="Image">
+	                    </figure>
+                    </div>
+                </div>
+            </div><!-- /.row -->
+{% endblock %}

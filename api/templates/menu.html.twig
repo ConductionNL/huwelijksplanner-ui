@@ -1,0 +1,116 @@
+		
+		 <!-- Mobile menu dropdown -->
+          <div class="mobile-header-menu bg-blue visible-xs visible-sm">
+            <div class="menu-logo">
+                <span class="header-icon glyphicon glyphicon-heart-empty"></span>
+            </div>
+            <div class="dropdown">
+              <div style="padding:5px;"  data-toggle="dropdown" aria-expanded="true">
+                <i class="fas fa-bars fa-2x"></i> Menu
+              </div>
+              <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+              {% if huwelijk is defined and huwelijk %}                
+                        <li>                    
+                        	<a href="{{ path('app_huwelijk_index') }}">
+                        		<i class="fas fa-ring "></i>
+                        		Huwelijk
+                            </a>
+    					</li>
+                        <li>          
+                        	<a href="{{ path('app_partner_index') }}">
+                            	<i class="fas fa-user-friends"></i>
+                            	Partner
+                            </a>
+    					</li>
+                        <li>            
+                        	<a href="{{ path('app_locatie_index') }}">
+                            	<i class="fas fa-building "></i>
+                            	Locatie
+                            </a>
+    					</li>
+                        <li>             
+                        	<a href="{{ path('app_ambtenaar_index') }}">
+                        		<i class="fas fa-user-tie"></i>
+                        		Ambtenaar
+                            </a>
+    					</li>
+                        <li>             
+                        	<a href="{{ path('app_datum_index') }}">
+                        		<i class="fas fa-calendar-day"></i>
+                        		Datum
+                            </a>
+    					</li>
+                        <li>             
+                        	<a href="{{ path('app_reservering_index') }}" >
+                        		<i class="fas fa-calendar-check" ></i>
+                        		Reservering
+                            </a>
+    					</li>
+                        <li>             
+                        	<a href="{{ path('app_getuigen_index') }}">
+                            	<i class="fas fa-users "></i>
+                            	Getuigen
+                            </a>
+    					</li>
+                        <li>             
+                        	<a href="{{ path('app_extra_index') }}">
+                        		<i class="fas fa-gift"></i>
+                        		Extras    
+                            </a> 
+    					</li>
+                        <li>      
+                        	<a href="{{ path('app_melding_index') }}"> 
+                            	<i class="fas fa-envelope"></i>
+                            	Melding
+                            </a>
+    					</li>
+                        <li>      
+                        	<a href="{{ path('app_betalen_index') }}">
+                        		<i class="fas fa-cash-register"></i>
+                        		Betalen
+                            </a>
+    					</li>
+                <li>
+                	<a href="{{ path('app_home_logout') }}">
+                		<i class="fal fa-lock-alt"></i>Uitlogen
+                	</a>       
+                </li>
+                {% else %}
+                <li>            
+                	<a href="{{ path('app_locatie_index') }}">
+                    	<i class="fas fa-building "></i>
+                    	Locaties
+                	</a>
+    			</li>
+                <li>             
+                	<a href="{{ path('app_ambtenaar_index') }}">
+                		<i class="fas fa-user-tie"></i>
+                    	Ambtenaren
+               		</a>
+    			</li> 
+                <li>
+                	<a href="http://digispoof.zaakonline.nl?responce_url={{ absolute_url(path('app_home_login')) }}">
+                		<i class="fal fa-lock-alt"></i>
+                		Inloggen
+                	</a>       
+                </li>
+                {% endif %}           
+              </ul>
+            </div>
+          </div>
+    
+          {% if huwelijk is defined and huwelijk %}                
+          <!-- Desktop menu -->
+          <div class="container fluid-container content-area header-menu hidden-xs hidden-sm">
+            <div class="header-menu-content">
+              <div class="menu-logo">
+                <i class="fas fa-bars"></i>
+              </div>
+              <ul>           
+                <li style="color:#fff;">
+                	<i class="fal fa-lock-alt"></i> U bent ingelogd over een beveiligd verbinding, klik <a href="{{ path('app_home_logout') }}"><u>hier</u></a> om uit te loggen.                  	
+                </li>
+              </ul>
+            </div>
+          </div>
+         {% endif %}  

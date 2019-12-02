@@ -1,0 +1,185 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+							<div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+	                           {% for partner in partners %}                         
+                               <div class="col-md-6">
+                        			<div class="well well-lg">    
+        	                            <b>Partner</b>{% if partner.personObject is defined %}
+                                	    {{ partner.personObject.naam.voornamen }}{{ partner.personObject.naam.geslachtsnaam }}
+                                        {% else %}
+                                        {{ partner.contactObject.given_name }}{{ partner.contactObject.family_name }}
+                                        {% endif %}      
+                                		<ul class="list-icon">                    
+                                            <li>    
+                                            	<!--  Trouwdatum -->
+                                                {% if partner.status != "requested"%}<i class="fa fas fa-check"></i>{% else %}<i class="fa fas fa-exclamation-triangle"></i>{% endif %} Instemming: {{ partner.status  }}  
+                                            <li>                                          
+                                            <li>    
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fa fas fa-check"></i>Leeftijd is gecontroleerd
+                                            <li>            
+                            		        {% if partners|length >= 2 %}                    
+                                            <li>    
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fa fas fa-check"></i>Is geen famillie in de eerste graad
+                                            <li>                   
+                                            {% endif %}       
+                                            <li>    
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fa fas fa-check"></i>Heeft geen partner
+                                            <li> 
+                                		</ul>       
+          							</div>
+    							</div>
+                                    {% endfor %}
+    						</div>
+							<div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                            {% for getuige in getuigen %}
+    						<div class="col-md-3">
+                            	<div class="well well-lg">
+        	                            <b>Getuige</b>{% if getuige.personObject is defined %}
+                                	    {{ getuige.personObject.naam.voornamen }}{{ getuige.personObject.naam.geslachtsnaam }}
+                                        {% else %}
+                                        {{ getuige.contactObject.given_name }}{{ getuige.contactObject.family_name }}    
+                                        {% endif %}        
+                                		<ul class="list-icon">               
+                                            <li>    
+                                            	<!--  Trouwdatum -->
+                                                {% if getuige.status != "verzoeked"%}<i class="fa fas fa-check"></i>{% else %}<i class="fas fa-exclamation-triangle"></i>{% endif %} Instemming: {{ getuige.status  }}  
+                                            <li>                             
+                                		</ul>   
+                                		</div>
+    	</div>                                       
+                                    {% endfor %}    	
+     </div>
+	<div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+	
+                <div class="col-sm-10 col-md-12 col-sm-offset-1 col-md-offset-0">
+                	<div class="col-text20 margin-bottom20">
+                	
+                        <div class="list-row"><div class="list-col">
+                        		Gedaan
+                                <ul class="list-icon">   
+                                    
+            	                    {% if verzoek.properties.type is defined %}                  
+                                    <li><b>Ceremonie</b>    
+                                		<ul class="list-icon">   
+                                			<li>  
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fa fas fa-check"></i>{{  verzoek.properties.type }}
+                                    		</li> 
+                                		</ul>  
+                                    </li> 
+            	                    {% endif %}  
+            	                    {% if verzoek.properties.datum is defined %}                  
+                                    <li><b>Trouwdatum</b>    
+                                		<ul class="list-icon">   
+                                			<li>  
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fa fas fa-check"></i> {{ verzoek.properties.datum  }}
+                                    		</li> 
+                                		</ul>  
+                                    </li> 
+            	                    {% endif %}  
+            	                    {% if verzoek.properties.ambtenaar is defined %}                  
+                                    <li><b>Ambtenaar</b>    
+                                		<ul class="list-icon">   
+                                			<li>  
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fa fas fa-check"></i>{{ verzoek.properties.ambtenaar }}
+                                    		</li> 
+                                		</ul>  
+                                    </li> 
+            	                    {% endif %}  
+            	                    {% if verzoek.properties.locatie is defined %}                  
+                                    <li><b>Locatie</b>    
+                                		<ul class="list-icon">   
+                                			<li>  
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fa fas fa-check"></i>{{ verzoek.properties.locatie }}
+                                    		</li> 
+                                		</ul>  
+                                    </li> 
+            	                    {% endif %}      
+                                            
+                                	</ul>
+                            	</div><!-- /.list-col -->   
+                        	<div class="list-col">
+                            	Nog te doen
+                            	<ul class="list-icon">   
+                                    
+            	                    {% if verzoek.properties.type is not defined %}                  
+                                    <li><b>Ceremonie</b>    
+                                		<ul class="list-icon">   
+                                			<li>  
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fas fa-exclamation-triangle"></i> Geen Ceremonie
+                                    		</li> 
+                                		</ul>  
+                                    </li> 
+            	                    {% endif %}  
+            	                    {% if verzoek.properties.datum is not defined %}                  
+                                    <li><b>Trouwdatum</b>    
+                                		<ul class="list-icon">   
+                                			<li>  
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fas fa-exclamation-triangle"></i> Geen datum
+                                    		</li> 
+                                		</ul>  
+                                    </li> 
+            	                    {% endif %}  
+            	                    {% if verzoek.properties.ambtenaar is not defined %}                  
+                                    <li><b>Ambtenaar</b>    
+                                		<ul class="list-icon">   
+                                			<li>  
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fas fa-exclamation-triangle"></i> Geen ambtenaar
+                                    		</li> 
+                                		</ul>  
+                                    </li> 
+            	                    {% endif %}  
+            	                    {% if verzoek.properties.locatie is not defined %}                  
+                                    <li><b>Locatie</b>    
+                                		<ul class="list-icon">   
+                                			<li>  
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fas fa-exclamation-triangle"></i> Nog geen locatie,
+                                    		</li> 
+                                		</ul>  
+                                    </li> 
+            	                    {% endif %}    
+                            		{% if partners|length < 2 %}                     
+                                    <li><b>Partners</b>   
+                                		<ul class="list-icon">   
+                                			<li>    
+                                    			<!--  Trouwdatum -->  
+                                    			<i class="fas fa-exclamation-triangle"></i> Te weinig partners
+                                    		</li> 
+                                		</ul>  
+                                    <li>         
+                                    {% endif %}
+                            		{% if getuigen|length < 2 %}                     
+                                    <li><b>Getuigen</b>   
+                                		<ul class="list-icon">   
+                                			<li>    
+                                            	<!--  Trouwdatum -->  
+                                            	<i class="fas fa-exclamation-triangle"></i> Te weinig getuigen
+                                    		</li> 
+                                		</ul>  
+                                    <li>         
+                                    {% endif %}
+                                </ul>
+                            </div>     
+                        </div><!-- /.list-row -->
+                      	<div class="btn-section textcenter animation" data-animation="animation-fade-in-up">
+                    	</div><!-- /.btn-section -->    
+                    	  
+                	</div><!-- /.col -->    
+     </div>
+     </div>
+	
+
+{% endblock %}

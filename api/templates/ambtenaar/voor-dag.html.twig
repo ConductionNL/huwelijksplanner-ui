@@ -1,0 +1,45 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+        <!-- .container -->
+    	<div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+            
+            <!-- .row -->
+                
+                <div class="col-sm-12 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs" >
+                	<div class="margin-bottom40">
+                    	<div class="post-heading-left text-center-sm text-center-xs" >
+                        	<h4>Trouwambtenaar </h4>
+                            <h2>Zelfstandig trouw ambtenaar</h2>
+                        </div>
+                        
+                        <p>Het is uiteraard ook mogelijk om...</p>
+                        <p class="margin-bottom30">Hou er rekening mee dat dit alleen mogelijk is in combinatie met een uitgebreid huwelijk</p>
+                        <a href="/" class="btn-custom btn-icon" ng-hide="loading"><i class="fa fa-search"></i> Ga terug naar de hoofpagina</a>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                	<form class="affa-form-contact" ng-hide="loading">
+                    	<h3>Toevoegen</h3>
+                        <br/>
+                        <label for="getuige_oornamen">Voornaam(en)</label>
+                        <input type="text" name="getuige_voornamen" ng-model="bijzonderAmbtenaar.voornamen"  placeholder="John"/>
+                        <label for="getuige_geslachtsnaam">Achternaam</label>
+                        <input type="text" name="getuige_geslachtsnaam" ng-model="bijzonderAmbtenaar.geslachtsnaam" placeholder="Do"/>
+                        <label for="getuige_email">Email Addres <span class="required">*</span></label>
+                        <input type="text" name="getuige_email" ng-model="bijzonderAmbtenaar.emailadres" placeholder="john@do.nl"/>
+                       	<label for="getuige_telefoonnummer">Telefoon nummer <span class="required">*</span></label>
+                        <input type="text" name="getuige_telefoonnummer" ng-model="bijzonderAmbtenaar.telefoonnummer" placeholder="+31 6 12345678"/>
+                        
+                       	<a href="#" ng-click="addBijzonderAmbtenaar(bijzonderAmbtenaar)"  class="btn btn-success btn-lg btn-block"  />Uitnodigen</a>
+                        <br/>
+                    	<p>Uw Kennis ontvangt een email om te bevestigen, tevens ontvang de gemeente uw melding</p>
+               		</form>
+                </div>
+                
+            </div>
+            <!-- .row end -->
+            
+{% endblock %}

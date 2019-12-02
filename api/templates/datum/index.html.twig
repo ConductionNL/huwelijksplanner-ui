@@ -1,0 +1,52 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                    	
+                    	<div class="post-heading-center ">
+                            <h2>Wanneer wilt u trouwen?</h2>
+                        </div>
+                
+                	
+                <div class="col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs">
+                	<div class="margin-bottom40">           
+	                	<figure class="col-img40 margin-bottom40">
+	                        <img src="images/content/elements/Bank.png" alt="Image">
+	                    </figure>
+                    </div>
+                </div>
+                
+               
+                
+                <div class="col-sm-10 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+
+		            	
+                	<form method="post" action="{{ path('app_datum_index')}}" class="affa-form-contact">
+		            	<div class="submit-status"></div> <!-- submit status -->
+						<div class="dateholder">
+							<md-datepicker  ng-model="datum" md-placeholder="Voer datum in" md-open-on-focus="" md-date-filter="availabledates" md-date-locale="dutchDates"></md-datepicker>
+						</div>
+		            	<select name="tijd">
+						  <option value="10:00">10:00</option>
+						  <option value="10:30">10:30</option>
+						  <!-- 
+						  <option value="11:00">11:00</option>
+						  <option value="11:30">11:30</option>
+						   -->
+						</select>
+						
+						<button type="submit" class="btn btn-primary btn-icon  btn-block btn-icon" ng-disabled="!datum"><i class="fas fa-save"></i> Sla datum op</button>
+						
+                        <input type="text" name="datum" ng-model="datum"  style="background: transparent; border: transparent; color: transparent;">
+    					<br><br>
+    					<span ng-hide="datum">Kies een datum om door te gaan</span>
+		           </form>
+                </div>
+                
+            </div>
+            <!-- .row end -->        
+    	    
+{% endblock %}

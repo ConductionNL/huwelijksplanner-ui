@@ -1,0 +1,36 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+
+                    <div class="post-heading-center">
+                    	<h2>Verzoeken</h2>
+                    </div>
+                    
+                
+                      
+            	<table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>>
+                      <th scope="col">Referentie</th>
+                      <th scope="col">Verzoek type</th>
+                      <th scope="col">Status</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                 	 {% for request in requests %}
+                    <tr>
+                      <th scope="row">{{ loop.index }}</th>
+                      <td>{{ request.reference }} </td>
+                      <td>{{ request.request_typeObject.name }} </td>
+                      <td>{{ request.status }}</td>
+                      <td><a href="{{ path('app_beheer_request',{'id':request.id}) }}" class="btn btn-success" role="button">Verwerken</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>    
+                 
+{% endblock %}

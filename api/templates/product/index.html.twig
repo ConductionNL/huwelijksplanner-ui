@@ -1,0 +1,51 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .tbl-pricing -->
+            <div class="tbl-pricing tbl-prc-recommended animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >                
+                <!-- .row -->
+                <div class="row">
+        	
+                    <div class="post-heading-center">
+                    	<h2>Hoe wilt u gaan trouwen ?</h2>
+                    </div>
+	                            
+                    {% for product in producten %} 
+                    <div class="col-sm-4 tbl-prc-col"> <!-- 1  -->
+                    	<div class="tbl-prc-wrap">
+                        	<div class="tbl-prc-heading">
+                            	<h4>
+                                	{% if request is not empty and ceremonie is not empty and product.id == ceremonie.id %}
+    								<i class="fas fa-check"></i>
+                                    {%  endif  %}                            	
+                                    {{ product.naam }}
+                                </h4>
+                            </div>
+                            <div class="tbl-prc-price bg-yellow">
+                                <h5>&euro; {{ product.prijsExcl / 100 }} </h5>
+                                <p>{{ product.samenvatting|raw }}</p>
+                            </div>
+                            <ul class="tbl-prc-list">
+                                <li>Eerste mogelijkheid: <b>{{  product.beschikbaar |date("d-m-Y") }}</b></li>
+                            </ul>
+                            {{ product.beschrijving|raw }}
+                            <div class="tbl-prc-footer">
+	                            <a href="{{ path('app_product_view',{'id':product.id}) }}"  class="btn btn-secondary btn-icon  btn-block" >Meer lezen</a> 
+                                {% if request is not empty  %}
+	                            <br/><br/>
+	                            <a href="{{ path('app_product_set',{'id':product.id}) }}"  class="btn btn-primary btn-icon  btn-block">Ja dit wil ik!</a> 
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>                    
+                    {% endfor %}        
+                         
+                    
+                </div>
+                <!-- .row end -->
+                
+            </div>
+            <!-- .tbl-pricing end -->        
+{% endblock %}

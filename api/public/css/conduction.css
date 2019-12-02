@@ -1,0 +1,84 @@
+/*! ========================================================================
+Frinzj overides TEMPLATE V0.1
+* -------------------------------------------------------------------------
+* - Conduction.nl -
+* =========================================================================
+*
+*
+*
+* IMPORTANT :
+* ===================================================================================================
+* This stylesheet overides the nifty template, dont make any changes there. Instead overide them here
+*
+*/
+
+/* The user image used to be aligned at 50% from top, since the image itszelf has height that should be 40 */ 
+.img-user {
+    top: 40%;
+    -webkit-transform: translateY(40%);
+    transform: translateY(40%);
+}
+
+/* The max hight on the profile box couses the last items tot disapear */
+.mainnav-profile {
+    max-height : none;
+}
+
+
+/* This code couses the > icons in het main menu to rotate 90 degrees when the menu is expanded */
+[data-toggle="collapse"][aria-expanded="true"] > .js-rotate-if-collapsed {
+    -webkit-transform: rotate(90deg);
+    -moz-transform:    rotate(90deg);
+    -ms-transform:     rotate(90deg);
+    -o-transform:      rotate(90deg);
+    transform:         rotate(90deg);
+}
+
+.rotate{
+    -webkit-transform: rotate(90deg);
+    -moz-transform:    rotate(90deg);
+    -ms-transform:     rotate(90deg);
+    -o-transform:      rotate(90deg);
+    transform:         rotate(90deg);	
+}
+
+/* this codes in applied to invallid form fields e.g. inputs */
+.ng-invalid     {  
+	/* border-color: #f22314;	*/
+}
+
+/* active menu items */
+.active-link {
+    font-weight: 700;
+    color: #25476a;
+}
+
+/* loading div */
+.loading {
+    padding-top: 50px;
+    padding-bottom: 50px;
+	width: 100%;
+	text-align: center;
+  	align-items: center;
+  	justify-content: center;
+    vertical-align: middle;
+}
+
+/* panel-overlay overwrites  */
+.panel-overlay {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+    border-radius: 3px;	
+}
+
+/* pulling content  */
+.pull-right {
+    float: right!important;/* @todo !important is really ugly, do we realy need it?*/
+}
+.pull-left {
+    float: left!important; /* @todo !important is really ugly, do we realy need it?*/
+}
+.panel {
+    background-color: #fff;
+}   

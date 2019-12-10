@@ -8,16 +8,16 @@ settings:
   name: hpui
   title: Huwelijks Planner
   version: V.0.1
-  domain: conduction.nl
-  description: Naast deze JSON
-  repro: https://github.com/ConductionNL/huwelijksplanner-ui'
-  demo: dev.huwelijksplanner.online
-  unit: Common-Ground  
-  locality: Amsterdam
-  state: Noord-Holland
+  description: '&#039;Dit is de huwelijksplanner app&#039;'
+  repro: 'https://github.com/ConductionNL/huwelijksplanner-ui'
+  domain: huwelijksplanner.online  
+  organisationName: Conduction
   email: info@conduction.nl
   country: Netherlands
-  organisationName: Conduction
+  state: Noord-Holland
+  locality: Amsterdam
+  unit: Common-Ground  
+  demo: hpui.zaakonline.nl
   env: dev
   debug: 1
   replicaCount: 1

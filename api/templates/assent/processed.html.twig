@@ -1,0 +1,54 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}        
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >          
+                <div class="col-sm-12 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs">
+                	<div class="margin-bottom40">
+                    	<div class="post-heading-left text-center-sm text-center-xs" >
+                        	<h4>{{ assent.name|raw }}   </h4>
+                            <h2>Instemmings verzoek</h2>
+                        </div>
+                        {{ assent.description|raw }}     
+                        <br/>
+                        
+                    </div>
+                </div>
+                
+                <div class="col-sm-12 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                	<div class="post-heading-left text-center-sm text-center-xs" >
+                    	<h4>Uw gegeven </h4>
+                        <h2>
+    		                {% if person.naam is defined and person.naam.voornamen is defined  %}
+                            {{ person.naam.voornamen }}
+                            {% endif %}
+                            {% if person.naam is defined and person.naam.geslachtsnaam is defined  %}
+                            {{ person.naam.geslachtsnaam }}
+                            {% endif %}
+                        </h2>
+                    </div>
+                    <p>	De bij ons bekende adres gegevens
+                    	{% if person.verblijfplaats is defined and person.verblijfplaats.straatnaam is defined  %}
+{{ person.verblijfplaats.straatnaam }}
+                        {% endif %}
+                        {% if person.verblijfplaats is defined and person.verblijfplaats.huisnummer is defined  %}
+{{  person.verblijfplaats.huisnummer }}
+                        {% endif %}<br />
+                        {% if person.verblijfplaats is defined and person.verblijfplaats.postcode is defined  %}
+{{ person.verblijfplaats.postcode }}
+                        {% endif %}
+                    </p>
+                	<div class="post-heading-left text-center-sm text-center-xs" >
+                    	<h4>De status van uw instemming</h4>
+                        <h2>
+    		             {{ assent.status }
+                        </h2>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            <!-- .row end -->       
+{% endblock %}

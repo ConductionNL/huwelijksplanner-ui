@@ -1,0 +1,52 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}     
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >  
+            	<div class="post-heading-center">
+                	<h2>Verzoeken</h2>
+                    <p>Het kan zijn dat u al openstaande verzoeken heeft. In dat geval krijgt u hier de keuze om verder te gaan met een huidig verzoek of een nieuw verzoek op te starten.</p>
+                      
+                </div>
+            </div>
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" > 
+                <div class="col-md-12"> <!-- 4 -->
+             <table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Referentie</th>
+                      <th scope="col">Verzoek type</th>
+                      <th scope="col">Begonnen op</th>
+                      <th scope="col">Status</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                 	 {% for request in requests %}
+                    <tr>
+                      <th scope="row">{{ loop.index }}</th>
+                      <td>{{ request.reference }} </td>
+                      <td>{{ request.request_typeObject.name }} </td>
+                      <td>{{ request.created_at}} </td>
+                      <td>{{ request.status }}</td>
+                      <td><a href="{{ path('app_request_continue',{'id':request.id}) }}" class="btn btn-success" role="button">Verder gaan</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>   
+                </div>
+            </div>
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" > 
+                <div class="col-md-2"> <!-- 4 -->
+                </div>
+                <div class="col-md-8"> <!-- 4 -->                
+     				<a href="{{ path('app_request_new') }}" class="btn btn-primary btn-icon btn-block btn-lg"><i class="far fa-rings-wedding"></i> Ik wil liever een nieuw verzoek starten</a>
+                </div>
+                <div class="col-md-2"> <!-- 4 -->
+                </div>
+            </div> 
+            <!-- /.row --> 
+{% endblock %}

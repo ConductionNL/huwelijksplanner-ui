@@ -1,15 +1,15 @@
 openapi: 3.0.2
 info:
-  title: 'Proto Component'
+  title: 'Huwelijks Planner'
   version: V.0.1
   description: |
     API Details
-    - Component: Proto Component
-    - Reference: pc
+    - Component: Huwelijks Planner
+    - Reference: hpui
     - Enviroment: dev
     - Version: V.0.1
-    - Repository: [online](https://github.com/ConductionNL/Proto-component-commonground) / [zip](https://github.com/ConductionNL/Proto-component-commonground/archive/master.zip)
-    - Docker Image: [online](https://hub.docker.com/repository/docker/conduction/pc-php) 
+    - Repository: [online](https://github.com/ConductionNL/huwelijksplanner-ui) / [zip](https://github.com/ConductionNL/huwelijksplanner-ui/archive/master.zip)
+    - Docker Image: [online](https://hub.docker.com/repository/docker/conduction/hpui-php) 
     - Datamodel: [postman](/schema/openapi.postman_collection) / [oas](/schema/openapi.yaml) / [pdf](/schema/datamodel.pdf) / [mwb](/schema/datamodel.mwb) 
     
     'Naast deze JSON rest API is er ook een [graphql](/graphql) interface beschikbaar.'         

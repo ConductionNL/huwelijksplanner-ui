@@ -1,0 +1,69 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                
+                <div class="post-heading-center">
+                	<h2>Extra opties</h2>
+                    <p>U kunt uiteraard ook extra opties kiezen voor uw huwelijk</p>
+                </div>
+            
+                <div class="col-sm-3"> <!-- 1 -->
+                	<div class="affa-team-profile">
+                    	<figure class="team-profile-img" >
+                            <img src="images/content/avatar/1.jpg" alt="Avatar" />
+                        </figure>
+                        <div class="team-profile-name">
+                        	<h4>Trouwboekje</h4>
+                            <p>Blauw</p>
+                        </div>
+                        <p>Een leuk boekje dat iedereen tekend, aardig aandenken</p>
+                    </div>
+                </div>
+                
+                
+                <div class="col-sm-3"> <!-- 1 -->
+                	<div class="affa-team-profile">
+                    	<figure class="team-profile-img" >
+                            <img src="images/content/avatar/1.jpg" alt="Avatar" />
+                        </figure>
+                        <div class="team-profile-name">
+                        	<h4>Trouwboekje</h4>
+                            <p>Rood</p>
+                        </div>
+                        <p>Een leuk boekje dat iedereen tekend, aardig aandenken</p>
+                    </div>
+                </div>
+                
+                <div class="col-sm-3"> <!-- 1 -->
+                	<div class="affa-team-profile">
+                    	<figure class="team-profile-img" >
+                            <img src="images/content/avatar/1.jpg" alt="Avatar" />
+                        </figure>
+                        <div class="team-profile-name">
+                        	<h4>Duiven</h4>
+                            <p>Wit</p>
+                        </div>
+                        <p>Naast binden is het ook leuk om iets los te laten</p>
+                    </div>
+                </div>
+                
+                <div class="col-sm-3"> <!-- 1 -->
+                	<div class="affa-team-profile">
+                    	<figure class="team-profile-img" >
+                            <img src="images/content/avatar/1.jpg" alt="Avatar" />
+                        </figure>
+                        <div class="team-profile-name">
+                        	<h4>Rijst</h4>
+                            <p>Korrelig</p>
+                        </div>
+                        <p>Niet handig om te combineren met duiven</p>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- .row end -->
+{% endblock %}

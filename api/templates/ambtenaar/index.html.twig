@@ -1,0 +1,73 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                <div class="post-heading-center">
+                	<h2>Door wie wilt u worden getrouwd?</h24>
+                    <p>Een trouwambtenaar heet officieel een buitengewoon ambtenaar van de burgerlijke stand (babs ). Een babs waarmee het klikt is belangrijk. Hieronder stellen de babsen van de gemeente Utrecht zich aan u voor. U kunt een voorkeur aangeven voor een van hen, dan krijgt u data te zien waarop die babs beschikbaar is. Wanneer u een babs heeft gekozen zal deze na de melding voorgenomen huwelijk, zelf contact met u opnemen.</p>
+                	<p>Kiest u liever voor een babs uit een andere gemeente? Of voor een vriend of familielid als trouwambtenaar? Dan kunt u hem of haar laten benoemen tot trouwambtenaar voor 1 dag bij de gemeente Utrecht. Dit kunt u hier ook opgeven.</p>
+                    <p class="margin-bottom30">Bij een gratis of een eenvoudig huwelijk of geregistreerd partnerschap kunt u niet zelf een babs kiezen, de gemeente wijst er een toe.</p>
+                      
+                </div>
+                {% for product in products %}
+                <div class="col-sm-6"> <!-- 4 -->
+                	<a href="{{ path('app_ambtenaar_view',{'id':product.id}) }}">
+	                	<div class="affa-testimonial">
+	                    	<div class="testimonial-text" >
+	                    		{{ product.description|raw }}
+	                        </div>
+	                        <div class="testimonial-author">
+	                            <h4>{{ product.name|e }}</h4>
+	                            {% if  huwelijk is defined  and huwelijk and huwelijk.ambtenaar is defined  and huwelijk.ambtenaar == ambtenaar.id %}
+	                            <p>Door u gekozen</p>
+	                            {% else %}
+	                            <p>Trouwambtenaar</p>
+	                            {% endif %}
+	                            <img src="{{product.logo}}" alt="{{ product.name|e }}"/>
+	                        </div>
+	                    </div>
+                    </a>
+                </div>       
+                {% endfor %}     
+            </div>
+ 			 <!--
+            <div class="row" >            
+                <div class="col-sm-6"> 
+                	<a href="{{ path('app_ambtenaar_vooreendag') }}">
+	                	<div class="affa-testimonial">
+	                    	<div class="testimonial-text">
+	                        	<p>Je kan ook zelf een een trouwambtenaar voor een dag aanleveren.</p>
+	                        </div>
+	                        <div class="testimonial-author">
+	                            <h4>Trouwambtenaar voor een dag</h4>
+	                            <p>Zelf regelen</p>
+	                            <img src="https://utrecht.trouwplanner.online/images/content/avatar/2.png" alt="Avatar" />
+	                        </div>
+	                    </div>
+                    </a>
+                </div>
+                
+                              
+                <div class="col-sm-6"> 
+                	<a href="{{ path('app_ambtenaar_zelfstandig') }}">
+	                	<div class="affa-testimonial" >
+	                    	<div class="testimonial-text">
+	                        	<p>Je kan ook een trouwambtenaar uit een andere gemeente regelen.</p>
+	                        </div>
+	                        <div class="testimonial-author">
+	                            <h4>Zelfstandige trouwambtenaar</h4>
+	                            <p>Zelf regelen</p>
+	                            <img src="https://utrecht.trouwplanner.online/images/content/avatar/3.png" alt="Avatar" />
+	                        </div>
+	                    </div>
+                    </a>
+                </div>
+            
+            </div>
+            -->
+            <!-- .row --> 
+    
+{% endblock %}

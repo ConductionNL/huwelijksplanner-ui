@@ -1,0 +1,30 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}              
+            <!-- .row -->
+            <div class="row" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                <div class="post-heading-center ">
+                	<h2>Melding voorgenomen huwelijk</h2>
+                </div>
+                <div class="col-sm-10 col-md-7 col-lg-6 col-sm-offset-0 col-md-offset-0 col-lg-offset-1">
+       				<p>Om te kunnen trouwen moet er tenminste 14 dagen voor de huwelijksdatum of partnerschapsdatum een melding worden gedaan bij de gemeente waar u gaat trouwen of een partnerschap aangaat. Deze melding blijft een jaar geldig. Voorheen werd dit ondertrouw of aangifte genoemd. Woont u in het buitenland en heeft tenminste 1 van de partners de Nederlandse nationaliteit dan doet u de melding bij de gemeente Den Haag via www.denhaag.nl. Deze stuurt het voornemen door naar uw gemeente. De melding voorgenomen huwelijk of partnerschap kunt u online doorgeven, nadat u uw huwelijksdatum of partnerschapsdatum heeft gekozen. U zet beiden een digitale handtekening, en u moet kopie&euml;n van de legitimatiebewijzen van uw beiden uploaden. Let op: Uw melding is 1 jaar geldig. Zorgt u er voor dat u binnen deze termijn het huwelijk sluit/partnerschap registreert. Let op: Het is mogelijk dat er om aanvullende stukken (documenten) wordt gevraagd, zoals een geboorteakte of een bewijs van burgerlijke staat. Ook belangrijk zijn de voorwaarden om te mogen trouwen/ partnershap te registreren: </p>
+
+                    <ol>
+                    	<li>U moet allebei 18 jaar of ouder zijn (op het moment dat u trouwt of uw patnerschap registreert)  </li>
+                    	<li>U mag niet al getrouwd zijn of een geregistreerd partnerschap hebben (bent u in het buitenland getrouwd, dan is dat ook in Nederland een geldig huwelijk)  </li>
+                    	<li>U mag geen directe familie van elkaar zijn. Broers en zussen (ook door adoptie) kunnen niet met elkaar trouwen, neven en nichten wel  </li>
+                    	<li>U mag niet gedwongen worden om te trouwen </li>
+                    	<li>U hebt toestemming nodig van de curator of rechtbank als u onder curatele staat  </li>
+                    </ol>
+                </div><!-- /.col -->
+                
+                <div class="col-sm-2 col-md-5 col-lg-4 col-sm-offset-0 col-md-offset-0 col-lg-offset-1">
+                	<figure class="margin-bottom40 ">
+                    	<img src="images/content/elements/MakeItKnown.png">
+                    </figure>
+                </div><!-- /.col -->
+                
+            </div><!-- /.row -->
+{% endblock %}

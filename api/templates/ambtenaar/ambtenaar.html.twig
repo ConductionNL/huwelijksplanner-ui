@@ -1,0 +1,73 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}        
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >          
+                <div class="col-sm-12 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs">
+                	<div class="margin-bottom40">
+                    	<div class="post-heading-left text-center-sm text-center-xs" >
+                        	<h4>Ambtenaar</h4>
+                            <h2>{{ product.name|e }}</h2>
+                        </div>
+                        {{ product.description|e }}     
+                        <br/>
+                        <br/>
+                         {% if request is defined and request.properties.ambtenaar is not defined and request is not empty %}
+                        <a href="{{ path('app_ambtenaar_set',{'id':product.id}) }}" class="btn btn-success btn-icon" >
+                        	<i class="far fa-calendar-check"></i>
+                         	Reserveer deze ambtenaar
+                         </a>
+                         {% elseif request is defined and request 
+                         and request.properties.ambtenaar is defined 
+                         and request.properties.product !=  "http://producten-diensten.demo.zaakonline.nl/producten/1" 
+                         and request.properties.product != "http://producten-diensten.demo.zaakonline.nl/producten/2" %}
+                         <a href="{{ path('app_ambtenaar_unset',{'id':product.id}) }}" class="btn btn-danger btn-icon" >
+                        	<i class="far fa-calendar-times"></i>
+                         	Annuleer deze ambtenaar
+                         </a>
+                         <br/><br/>
+                         <a href="{{ path('app_getuigen_index') }}" class="btn btn-primary btn-icon" >
+                        	<i class="far fa-calendar-times"></i>
+                         	Ga door naar getuigen
+                         </a>
+                         {% elseif request is defined and request is not null and (
+                         request.properties.product !=  "http://producten-diensten.demo.zaakonline.nl/producten/1" 
+                         or request.properties.product != "http://producten-diensten.demo.zaakonline.nl/producten/2" )%}
+                         <p>Let op: Het type ceremonie dat u heeft geselecteerd laat geen keuze voor een ambtenaar toe. Alleen bij een uitgebreide ceremonie bestaat de mogelijkheid een ambtenaar te kiezen. Wilt u toch een ambtenaar kunnen kiezen, dan kunt u  <a href="{{ path('app_product_index') }}">hier</a> uw ceremonie aanpassen.</p>
+                         
+                         <a href="{{ path('app_getuigen_index') }}" class="btn btn-primary btn-icon" >
+                        	<i class="far fa-calendar-times"></i>
+                         	Ga door naar getuigen
+                         </a>
+                         {% endif %}
+                    </div>
+                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                	<figure class="col-img40 margin-bottom40 animation">
+                        <img  ng-src="{{product.logo}}" alt="Image">
+                    </figure>
+                    
+                    beschikbaarheid van deze Ambtenaar
+                </div>
+                
+            </div>
+            <!-- .row end -->            
+            <!-- .row -->
+            <div class="row animation"  {% if app.session.flashbag.peekAll|length > 0 %}data-animation="animation-fade-in" data-delay="3400"{% endif %}>
+                
+                <div class="col-sm-10 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0">
+                	<figure class="margin-bottom40 animation" data-animation="animation-fade-in-left">
+                        <iframe width="560" height="315" frameborder="0" allowfullscreen="" src="{{ product.movie}}"></iframe>
+                    </figure>
+                </div>
+                
+                <div class="col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                	<div class="col-text20 margin-bottom20">{{ product.description|raw }}
+                    </div>
+                </div>
+                
+            </div>
+            <!-- .row end -->    
+{% endblock %}

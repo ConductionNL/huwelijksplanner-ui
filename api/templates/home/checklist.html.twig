@@ -1,0 +1,123 @@
+{# templates/home/flow.html.twig #}
+
+
+{% block body %}   
+            
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                
+                <div class="d-none d-md-block col-md-4 col-md-offset-0 hidden-xs hidden-sm">
+                	<figure class="margin-bottom40 animation animated animation-fade-in-left" data-animation="animation-fade-in-left">
+                    	<img src="images/content/elements/Gellukig.png" alt="Image">
+                    </figure>
+                </div>
+                
+                <div class="col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-0">
+                	<div class="col-text20 margin-bottom20">
+                    	<div class="post-heading-left">
+                            <h4>To do or not do? </h4>
+                            <h2>En, zijn jullie er al klaar voor?</h2>
+                            <p>We kunnen ons goed voorstellen dat er nogal wat op jullie afkomt bij het plannen van een huwelijk, daarom hebben we alles op een rij gezet voor jullie. Een handig overzicht van wat er moet gebeuren, maar ook wat er al is gedaan.</p>
+                            <p>Legenda
+                            	<i class="fa far fa-square"></i> Nog te doen
+                            	<i class="fa fas fa-circle-notch fa-spin"></i> In afwachting van reactie
+                            	<i class="fa fas fa-check"></i> Gedaan
+                            	<i class="fa fas fa-times"></i> (Nog) niet gelukt
+                            </p>
+                        </div>
+                        
+                        <div class="list-row">
+                        	<div class="list-col">
+                        		Uw perfecte dag
+                                <ul class="list-icon">
+                                 	<!-- Trouwdatum -->                                    
+                                    <li>
+                                    	<i class="fa fas" ng-class="{'fa-check':  huwelijk.trouwdatum , 'fa-circle-notch fa-spin': !huwelijk.trouwdatum }"></i>
+                                    	<span ng-show="huwelijk.trouwdatum">{{ huwelijk.trouwdatum | date:'dd-MM-yyyy' }}</span>
+                                    	<span ng-hide="huwelijk.trouwdatum">Kies <a href="#trouwdatum" ng-click="setStage('datum')">hier</a> uw boogde huwelijks datum</span>                                     	
+                                   	</li>
+                                    <!--  Type -->
+                                    <li>
+                                    	<i class="fa fas" ng-class="{'fa-check': huwelijk.type , 'fa-circle-notch fa-spin': !huwelijk.type }"></i>
+                                    	<span ng-show="huwelijk.type">Type huwelijk : {{ huwelijk.type }}</span>
+                                    	<span ng-hide="huwelijk.type">Kies <a href="#trouwdatum" ng-click="setStage('datum')">hier</a> uw type huwelijk </span> 
+                                    	
+                                    </li>
+                                    <!-- Product -->
+                                    <li>
+                                    	<i class="fa fas" ng-class="{'fa-check': huwelijk.primairProduct , 'fa-square': !huwelijk.primairProduct }"></i>
+                                    	<span ng-show="huwelijk.primairProduct">Soort huwelijk: : {{ huwelijk.primairProduct.naam }}</span>
+                                    	<span ng-hide="huwelijk.primairProduct">Kies <a href="#producten" ng-click="setStage('type')">hier</a> uw soort huwelijk door </span>                                     	
+                                    </li>
+                                   
+                                    <!-- Partners -->
+                                    <li ng-show="huwelijk.partners < 2 && display != 'flow'"><i class="far fa-square" ></i> Nodig <a href="#partners">hier</a> uw partner uit</li>
+                                    <li ng-repeat="partnerLees in huwelijk.partners  track by $index" ng-show="display != 'flow'">
+                                    	<i class="fa fas"ng-class="{'fa-check': partnerLees.acceptatieDatum,'fa-times': partnerLees.weigerDatum, 'fa-circle-notch fa-spin': !partnerLees.weigerDatum && !partnerLees.weigerDatum }" ></i>
+                                    	{{$index+1}}: {{ partnerLees.persoon.voornamen }} {{ partnerLees.persoon.geslachtsnaam }}
+                                    </li>
+                                    <!-- locatie -->
+                                    <li>
+                                    	<i class="fa fas"ng-class="{'fa-check': huwelijk.locatie.acceptatieDatum,'fa-times': huwelijk.locatie.weigerDatum, 'fa-circle-notch fa-spin': huwelijk.locatie && !huwelijk.locatie.weigerDatum && !huwelijk.locatie.weigerDatum, 'fa-square': !huwelijk.locatie }" ></i>
+                                    	<span ng-show="huwelijk.locatie"> Locatie: {{ huwelijk.locatie.locatie.naam }}</span>
+                                    	<span ng-hide="huwelijk.locatie ">U heeft nog  geen locatie doorgegeven, doe dat <a href="#locaties" ng-click="setStage('locatie')">hier</a></span>
+                                    </li>
+                                    <!-- Trouw Ambtenaar -->
+                                    <li>
+                                    	<i class="fa fas"ng-class="{'fa-check': huwelijk.trouwAmbtenaar.acceptatieDatum,'fa-times': huwelijk.trouwAmbtenaar.weigerDatum, 'fa-circle-notch fa-spin': huwelijk.trouwAmbtenaar && !huwelijk.trouwAmbtenaar.weigerDatum && !huwelijk.trouwAmbtenaar.weigerDatum, 'fa-square': !huwelijk.trouwAmbtenaar }" ></i>
+                                    	<span ng-show="huwelijk.trouwAmbtenaar">Ambtenaar: {{  huwelijk.trouwAmbtenaar.ambtenaar.voornamen }} {{ huwelijk.trouwAmbtenaar.ambtenaar.geslachtsnaam }}</span>
+                                    	<span ng-hide="huwelijk.trouwAmbtenaar">U heeft nog  geen trouwambtenaar doorgegeven, doe dat <a href="#ambtenaren" ng-click="setStage('ambtenaar')">hier</a></span>
+                                    </li>
+                                    
+                                	</ul>
+                            	</div>   
+                            
+                            <div class="list-col">
+                            	<span  ng-show="display != 'flow'">Uw Getuigen</span>            
+                            	<ul class="list-icon" ng-show="display != 'flow'">
+                                    <li ng-show="huwelijk.getuigen.length < 2">
+                                    	<i class="fa far fa-square" ></i> U heeft nog te weinig getuigen doorgegeven, voeg ze <a href="#getuigen">hier</a> toe
+                                    </li>
+                                    <li ng-repeat="getuigeLees in huwelijk.getuigen  track by $index">
+                                    	<i class="fa fas"ng-class="{'fa-check': getuigeLees.acceptatieDatum,'fa-times': getuigeLees.weigerDatum, 'fa-circle-notch fa-spin': getuigeLees && !getuigeLees.weigerDatum && !getuigeLees.weigerDatum, 'fa-square': !getuigeLees }" ></i>
+                                    	{{$index+1}}: {{ getuigeLees.persoon.voornamen }} {{ getuigeLees.persoon.geslachtsnaam }} 
+                                    </li>
+                                </ul>
+                            	Uw Verplichtingen
+                            	<ul class="list-icon">
+                                    <li ng-show="display != 'flow'">
+                                    	<i class="fa fas"ng-class="{'fa-check': huwelijk.melding.status == 'akoord','fa-times': huwelijk.melding.status == 'afgewezen', 'fa-circle-notch fa-spin': huwelijk.melding && !huwelijk.melding.status, 'fa-square': !huwelijk.melding }" ></i>
+                                    	<span ng-show="huwelijk.melding"> De status van uw melding: {{ huwelijk.melding.status }} </span>
+                                    	<span ng-hide="huwelijk.melding"> U heeft nog  geen melding gedaan</span>
+                                    </li>
+                                    <li>
+                                    	<i class="fa fas"ng-class="{'fa-check': huwelijk.aanvraag.status == 'akoord','fa-times': huwelijk.aanvraag.status == 'afgewezen', 'fa-circle-notch fa-spin': huwelijk.aanvraag && !huwelijk.aanvraag.status, 'fa-square': !huwelijk.aanvraag }" ></i>
+                                    	<span ng-show="huwelijk.aanvraag"> De status van uw reservering: {{ huwelijk.aanvraag.status }} </span>
+                                    	<span ng-hide="huwelijk.aanvraag"> U heeft nog  geen reservering gedaan</span>
+                                    </li>
+                                    <li ng-show="huwelijk.inclAmount > 0 && display != 'flow'">
+                                    	<i class="fa fas"ng-class="{'fa-check': huwelijk.betaaling.status == 'akoord','fa-times': huwelijk.betaaling.status == 'afgewezen', 'fa-circle-notch fa-spin': huwelijk.betaaling && !huwelijk.betaaling.status, 'fa-square': !huwelijk.betaaling }" ></i>
+                                    	<span ng-show="huwelijk.betaaling"> De status van uw betaling: {{ huwelijk.v.status }} </span>
+                                    	<span ng-hide="huwelijk.betaaling"> U heeft nog geen betaling gedaan</span>
+                                    </li>
+                                </ul>
+                            </div>                         
+                        </div>
+                            
+                        </div><!-- /.list-row -->
+                         <div class="btn-section textcenter animation" data-animation="animation-fade-in-up">
+		                	<a href="#" class="btn-custom btn-icon" ng-click="sendMelding()" ng-show="!huwelijk.melding && huwelijk.aanvraag && huwelijk.primairProduct" ng-disabled="loading">
+							   <i class="fas fa-circle-notch fa-spin" ng-show="loading"></i>
+		                		<i class="fas fa-share-square" ng-hide="loading"></i>
+		                		Meld je huwelijk
+		                	</a>
+		                    <a href="#" class="btn-custom btn-icon"  ng-click="sendAanvraag()" ng-show="!huwelijk.aanvraag && huwelijk.primairProduct" ng-disabled="loading">
+			                    <i class="fas fa-circle-notch fa-spin" ng-show="loading"></i>
+								<i class="fas fa-share-square" ng-hide="loading"></i> 
+			                    Maak een reservering
+		                    </a>
+                    </div>
+                </div>
+            </div>
+            <!-- .row end -->
+{% endblock %}

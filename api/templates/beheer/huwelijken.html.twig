@@ -1,0 +1,42 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+
+                    <div class="post-heading-center">
+                    	<h2>Huwelijken</h2>
+                    </div>
+                    
+                <a href="#" class="btn btn-succes" role="button">Voeg toe</a></td>
+                      
+            	<table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Datum</th>
+                      <th scope="col">Tijd</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Product</th>
+                      <th scope="col">Ambtenaar</th>
+                      <th scope="col">Locatie</th>
+                      <th scope="col">#</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                 	 {% for huwelijk in huwelijken %}
+                    <tr>
+                      <th scope="row">{{ loop.index }}</th>
+                      <td>{% if huwelijk.datum is not empty %}{{ huwelijk.datum }}{% else %}Niet gekozen{% endif %}</td>
+                      <td>{% if huwelijk.tijd is not empty %}{{ huwelijk.tijd }}{% else %}Niet gekozen{% endif %}</td>
+                      <td>{% if huwelijk.type is not empty %}{{ huwelijk.type|capitalize }}{% else %}Niet gekozen{% endif %}</td>
+                      <td>{% if huwelijk.primairProduct is not empty %}{{huwelijk.primairProduct}}{% else %}Niet gekozen{% endif %}</td>
+                      <td>{% if huwelijk.trouwAmbtenaar and huwelijk.trouwAmbtenaar  is not empty %}{{ huwelijk.trouwAmbtenaar }}{% else %}Niet gekozen{% endif %}</td>
+                      <td>{% if huwelijk.locatie is not empty %}{{ huwelijk.locatie }}{% else %}Niet gekozen{% endif %}</td>
+                      <td><a href="{{ path('app_beheer_huwelijk',{'id':huwelijk.id}) }}" class="btn btn-primary" role="button">Bekijk</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>    
+                 
+{% endblock %}

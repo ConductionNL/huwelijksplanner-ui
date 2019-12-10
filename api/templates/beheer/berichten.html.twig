@@ -1,0 +1,31 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+
+                    <div class="post-heading-center">
+                    	<h2>Berichten</h2>
+                    </div>
+                <a href="#" class="btn btn-succes" role="button">Voeg toe</a></td>
+                      
+            	<table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Naam</th>
+                      <th scope="col">Acties</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                 	 {% for bericht in berichten %}
+                    <tr>
+                      <th scope="row">{{ loop.index }}</th>
+                      <td>{{ bericht.naam }} </td>
+                      <td><a href="{{ path('app_beheer_bericht',{'id':bericht.id}) }}" class="btn btn-primary" role="button">Bewerk</a></td>
+                    </tr> 
+                    {% endfor %}
+                  </tbody>
+                </table>    
+                 
+{% endblock %}

@@ -1,0 +1,30 @@
+{# templates/betalen/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                
+                <div class="col-sm-4"> <!-- 1 -->
+                	<div class="affa-feature-img">
+                    	<img src="images/thumbs/betalen.png" alt="Icon">
+                    </div>
+                </div>
+                
+                <div class="col-sm-8"> <!-- 2 -->
+                    {% if product is not empty %}
+                 	<h4>{{ product.naam }} {{ product.prijsExcl / 100 }}</h4>
+              		<p>U heeft een huwelijk of opties gekozen waar kosten aan zijn verbonden. U dient deze kosten 6 weken voor aanvang van huwelijk te voldoen</p>
+              		<p><a href="https://www.ideal.nl/demo/" class="btn btn-login btn-large" >
+						<i class="fas fa-money-bill-wave" ></i>
+			       		Betaal uw huwelijk
+		        	</a></p>
+		        	{% else %}
+                 	<h4>U heeft nog geen plechtigheid gekozen</h4>
+		        	{% endif %}
+                </div>
+                
+            </div>
+            <!-- .row end -->
+{% endblock %}

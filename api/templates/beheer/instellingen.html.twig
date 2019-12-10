@@ -1,0 +1,444 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+                <!-- .row -->
+                <div class="row">            
+                    <div class="post-heading-center">
+                    	<h2>Instellingen</h2>
+                    </div>
+                </div>
+                <!-- .row -->
+                <div class="row">    
+                	<form class="form-horizontal" role="form">
+                      <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Organisatie naam</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="inputEmail3" placeholder="Gemeente bla bla" value="Gemeente Utrecht">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">RSIN</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="inputEmail3" placeholder="Gemeente bla bla" value="123456789">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label">URL</label>
+                        <div class="col-sm-10">
+                          <p class="form-control-static">utrecht.trouwplanner.online</p>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputPassword3" class="col-sm-2 control-label">Style</label>
+                        <div class="col-sm-10">
+                          <textarea class="form-control" rows="3">
+    .fa-times{
+    	color: #F9522C !important;
+    }
+    .fa-check {
+    	color: #addfad !important; 
+    }
+    .fa-circle-notch{
+    	color: #50A2F6 !important; 
+    }
+    .btn{
+	    font-family: Montserrat, Arial, sans-serif;
+	    color: #FFF !important;
+	    font-size: 15px;
+    	border-radius: 3px;    
+    	font-weight: 700;
+	    text-transform: uppercase;
+	    white-space: nowrap;
+    	padding: 16px 30px 14px;
+    	border: 0px;    
+    	transition: background-color .2s ease, color .2s ease, border .2s ease;
+    }
+    .post-heading-right{
+    	text-align: right;
+    }
+
+	media (max-width: 991px) and (min-width: 768px)
+	.affa-feature-icon .fas {
+	    display: inline-block;
+	    position: static;
+	    top: auto;
+	    right: auto;
+	}
+
+	.affa-feature-icon .fas {
+	    position: absolute;
+	    width: 60px;
+	    top: 5px;
+	    right: 0px;
+	    color: #CC0000;
+	    font-size: 50px;
+	    line-height: 60px;
+	    text-align: center;
+	}
+	.row-custom .col-right .affa-feature-icon .fas {
+	    right: auto;
+	    left: 0px;
+	}
+	
+	.gekozen-trouwambtenaar {
+		border: 8px solid #449D44 !important;
+	}
+	 
+	/* asd */ 
+	.bg-blue {
+	    background-color: #2A5587;
+	}
+	.bg-red {
+	    background-color: #CC0000;
+	}
+	.bg-white {
+	    background-color: #FFF;
+	}
+	.bg-yellow {
+	    background-color: #ffcc00;
+	}
+	
+	#footer {
+	    background: url('/images/bg-footer.svg') top center no-repeat #C00;
+    	background-size: cover;
+    	/* height: 200px;
+        top: -40px; 
+        position: relative;*/
+  		z-index: -1;
+  		padding-top: 40px;
+	}
+	
+	/* header stuff */
+	.header {    
+    	background: #CC0000 url(/images/base-header-overlay.png) repeat top left;
+        color: #fff;
+        width: 100%;
+        padding: 0;
+        padding-top: 90px;
+        margin: 0;
+        height: 200px;
+	}
+	.header-content {
+    	position: relative;
+    	left: 60px;
+      	top: 50%;
+      	transform: translateY(-50%);
+      	-webkit-transform: translateY(-50%);
+    }
+    
+    .header-content h1 {
+    	font-size: 4em;
+    	font-weight: 500;
+    	font-family: 'Roboto', sans-serif;
+        color: #fff;
+    }
+    
+    .header-content h3 {
+    	font-size: 4em;
+    	font-weight: 100;
+    	line-height: 0.6em;
+    	margin-top: -5px;
+    	opacity: 0.7;
+    	font-family: 'Roboto', sans-serif;
+        color: #fff;
+    }
+    
+    .header-title {
+    	display: table;
+    }
+    
+    .header-icon {
+    	font-size: 8em;	
+    	float: left;
+    	margin-right: 30px;
+    	margin-top: 0px;
+    }
+    
+    .header-loginbar {
+    	font-size: 1.5em;	
+    }
+    
+    .header-loginbar a {
+        color: #fff;
+  		text-decoration: underline;
+    }
+    .header-loginbar a :hoover {
+        color: #F2F2F2;
+    }
+    
+    .header-menu {
+    	position: relative;
+    	margin: -100px auto 0;
+        height: 100px;
+        font-weight: 400;
+    }
+    
+    .header-menu a:link{
+    	color:#fff;
+    }
+    
+    .header-menu a:hover{
+    	color:#56c2b1;
+    	text-decoration: none;
+    }
+    
+    .header-menu a:visited{
+    	color:#fff;
+    }
+    
+    .menu-logo {
+    	display: none;
+    	color: #fff;
+    	font-size: 0.25em;
+    	position: absolute;
+    	margin: -7px 0 0 -82px;
+    }
+    
+    .mobile-header-menu .menu-logo {
+    	margin: 2px 0 0 -19px;
+    }
+    
+    .header-menu-content {
+    	position: relative;
+      	top: 50%;
+      	transform: translateY(-50%);
+      	-webkit-transform: translateY(-50%);
+      	font-size: 1.2em;
+      	padding-left: 65px;
+    }
+    
+    .header-menu-content ul {
+    	padding-left: 0;
+    }
+    
+    .header-menu-content li {
+    	display: inline;
+    	list-style: none;
+    	padding-right: 20px;
+    }
+
+	/* flow stuff*/
+	#flow {
+		padding-bottom: 20px;
+		max-height: 180px;
+	}
+	
+	.flow ul {
+        display: flex;
+        align-items: stretch; /* Default */
+        justify-content: space-between;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+   .flow  li {
+        display: block;
+        flex: 0 1 auto; /* Default */
+        list-style-type: none;
+        color: #FFF;
+        text-align: center;
+  		text-transform: uppercase;
+  		font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, sans-serif;
+    }
+   .flow .fas {
+	    background-color: #FFF;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 100px;
+        vertical-align: middle;
+		margin-bottom: 10px;
+		margin-top: 5px;
+		margin-left: 5px;
+		margin-right: 5px;
+    }
+    
+    
+	.flow li a{
+	    color: #2A5587;
+	}
+	
+	.completed:after{
+		content:"";
+		background-color: #FFF;
+	    color: #8BB929 !important;
+        line-height: 40px;
+	    font-size: 30px;
+        display: block;
+        position: relative;  
+        text-align: center;
+        vertical-align: middle;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        bottom: 125px;
+        left: 70px;
+        padding: 0;
+        
+    }
+	.completed a{
+		margin-bottom: 90px;
+	}
+	.flow li a:hover .fas {
+	    color: #CC0000;
+        width: 100px;
+        height: 100px;
+		margin-bottom: 5px;
+		margin-top: 0px;
+		margin-left: 0px;
+		margin-right: 0px;
+	}
+	.completed a:hover .fas {
+	    color: #8BB929 !important;
+	}
+    
+  
+
+	.affa-form-contact select, textarea {
+    	width: 100%;
+    	margin-bottom: 15px;
+	   	height:52px; 
+	   	padding: 13px 16px;
+	}
+	.dateholder {
+	    height: 52px;
+	    font-family: 'Noto Sans', Arial, sans-serif;
+	    color: #909090;
+	    font-size: 15px;
+	    font-weight: 400;
+	    background-color: #f4f5f9;
+	    padding: 0px 20px;
+	    border: 2px solid #f4f5f9;
+	    outline: none !important;
+	    border-radius: 3px;
+    	width: 100%;
+    	margin-bottom: 15px;
+	   	height:52px; 
+	   	padding: 5px 1px;
+    	text-align: left;
+	}
+	body {
+	    background-color:#F2F2F2;	
+	}
+	.row {
+	    padding-top: 15px;
+    	padding-bottom: 15px;
+  		z-index: 10;
+	}
+	
+	/* overschrijven van de stijl op knoppwn*/
+	.btn {
+		border-radius: 0px;
+    	padding: .5em 1em;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-weight: 700;
+	}
+	.btn-primary {
+        border: 2px solid #2A5587;
+        background: #2A5587;
+        color: #FFF !important;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-weight: 700;
+	}
+	.btn-secondary {
+        border: 2px solid #2A5587;
+        background: #FFF;
+        color: #2A5587 !important;
+	}
+	.btn-login {
+        border: 2px solid #FFF;
+        background: #2A5587;
+        color: #FFF !important;
+	}
+	.btn-secondary:hover { 
+        background: #FFF;
+        color: #2A5587 !important;
+	}
+	.content {
+        top: -20px;
+        position: relative;
+	}	
+	.post-heading-left h2:after, .post-heading-center h2:after {
+    	background-color: #FFCC00;
+	}
+	.tbl-pricing .tbl-prc-col .tbl-prc-price {
+	    background-color: #ffcc00;
+	}
+	
+	/* md-calendar */
+	.md-calendar-date{
+		color: #2A5587;
+	}
+	.md-calendar-date-disabled {
+		color: #cc0000;
+	}
+	/* alerts*/
+	.alert{
+	    border-radius: 0px;
+        padding: .5em 1em;
+        border: 2px solid;
+        background: #FFF;
+	}
+	/* trouw ambtenaar avatar */
+	.affa-testimonial .testimonial-author img{
+  		object-fit: cover;
+	    background-color: #FFF;
+	}
+	
+	.container {
+		padding-top: 15px;
+	}
+	
+	/* The icon wels for the frontpage*/
+	.well-frontpage{
+		height: 300px;
+        text-align: center;
+        vertical-align: middle;
+	    border-radius: 0px;
+	    background-color: #FFF;	
+	}
+	.well-frontpage h4{
+		padding-top: 15px;
+	}
+	.well-frontpage:hover { 
+        background: #F2F2F2 !important;
+	}
+	.well-frontpage .btn{
+        position: absolute;
+        bottom: 45px;
+        left: 45px;
+        right: 45px;
+        width: calc(100% - 90px);
+	}
+	
+	a, a:visited {
+    	color: #2A5587;
+    }
+    
+    .container {
+		min-height: 300px;
+    }
+    
+    .save-confirmation{
+        position: absolute;
+        top: 15px;
+        left: 0px;
+        right: 0px;
+    }
+                          </textarea>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                          <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                      </div>
+                    </form>
+                </div> 
+	
+{% endblock %}

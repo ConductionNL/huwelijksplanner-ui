@@ -1,0 +1,34 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+
+                    <div class="post-heading-center">
+                    	<h2>Product Groepen</h2>
+                    </div>
+                    
+                
+                      
+            	<table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Naam</th>
+                      <th scope="col">Producten</th>
+                      <th scope="col"><a href="{{ path('app_beheer_group') }}" class="btn btn-success" role="button">Voeg toe</a></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                 	 {% for group in groups %}
+                    <tr>
+                      <th scope="row">{{ loop.index }}</th>
+                      <td>{{ group.name }} </td>
+                      <td>{% if group._embedded is defined %}{{ group._embedded.products|length }}{% else %}0{% endif %}</td>
+                      <td><a href="{{ path('app_beheer_group',{'id':group.id}) }}" class="btn btn-primary" role="button">Bewerk</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>    
+                 
+{% endblock %}

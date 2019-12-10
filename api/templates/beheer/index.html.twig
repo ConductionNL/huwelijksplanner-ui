@@ -1,0 +1,36 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+        <!-- .container -->
+    	<div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+           <div class="col-md-3 bg-gray">
+               		<ul class="nav flex-column nav-fill">
+      				<li class="nav-item">
+                      <a class="nav-link" href="{{ path('app_beheer_groups') }}"><i class="fas fa-ring"></i> Product Groepen</a>
+                  	</li>
+      				<li class="nav-item">
+                      <a class="nav-link" href="{{ path('app_beheer_requests') }}"><i class="fas fa-user-tie"></i> Verzoeken</a>
+                  	</li>
+      				<li class="nav-item">
+                      <a class="nav-link" href="{{ path('app_beheer_employees') }}"><i class="fas fa-user-tie"></i> Medewerkers</a>
+                  	</li>
+            	</ul>
+
+           </div>
+           <div class="col-md-9"> <!-- 4 -->
+                {% block admin %} 
+                <!-- .row -->
+                <div class="row">            
+                    <div class="post-heading-center">
+                    	<h2>Beheer</h2>
+                        <p>Maak aan de linkerkant een keuze voor welke objecten u wilt beheren</p>
+                    </div>
+                </div>
+                
+                {% endblock %}
+           </div>                    
+        <!-- .container end -->
+    
+{% endblock %}

@@ -1,0 +1,124 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}"  >
+                
+                <div class="col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs" ng-hide="token">
+                	<div class="margin-bottom40">
+                    	<div class="post-heading-left text-center-sm text-center-xs">
+                        	<h4> We zijn uw bevestiging aan het opzoeken in ons systeem </h4>
+                            <h2><i class="fas fa-circle-notch fa-spin"></i>Een moment geduld alstublief</h2>
+                        </div>
+                        
+                        <p>We zijn onderweg om zo snel mogelijk te achterhalen waarvoor u om een bevestiging bent gevraagd</p>
+                        <p class="margin-bottom30">Dat kan heel even duren.....</p>
+                        <a href="/" class="btn-custom btn-icon" ><i class="fa fa-search"></i> Ga in plaats hiervan naar de hoofd pagina</a>
+                    </div>
+                </div>
+                
+                <div class="col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs" ng-show="token && ! token.gebruikt">
+                	<div class="margin-bottom40">
+                    	<div class="post-heading-left text-center-sm text-center-xs" ng-hide="token.persoon"> 
+                        	<h4>{{ token.beschrijving }}</h4>
+                            <h2>{{ token.actie }}</h2>
+                        </div>
+                    	<div class="post-heading-left text-center-sm text-center-xs" ng-show="token.persoon">
+                        	<h4>{{ token.actie }} </h4>
+                            <h2>Welkom {{ token.persoon.voornamen }} {{ token.persoon.geslachtsnaam }}</h2>
+                        </div>
+                        
+                        <h4>U bent gevraag om de volgende aktie te verichten: {{ token.actie }} </h4>
+                        <p ng-bind-html="token.beschrijving"></p>
+
+						<div ng-show="token.person && !token.person.basisRegistratiePersonen">							
+	                        <a ng-click="login()" class="btn-custom btn-icon"><i class="fa fa-search"></i> Inloggen en accepteren of afwijzen</a>
+						</div>	
+						<div ng-hide="(token.person && !token.person.basisRegistratiePersonen) || token.gebruikt">
+	                        <a ng-click="confirmToken(token)" class="btn btn-success btn-icon" ng-disabled="loading">
+								<i class="fas fa-circle-notch fa-spin" ng-show="loading"></i>
+	                        	<i class="fa fa-check" ng-hide="loading"></i> 
+	                        	Accepteren
+	                       	</a>
+	                        <a ng-click="refuseToken(token)" class="btn btn-danger btn-icon" ng-disabled="loading">
+								<i class="fas fa-circle-notch fa-spin" ng-show="loading"></i>
+	                        	<i class="fa fa-times" ng-hide="loading"></i> 
+	                        	Afwijzen
+	                        </a>						
+						</div>	
+						<p  ng-show="token.gebruikt">
+							Hartelijk bedankt voor het doorgeven van uw keuze!
+						</p>
+                    </div>
+                </div>
+                <div class="col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs"  ng-show="token.gebruikt">
+                	<div class="margin-bottom40">
+                	<div class="post-heading-left text-center-sm text-center-xs" ng-hide="token.persoon"> 
+                        	<h4>{{ token.beschrijving }}</h4>
+                            <h2>{{ token.actie }}</h2>
+                        </div>
+                    	<div class="post-heading-left text-center-sm text-center-xs" ng-show="token.persoon">
+                        	<h4>{{ token.actie }} </h4>
+                            <h2>Bedankt {{ token.persoon.voornamen }} {{ token.persoon.geslachtsnaam }}!</h2>
+                        </div>
+                        
+                        <h4>U heeft de volgende actie vericht: {{ token.actie }} </h4>
+                        <p ng-bind-html="token.beschrijving"></p>
+                    </div>
+                </div>
+                
+                
+                <div class="col-sm-10 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                	<figure class="col-img40 margin-bottom40 animation" data-animation="animation-fade-in-right">
+                        <img src="images/content/elements/Scooter.png" alt="Image">
+                    </figure>
+                </div>
+                
+            </div>
+            <!-- .row end -->
+            
+            
+            <!-- .row -->
+            <div class="row" class="row animation"  {% if app.session.flashbag.peekAll|length > 0 %}data-animation="animation-fade-in" data-delay="3400"{% endif %}>                                
+                <div class="col-sm-6 col-md-3">
+                	<strong>Partner 1</strong>
+                	<br />{{ token.huwelijk.partners[0].persoon.voornamen }} {{ token.huwelijk.partners[0].persoon.geslachtsnaam}} 
+                	<br />
+                	<br />{{ token.huwelijk.partners[0].persoon.verblijfadres.straatnaam }} {{ token.huwelijk.partners[0].persoon.verblijfadres.huisnummer }}
+                    <br />{{ token.huwelijk.partners[0].persoon.verblijfadres.postcode }} {{ token.huwelijk.partners[0].persoon.verblijfadres.woonplaats }}
+                    <br />{{ token.huwelijk.partners[0].persoon.emailadres }}
+                    <br />{{ token.huwelijk.partners[0].persoon.telefoonnummer }}
+                	<br />
+                	<br />{{ token.huwelijk.partners[0].persoon.geboorte.datum }}
+                	<br />{{ token.huwelijk.partners[0].persoon.geboorte.stad }},{{ token.huwelijk.persoon.geboorte.land }}
+                </div>                                       
+                <div class="col-sm-6 col-md-3">
+                	<strong>Partner 2</strong>
+                	<br />{{ token.huwelijk.partners[1].persoon.voornamen }} {{ token.huwelijk.partners[1].persoon.geslachtsnaam}} 
+                	<br />
+                	<br />{{ token.huwelijk.partners[1].persoon.verblijfadres.straatnaam }} {{ token.huwelijk.partners[1].persoon.verblijfadres.huisnummer }}
+                    <br />{{ token.huwelijk.partners[1].persoon.verblijfadres.postcode }} {{ token.huwelijk.partners[1].persoon.verblijfadres.woonplaats }}
+                    <br />{{ token.huwelijk.partners[1].persoon.emailadres }}
+                    <br />{{ token.huwelijk.partners[1].persoon.telefoonnummer }}
+                	<br />
+                	<br />{{ token.huwelijk.partners[1].persoon.geboorte.datum }}
+                	<br />{{ token.huwelijk.partners[1].persoon.geboorte.stad }},{{ token.huwelijk.persoon.geboorte.land }}
+                </div>                                      
+                <div class="col-sm-6 col-md-3">
+                	<strong>Getuigen</strong>
+                	<span  ng-repeat="getuigeLees in token.huwelijk.getuigen  track by $index" ><br /> Naam getuigen {{$index+1}}: {{ getuigeLees.persoon.voornamen }} {{ getuigeLees.persoon.geslachtsnaam }}</span>  
+                </div>                                      
+                <div class="col-sm-6 col-md-3">
+                	<strong>Algemene gegevens</strong>
+                	<br /> Type: {{token.huwelijk.type }}
+                	<br /> Soort: {{ token.huwelijk.primairProduct.naam }}
+                	<br /> Datum: {{ token.huwelijk.trouwdatum | date:'dd-MM-yyyy' }}
+                	<br /> Tijd: {{ token.huwelijk.trouwdatum | date:'dd-MM-yyyy' }}
+                	<br /> Locatie: : {{ token.huwelijk.locatie.locatie.naam }}
+                	<br /> Trouwambtenaar: {{  token.huwelijk.trouwAmbtenaar.ambtenaar.voornamen }} {{ token.huwelijk.trouwAmbtenaar.ambtenaar.geslachtsnaam }}
+                </div>               
+            </div>
+            <!-- .row end -->
+{% endblock %}

@@ -1,0 +1,78 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >          
+                <div class="col-sm-12 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs">
+                	<div class="margin-bottom40">
+                    	<div class="post-heading-left text-center-sm text-center-xs" >
+                        	<h4>Locatie </h4>
+                            <h2>{{ locatie.naam}}</h2>
+                        </div>
+                        {{ locatie.samenvatting|raw }}                        
+                        <br/>
+                        <br/>
+                         {% if request is defined and request.properties.locatie is not defined and request is not empty %}
+                        <a href="{{ path('app_locatie_set',{'id':locatie.id}) }}" class="btn btn-success btn-icon" >
+                        	<i class="far fa-calendar-check"></i>
+                         	Reserveer deze locatie
+                         </a>
+                         {% elseif request is defined 
+                         and request.properties.locatie is defined 
+                         and request.properties.product !=  "http://producten-diensten.demo.zaakonline.nl/producten/1" 
+                         and request.properties.product != "http://producten-diensten.demo.zaakonline.nl/producten/2"  %}
+                         <a href="{{ path('app_locatie_unset',{'id':locatie.id}) }}" class="btn btn-danger btn-icon" >
+                        	<i class="far fa-calendar-times"></i>
+                         	Annuleer deze locatie
+                         </a> 
+                         <br/><br/>
+                         <a href="{{ path('app_ambtenaar_index') }}" class="btn btn-primary btn-icon" >
+                        	<i class="far fa-calendar-times"></i>
+                         	Ga door naar ambtenaar
+                         </a>
+                         {% elseif request is defined and request is not null and (
+                         request.properties.product !=  "http://producten-diensten.demo.zaakonline.nl/producten/1" 
+                         or request.properties.product != "http://producten-diensten.demo.zaakonline.nl/producten/2") %}
+                         <p>Let op: Het type ceremonie dat u heeft geselecteerd laat geen keuze voor een locatie toe. Alleen bij een uitgebereide ceremonie bestaat de mogelijkheid een locatie te kiezen. Wilt u toch een locatie kunnen kiezen, dan kunt u <a href="{{ path('app_product_index') }}">hier</a> uw ceremonie aanpassen.</p>
+                         <a href="{{ path('app_ambtenaar_index') }}" class="btn btn-primary btn-icon" >
+                        	<i class="far fa-calendar-times"></i>
+                         	Ga door naar ambtenaar
+                         </a> 
+                         {% endif %}
+                         
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                         {% if huwelijk is defined and huwelijk and huwelijk.locatie  is defined and huwelijk.locatie is not empty%}
+                        	<figure class="col-img40 margin-bottom40">
+                                <img  ng-src="{{locatie.afbeelding}}" alt="Image">
+                            </figure>
+                         {% endif %}
+                    
+                </div>
+                
+            </div>
+            <!-- .row end -->            
+            <!-- .row -->
+            <div class="row animation" {% if app.session.flashbag.peekAll|length > 0 %}data-animation="animation-fade-in" data-delay="3400"{% endif %}>
+                
+                <div class="col-sm-10 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0">
+                	<figure class="margin-bottom40 animation" data-animation="animation-fade-in-left">
+                        <iframe width="560" height="315" frameborder="0" allowfullscreen="" src="{{locatie.film}}"></iframe>
+                    </figure>
+                </div>
+                
+                <div class="col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                	<div class="col-text20 margin-bottom20">{{ locatie.beschrijving|raw }}
+                    </div>
+                </div>
+                
+            </div>
+            <!-- .row end -->
+            
+    
+    
+{% endblock %}

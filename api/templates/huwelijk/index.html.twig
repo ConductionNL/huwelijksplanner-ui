@@ -1,0 +1,71 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row-custom -->
+            <div class="row-custom animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >     
+                <div class="post-heading-center">
+                	<h2>Gaat u een huwelijk of partnerschap aan?</h2>
+                </div>
+               	
+                <div class="col-left">
+                	<div class="affa-feature-icon"> <!-- 1 -->
+                    	<i class="fas fa-heart"></i>
+                        <div class="feature-text">
+                        	<h4>Partnerschap</h4>
+                            <p class="text-left">
+                            	<ul class="text-left">
+									<li>Niet alle landen in de wereld erkennen het geregistreerd partnerschap. Dit kan bijvoorbeeld gevolgen hebben voor het erfrecht of de familieverhouding tot uw kinderen.</li>
+									<li>Is een geregistreerd partnerschap voor u verstandig? Vraag dit bijvoorbeeld aan de ambassade van het land waar u mee te maken hebt of misschien mee te maken gaat krijgen.</li>
+									<li>Van de akte van geregistreerd partnerschap kunnen wij geen internationaal uittreksel afgeven.</li>
+									<li>Wilt u uw geregistreerd partnerschap later misschien omzetten in een huwelijk? Lees dan de informatie onder &ldquo;Geregistreerd partnerschap omzetten in een huwelijk&rdquo;.</li>
+                            	</ul>
+								Meer informatie over trouwen, geregistreerd partnerschap en een samenlevingscontract vindt u op de <a href="https://www.rijksoverheid.nl/onderwerpen/trouwen-samenlevingscontract-en-geregistreerd-partnerschap/">website</a> van de Rijksoverheid.
+                            </p>
+                        </div>
+     				<a href="{{ path('app_huwelijk_type',{'type':'partnerschap'}) }}" class="btn btn-secondary btn-icon  btn-block"><i class="far fa-rings-wedding"></i> Kies Partnerschap</a>
+                    </div>
+     			
+     			</div><!-- .col-left -->  
+     			
+                <div class="col-center">
+                	<figure class="margin-bottom40">
+                    	<img src="/images/content/elements/trouwstell.png"/>
+                    </figure>
+                </div>
+                                       
+                <div class="col-right">
+                	<div class="affa-feature-icon"> 
+                    	<i class="fas fa-heart" ></i>
+                        <div class="feature-text">
+                        	<h4>Huwelijk</h4>
+                            <p>
+                            	<ul>
+									<li>Als u trouwt, geeft u elkaar officieel het &lsquo;ja-woord&rsquo;, bij een geregistreerd partnerschap is dit niet verplicht.</li>
+									<li>Als u getrouwd bent en wilt scheiden moet u altijd naar de rechter.</li>
+									<li>Als u een geregistreerd partnerschap wilt be&euml;indigen, gaat u alleen naar de rechter als u het samen niet eens kunt worden of wanneer u minderjarige kinderen heeft.</li>
+                            	</ul>
+                            </p>
+                        </div>
+     					<a href="{{ path('app_huwelijk_type',{'type':'huwelijk'}) }}" class="btn btn-secondary btn-icon btn-block"><i class="far fa-rings-wedding"></i> Kies huwelijk</a>
+                    </div>
+                	<div class="affa-feature-icon"> 
+                    	<i class="fas fa-heart" ></i>
+                        <div class="feature-text">
+                        	<h4>Omzetten</h4>
+                            <p>
+                            	<ul>
+									<li>U heeft reeds een partnerschap.</li>
+									<li>U wilt dit laten omzetten naar een huwelijk.</li>
+									<li>Omzettingen geschieden aan de ballie, zonder ceremonie.</li>
+									<li>Er zijn geen getuigen nodig.</li>
+                            	</ul>
+                            </p>
+                        </div>
+     					<a href="https://www.utrecht.nl/" class="btn btn-secondary btn-icon btn-block"><i class="far fa-rings-wedding"></i> Kies Omzetten</a>
+                    </div>
+                    
+     			</div><!-- .col-right --> 			
+           </div> <!-- .row-custom end -->      
+{% endblock %}

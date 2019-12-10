@@ -1,0 +1,41 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row -->
+            <div class="row animation data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+            
+                <div class="post-heading-center">
+                	<h2>Waar wilt u trouwen?</h2>                	
+                    <p>Een trouwlocatie; in Utrecht is er voor elk wat wils. De gemeente Utrecht heeft een aantal eigen trouwlocaties; het Stadhuis, het Wijkservicecentrum in Vleuten en het Stadskantoor.  Een keuze voor een van deze trouwlocaties kunt u direct hier doen. </p>
+                	<p>Daarnaast zijn er verschillende andere vaste trouwlocaties. Deze trouwlocaties zijn door de gemeente Utrecht al goedgekeurd. Hieronder vindt u het overzicht van deze trouwlocaties. Heeft u een keuze gemaakt uit een van de vaste trouwlocaties? Maak dan eerst een afspraak met de locatie en geef dan aan ons door waar en wanneer u wilt trouwen. </p>
+                	<p class="margin-bottom30"> Maar misschien wilt u een heel andere locatie. Bijvoorbeeld het café om de hoek, bij u thuis of in uw favoriete restaurant. Zo'n locatie heet een vrije locatie.  Een aanvraag voor een vrije locatie kunt u hier ook doen. </p>
+                </div>
+                
+                <nav class="isotope-menu" >
+                    <a href="#" class="active" data-filter="*">Alle trouwlocaties</a>
+                    <a href="#" data-filter=".creative">Modern</a>
+                    <a href="#" data-filter=".intern">Intern</a>
+                    <a href="#" data-filter=".extern">Extern</a>
+                    <a href="#" data-filter=".entertainment">Romantisch</a>
+                    <a href="#" data-filter=".mobile">Voordelig</a>
+                </nav>
+                            
+                <div class="isotope-row">
+                    {% for product in products %}
+                	<div class="item entertainment mobile intern"> <!-- 1 -->
+                    	<a href="{{ path('app_locatie_view',{'id':product.id}) }}" data-fancybox-group="images_gallery" >
+                            <figure class="img-overlay">
+                            	<img ng-src="{{ product.logo}}" alt="Portfolio Item 1" />
+                                <div class="overlay-masked" style="display: none;">
+                                	<span class="overlay-icon" style="top: 25%; opacity: 0;"></span>
+                                    <p style="display: none;">{{ product.name }} {{ product.logo}}</p>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    {% endfor %}     
+                </div>  
+            </div> 
+{% endblock %}

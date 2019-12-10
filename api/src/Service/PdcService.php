@@ -1,0 +1,151 @@
+<?php
+// src/Service/BRPService.php
+namespace App\Service;
+
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use GuzzleHttp\Client;
+
+class PdcService
+{
+	private $params;
+	private $client;
+	
+	public function __construct(ParameterBagInterface $params)
+	{
+		$this->params = $params;
+		
+		$this->client= new Client([
+				// Base URI is used with relative requests
+				'base_uri' => 'http://pdc.zaakonline.nl/',
+				// You can set any number of default request options.
+				'timeout'  => 4000.0,
+				'body' => 'raw data',
+		]);
+	}
+	
+	public function getProducts($query)
+	{
+	    $response = $this->client->request('GET','/products', [
+	        'headers' => [
+	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+	        ]
+	    ]
+	        );
+	    
+	    $response = json_decode($response->getBody(), true);
+	    return $response['_embedded']['item'];
+	}
+	
+	public function getProduct($id)
+	{
+		$response = $this->client->request('GET','/products/'.$id, [
+				'headers' => [
+						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+				]
+		]
+				);
+		
+		$response = json_decode($response->getBody(), true);
+		return $response;
+	}
+	
+	public function getGroups($query)
+	{
+	    $response = $this->client->request('GET','/groups', [
+	        'headers' => [
+	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+	        ]
+	    ]
+	        );
+	    
+	    $response = json_decode($response->getBody(), true);
+	    return $response['_embedded']['item'];
+	}
+	
+	public function getGroup($id)
+	{
+	    $response = $this->client->request('GET','/groups/'.$id, [
+	        'headers' => [
+	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+	           ]
+	       ]
+	    );
+	    
+	    $response = json_decode($response->getBody(), true);
+	    return $response;
+	}
+	
+	
+	public function getProductOnUri($uri)
+	{
+		$response = $this->client->request('GET',$uri, [
+				'headers' => [
+						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+				]
+			]
+		);
+		
+		$response = json_decode($response->getBody(), true);
+		return $response;
+	}
+	
+	
+	public function createProduct($product)
+	{
+		$response = $this->client->request('POST','/products', [
+		    'json' => $product,
+				'headers' => [
+						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+				]
+			]
+		);
+		
+		$response = json_decode($response->getBody(), true);
+		return $response;
+	}
+	
+	
+	public function updateProduct($product)
+	{
+	    $response = $this->client->request('PUT','/products/'.$product['id'], [
+	        'json' => $product,
+				'headers' => [
+						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+				]
+			]
+		);
+		
+		$response = json_decode($response->getBody(), true);
+		return $response;
+	}
+	
+	
+	public function createGroup($group)
+	{
+	    $response = $this->client->request('POST','/groups', [
+	        'json' => $group,
+	        'headers' => [
+	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+	        ]
+	    ]
+	        );
+	    
+	    $response = json_decode($response->getBody(), true);
+	    return $response;
+	}
+	
+	public function updateGroup($group)
+	{
+	    $response = $this->client->request('PUT','/groups/'.$group['id'], [
+	        'json' => $group,
+	        'headers' => [
+	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+	        ]
+	    ]
+	        );
+	    
+	    $response = json_decode($response->getBody(), true);
+	    return $response;
+	}
+	
+}

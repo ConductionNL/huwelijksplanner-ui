@@ -1,0 +1,114 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}   
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >         
+                <div class="post-heading-center">
+                	<h2>Uw Getuigen</h2>
+                    <p>Voor een huwelijk zijn er getuigen nodig, minimaal 1 en maximaal 2 per partner.</p>
+                </div>        
+                <div class="
+            	{% if getuigen|length >= 4
+            	 %}	col-sm-12{% else %}col-md-8{% endif %}">                 
+		            <div class="row">   
+                        {% for getuige in getuigen  %}
+			            <div class="col-md-3"> <!-- 1 -->
+		                	<div class="affa-team-profile">
+		                    	<figure class="team-profile-img animation" data-animation="animation-fade-in-down">
+		                        	<div class="team-profile-socials">
+		                        		<!-- 
+		                            	<div class="team-profile-socials-wrap">
+		                                    <a href="#" title="Facebook"><i class="fa fa-facebook"></i></a>
+		                                    <a href="#" title="Twitter"><i class="fa fa-twitter"></i></a>
+		                                    <a href="#" title="LinkedIn"><i class="fa fa-linkedin"></i></a>
+		                                    <a href="#" title="Email"><i class="fa fa-envelope"></i></a>
+		                                </div> -->
+		                            </div>
+		                            <img src="images/content/avatar/1.jpg" alt="Avatar" />
+		                        </figure>
+		                        <div class="team-profile-name">
+		                        	<h4>{{ getuige.status }}</h4>
+		                        	<p>
+		                        	
+            							{# partner is contact #}
+        	                            {% if getuige.personObject is defined %}
+                                	    <br><b>Voornaam:</b> {{ getuige.personObject.naam.voornamen }}
+                                        <br><b>Achternaam:</b> {{ getuige.personObject.naam.geslachtsnaam }}
+                                        {% else %}
+                                	    <br><b>Voornaam:</b> {{ getuige.contactObject.given_name }}
+                                        <br><b>Achternaam:</b> {{ getuige.contactObject.family_name }}
+                                        {% endif %}
+                                        
+                                        {# partner is person #}
+        	                            {% if getuige.contactObject is defined and getuige.contactObject._embedded.emails is defined  %}
+                                	    <br><b>Email:</b> {{ getuige.contactObject._embedded.emails[0].email }}
+                                	    {% endif %}
+                                        {% if getuige.contactObject is defined and  getuige.contactObject._embedded.telephones is defined  %}
+                                        <br><b>Telefoon</b></b> {{ getuige.contactObject._embedded.telephones[0].telephone }}
+                                        {% endif %}
+		                        	</p>
+		                        </div>
+		                    </div>
+		                </div>
+                        {% endfor %}  
+		            </div><!-- /.row -->
+            	</div>
+            	{# We are onlygoing to display this form if we do not yet already have 4 witnesses #}
+            	{# if (huwelijk is defined and  huwelijk.getuigen is defined and huwelijk.getuigen|length < 4) or !huwelijk.getuigen #}
+            	{% if 
+            	    getuigen|length < 4 
+            	 %}
+                <div class="col-sm-4"> 
+                	<form method="post" action="{{ path('app_getuigen_index')}}" class="affa-form-contact">
+                    	<h3>Toevoegen</h3>
+                        <br/>
+                    	<label for="getuige_voornamen">Voor partner</label>    
+                        <select ng-disabled="loading"/  name="partner" id="partner">
+                        	{% if request['properties']['getuigenPartner1'] is not defined or(request['properties']['getuigenPartner1'] is  defined and request['properties']['getuigenPartner1']|length < 2) %}
+                          <option value="getuigenPartner1">partner1</option>
+                           {% endif %}  
+                        	{% if request['properties']['getuigenPartner2'] is not defined or (request['properties']['getuigenPartner1'] is  defined and request['properties']['getuigenPartner2']|length < 2)  %}
+                          	<option value="getuigenPartner2">partner2</option>
+                           {% endif %}  
+                        </select>
+                        <label for="getuige_oornamen">Voornaam(en)</label>
+                        <input type="text" name="voornamen" placeholder="John" ng-disabled="loading"/>
+                        <label for="getuige_geslachtsnaam">Achternaam</label>
+                        <input type="text" name="geslachtsnaam" placeholder="Do" ng-disabled="loading"/>
+                        <label for="getuige_email">Email Adres <span class="required">*</span></label>
+                        <input type="text" name="emailadres"placeholder="john@do.nl" ng-disabled="loading"/>
+                       	<label for="getuige_telefoonnummer">Telefoon nummer <span class="required">*</span></label>
+                        <input type="text" name="telefoonnummer" placeholder="+31 6 12345678" ng-disabled="loading"/>
+                       
+
+
+                       	<button type="submit" class="btn btn-success btn-lg btn-block  btn-icon" />
+							<i class="far fa-envelope"></i>
+							Uitnodigen
+						</button>
+                        <br/>
+                    	<p>Uw getuige ontvangt een email met daarin een bevestigingslink. <br /> Via die link kan uw getuige aangeven of hij voor u wilt/gaat getuigen.</p>
+                         
+                        <br/>
+                         <a href="{{ path('app_extra_index') }}" class="btn btn-primary btn-block btn-icon" >
+                        	<i class="far fa-calendar-times"></i>
+                         	Ga door naar extras
+                         </a>
+               		</form>
+            	</div>
+                {% endif %}   
+            </div><!-- /.row --> 
+            {% if request['properties']['getuigenPartner1'] is  defined and request['properties']['getuigenPartner2'] is defined %}   
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >   
+                <div class="col-sm-12"> 
+                         <a href="{{ path('app_extra_index') }}" class="btn btn-primary btn-block btn-icon" >
+                        	<i class="far fa-calendar-times"></i>
+                         	Ga door naar extras
+                         </a>
+            	</div>
+            </div><!-- /.row -->       
+            {% endif %}   
+        
+{% endblock %}

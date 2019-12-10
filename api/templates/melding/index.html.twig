@@ -1,0 +1,52 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}  
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >            
+            
+                <div class="post-heading-center">
+                	<h2>Melding voorgenomen huwelijk</h2>
+             	</div>
+                            
+                <div class="col-md-12">
+                    <p>Voordat u kunt trouwen, moet u uw voorgenomen huwelijk melden (vroeger heette dat &quot;ondertrouw&quot;. U moet uw huwelijk van tevoren melden bij de gemeente waar u wilt trouwen. U kunt dus niet trouwen zonder dat u eerst uw voorgenomen huwelijk hebt gemeld.U doet dit tenminste 14 dagen voor de huwelijksdatum of partnerschapsdatum. De melding blijft een jaar geldig. Woont u in het buitenland en heeft tenminste 1 van de partners de Nederlandse nationaliteit dan doet u de melding voorgenomen huwelijk bij de gemeente Den Haag via www.denhaag.nl.</p>
+                    <p>De melding voorgenomen huwelijk of partnerschap bij de gemeente Utrecht kunt u online doen met uw DigiD. Voorwaarden voor online melden voorgenomen huwelijk:</p>
+    
+                    <ol>
+                    	<li>U en uw partner wonen allebei ten minste een half jaar in Nederland. </li>
+                    	<li>U trouwt in de gemeente Utrecht.</li> 
+                    	<li>U bent allebei 18 jaar of ouder op de trouwdatum.</li>
+                    	<li>Informatie over bijvoorbeeld uw ouders en eventuele eerdere huwelijken zijn in de basisregistratie persoonsgegevens (BRP) bij uw gegevens geregistreerd. Dit kunt u controleren op MijnOverheid.nl. Log in met uw DigiD en bekijk deze informatie via &quotPersoonlijke gegevens&quot, &quotBasisregistratie Personen&quot en &quotFamilie&quot. Deze gegevens hebt u ook nodig bij het invullen van de digitale melding. Hou ze dus bij de hand. Ontbreken er gegevens over uw ouders of eerdere huwelijk(en)? Neem dan eerst contact met ons op via telefoonnummer 14 030. Het kan zijn dat u dan eerst documenten bij ons of in uw woongemeente moet aanleveren, bijvoorbeeld een geboorte akte uit uw geboorteland, voordat u de melding voorgenomen huwelijk kunt doen. </li>
+                    	<li>Controleer vooraf of u de verklaring schijnhuwelijk  moet afleggen: Hebt u of uw partner een nationaliteit van een land buiten de Europese Unie (EU/EER)  en een verblijfsvergunning voor bepaalde tijd (dit staat op de voorkant van uw verblijfspasje)? Dan moet u allebei de verklaring schijnhuwelijk bij de melding voorgenomen huwelijk afleggen.</li>
+                    	
+                    </ol>
+                    
+                    <p>Hiermee verklaart u dat u niet trouwt om een verblijfsvergunning te krijgen. Vermoeden wij dat er toch sprake is van een schijnhuwelijk, dan stellen wij een onderzoek in. Zijn wij hierna overtuigd dat er mogelijk sprake is van een schijnhuwelijk, dan weigert de gemeente aan de huwelijksvoltrekking of het geregistreerd partnerschap mee te werken. De eigen verklaring blijft bewaard voor de Immigratie- en Naturalisatiedienst (IND)./p>
+                    <p>Wat u nodig hebt om uw voorgenomen huwelijk online te melden</p>
+                    <ol>
+                    	<li>Uw DigiD-gebruikersnaam en -wachtwoord</li> 
+                        <li>Uw telefoonnummer en e-mailadres</li> 
+                        <li>Een digitaal bestand van uw paspoort, identiteitskaart en/of verblijfsvergunning (voor en achterkant)</li> 
+                        <li>Een digitaal bestand van het identiteitsbewijs van uw getuigen</li> 
+                        <li>De persoonsgegevens van uw ouder(s), eventuele eerdere huwelijkspartner(s) en minderjarige kinderen. U vindt deze gegevens ook op MijnOverheid.nl.</li> 
+                        <li>Staat u onder curatele? Lever dan ook de gegevens van uw curator en een digitaal bestand van zijn/haar toestemmingsverklaring dat u mag trouwen.</li> 
+					</ol>
+    		        
+    		        <a href="https://pki.utrecht.nl/Loket/product/start/70e867fa386cda6205557e70defb3db6/c0820d2301a11a4c7a268fec039e295c" class="btn btn-primary btn-icon" >
+    					<i class="fas fa-share-square"></i> 
+    			        Doe uw melding
+    		        </a>    
+    		        <!-- 
+    		        <a href="{{ path('app_getuigen_index') }}" class="btn btn-primary btn-icon" >
+    					<i class="fas fa-share-square"></i> 
+    			        Ga door naar getuigen
+    		        </a>     -->
+                
+                </div><!-- /.col -->
+            </div><!-- /.row -->      
+    	    
+         
+    
+{% endblock %}

@@ -1,0 +1,74 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                
+                <div class="col-sm-12 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs" ng-hide="locatie">
+                	<div class="margin-bottom40">
+                    	<div class="post-heading-left text-center-sm text-center-xs" ng-hide="locatie">
+                        	<h4>We zijn uw toekomstig favoritie Locatie aan het opzoeken </h4>
+                            <h2><i class="fas fa-circle-notch fa-spin"></i> Een moment geduld alstublief</h2>
+                        </div>
+                        
+                        <p>We zijn onderweg om zo snel mogelijk te achterhalen waarvoor u om een bevestiging bent gevraagd</p>
+                        <p class="margin-bottom30">Dat kan heel even duren.....</p>
+                        <a href="/" class="btn-custom btn-icon"><i class="fas fa-caret-square-left"></i> Ga in plaats hiervan terug naar de Hoofdpagina</a>
+                    </div>
+                </div>
+                
+                <div class="col-sm-12 col-md-6 col-sm-offset-1 col-md-offset-0 text-center-sm text-center-xs" ng-show="locatie">
+                	<div class="margin-bottom40">
+                    	<div class="post-heading-left text-center-sm text-center-xs" >
+                        	<h4>Trouwlocatie </h4>
+                            <h2>{{ locatie.naam}}</h2>
+                        </div>
+                        
+                        <p ng-bind-html="locatie.samenvatting" ></p>
+                        <p class="margin-bottom30">Oeh deze is leuk .....</p>
+                        <a href="/" class="btn-custom btn-icon" ng-disabled="loading"><i class="fa fa-search"></i> Ga terug naar de Hoofdpagina</a>
+                        <br/>
+                        <br/>
+                        <a ng-click="setLocatie(locatie)" class="btn btn-success btn-icon" ng-disabled="loading">
+	                        <i class="fas fa-circle-notch fa-spin" ng-show="loading"></i>
+                        	<i class="far fa-calendar-check" ng-hide="loading"></i>
+	                        Reserveer deze trouw locatie
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-sm-12 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1" ng-hide="locatie">
+                	<figure class="col-img40 margin-bottom40 animation" data-animation="animation-fade-in-right">
+                        <img src="images/content/elements/Scooter.png" alt="Image">
+                    </figure>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0 col-lg-offset-1" ng-show="locatie">
+                	<figure class="col-img40 margin-bottom40 animation">
+                        <img  ng-src="{{locatie.afbeelding.url}}" alt="Image">
+                    </figure>
+                </div>
+                
+            </div>
+            <!-- .row end -->
+            
+            <!-- .row -->
+            <div class="row animation" class="row animation"  {% if app.session.flashbag.peekAll|length > 0 %}data-animation="animation-fade-in" data-delay="3400"{% endif %}>
+                
+                <div class="col-sm-10 col-md-6 col-lg-5 col-sm-offset-1 col-md-offset-0">
+                	<figure class="margin-bottom40 animation" data-animation="animation-fade-in-left">
+                        <iframe width="560" height="315" frameborder="0" allowfullscreen="" ng-src="{{locatie.film.url}}"></iframe>
+                    </figure>
+                </div>
+                
+                <div class="col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-0 col-lg-offset-1">
+                	<div class="col-text20 margin-bottom20" ng-bind-html="locatie.beschrijving">
+                    </div>
+                </div>
+                
+            </div>
+            <!-- .row end -->
+    
+    
+{% endblock %}

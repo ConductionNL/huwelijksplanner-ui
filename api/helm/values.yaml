@@ -4,14 +4,14 @@
 
 settings:
   registryBase: docker.io/conduction
-  projectName: pc
-  name: pc
-  title: Proto Component
+  projectName: hpui
+  name: hpui
+  title: Huwelijks Planner
   version: V.0.1
-  description: '&#039;Naast deze JSON rest API is er ook een [graphql](/graphql) interface beschikbaar.&#039;'
-  repro: 'https://github.com/ConductionNL/Proto-component-commonground'
+  description: Naast deze JSON
   domain: conduction.nl
-  demo: pc.zaakonline.nl
+  repro: https://github.com/ConductionNL/huwelijksplanner-ui'
+  demo: dev.huwelijksplanner.online
   env: dev
   debug: 1
   replicaCount: 1

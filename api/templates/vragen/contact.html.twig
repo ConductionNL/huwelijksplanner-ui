@@ -1,0 +1,76 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+             <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+                
+                <div class="col-sm-4">
+                	<div class="affa-info-text">
+                    	<img src="images/content/icon/mobile.png" alt="Icon"/>
+                        <h4>Telefoon</h4>
+                        <p>14 030</p>
+                    </div>
+                </div>
+                
+                <div class="col-sm-4">
+                	<div class="affa-info-text">
+                    	<img src="images/content/icon/mail.png" alt="Icon" />
+                        <h4>Email</h4>
+                        <p>trouwen@utrecht.nl</p>
+                    </div>
+                </div>
+                
+                <div class="col-sm-4">
+                	<div class="affa-info-text">
+                    	<img src="images/content/icon/location-pin.png" alt="Icon" />
+                        <h4>Stadskantoor</h4>
+                        <p>Stadsplateau 1 </p>
+                        <p>3521AZ Utrecht</p>
+                    </div>
+                </div>
+                
+            </div> <!-- .row end -->
+            <!-- .row end -->    
+        </div>
+        <!-- .container end -->
+    </div>
+    <!-- #contact end --> 
+    <!-- #contact -->
+    <div id="contact" class="wrap-container80 bg-white">        
+        <!-- .container -->
+    	<div class="container">   
+            <div class="post-heading-center">
+            	<h4>Hulp is onderweg</h4>
+                <h2>Waar kunnen we u mee helpen?</h2>
+                <p>Komt u er even niet uit? Aarzel dan niet om contact met ons op te nemen.</p>
+            </div>
+            			
+						  
+						
+            <!-- .row -->
+            <div class="row">
+                
+                <div class="col-md-10 col-lg-8 col-md-offset-1 col-lg-offset-2" ng-hide="issueResponce || loading">       
+                	<form method="post" action="#" class="affa-form-contact">
+                    	<div class="submit-status"></div> <!-- submit status -->
+                        <input type="hidden" name="type"  ng-model="issue.type" value="contact" />
+                        <input type="text" name="voornamen" placeholder="Voornam(en)" ng-model="issue.voornamen" />
+                        <input type="text" name="geslachtsnaam" placeholder="Achternaam" ng-model="issue.geslachtsnaam" />
+                        <input type="text" name="email" placeholder="E-mailadres" ng-model="issue.email"/>
+                        <input type="text" name="telefoonnummer" placeholder="Telefoonnummer" ng-model="issue.telefoonnummer"/>
+                        <input type="text" name="titel" placeholder="Titel" ng-model="issue.naam" />
+                        <textarea name="message" placeholder="Uw vraag *" ng-model="issue.beschrijving"></textarea>
+                        <a href="#" ng-click="sendIssue(issue)" class="btn btn-success btn-lg btn-block"  />Verstuur bericht</a>
+                    </form>
+                </div>
+                <div class="col-md-10 col-lg-8 col-md-offset-1 col-lg-offset-2" ng-show="issueResponce">                	
+                	Bedankt! We nemen zo spoedig mogelijk contact met u op
+                </div>
+                
+						
+            </div>
+            <!-- .row end -->
+    
+{% endblock %}

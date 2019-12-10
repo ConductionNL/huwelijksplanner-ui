@@ -1,0 +1,31 @@
+{# templates/home/index.html.twig #}
+
+{% extends '/beheer/index.html.twig' %}
+
+{% block admin %}
+
+                    <div class="post-heading-center">
+                    	<h2>Medewerkers</h2>
+                    </div>
+                    
+                      
+            	<table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Naam</th>
+                      <th scope="col"><a href="{{ path('app_beheer_employee') }}" class="btn btn-success" role="button">Voeg toe</a></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                 	 {% for employee in employees %}
+                    <tr>
+                      <th scope="row">{{ loop.index }}</th>
+                      <td>{{ employee.contactObject.given_name }} {{ employee.contactObject.additional_name }} {{ employee.contactObject.family_name }}</td>
+                      <td><a href="{{ path('app_beheer_employee',{'id':employee.id}) }}" class="btn btn-primary" role="button">Bewerk</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>    
+                 
+{% endblock %}

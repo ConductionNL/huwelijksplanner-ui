@@ -1,0 +1,88 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}     
+            <!-- .row -->
+            <div class="row animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >            
+                <div class="post-heading-center">
+                	<h2>Extra opties</h2>
+                    <p>U kunt uiteraard ook extra opties kiezen voor uw huwelijk</p>
+                </div>
+	                
+                {% for product in products %}
+                <div class="col-sm-4"> <!-- 1 -->
+                	<div class="affa-team-profile">
+                    	<figure class="team-profile-img" >
+                            <img src="images/thumbs/trouwboek_blauw.png" alt="Avatar" />
+                        </figure>
+                        <div class="team-profile-name">
+                        	<h4>{{ product.name }}</h4>
+                            <p>Blauw</p>
+                        </div>
+                        <p>{{ product.description }}<br/></p>
+                        <div class="tbl-prc-footer">
+                        	<!--
+	                    	<a href="{# path('app_extra_view',{'id':extra.id}) #}"  class="btn btn-secondary btn-icon  btn-block" >Meer lezen</a> 
+	                    	<br/>
+	                    	-->
+	                    	<a href="{{ path('app_extra_set',{'id':product.id})  }}"  class="btn btn-primary btn-icon  btn-block">Ja dit wil ik!</a> 
+                            
+	                    		<br/>	                    	
+                           		<a href="{{ path('app_betalen_index') }}"  class="btn btn-danger btn-icon  btn-block">Ik hoef geen extra opties</a> 
+                    	</div>
+                    </div>
+                </div>
+                {% endfor %}     
+                
+                
+                <div class="col-sm-4"> <!-- 1 -->
+                	<div class="affa-team-profile">
+                    	<figure class="team-profile-img" >
+                            <img src="images/thumbs/trouwboek_rood_thumb.png" alt="Avatar" />
+                        </figure>
+                        <div class="team-profile-name">
+                        	<h4>Trouwboekje</h4>
+                            <p>Rood</p>
+                        </div>
+                        <p>Een leuk aandenken <br/></p>
+                        <div class="tbl-prc-footer">
+                        	<!--
+	                    	<a href="{# path('app_extra_view',{'id':extra.id}) #}"  class="btn btn-secondary btn-icon  btn-block" >Meer lezen</a> 
+	                    	<br/>
+	                    	-->
+	                    	<a href="{{ path('app_extra_set',{'id':2})  }}"  class="btn btn-primary btn-icon  btn-block">Ja dit wil ik!</a> 
+	                    		<br/>	                    	
+                           		<a href="{{ path('app_betalen_index') }}"  class="btn btn-danger btn-icon  btn-block">Ik hoef geen extra opties</a> 
+                    	</div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-4"> <!-- 1 -->
+                	<div class="affa-team-profile">
+                    	<figure class="team-profile-img" >
+                            <img src="images/thumbs/uittrekksel.png" alt="Avatar" />
+                        </figure>
+                        <div class="team-profile-name">
+                        	<h4>Akte</h4>
+                            <p>Internationale huwelijksakte</p>
+                        </div>
+                        <p>Voor als u uw huwelijk ook in het buitenland moet doorgeven</p>
+                        <div class="tbl-prc-footer">
+                        	<!--
+	                    	<a href="{# path('app_extra_view',{'id':extra.id}) #}"  class="btn btn-secondary btn-icon  btn-block" >Meer lezen</a> 
+	                    	<br/>
+	                    	-->
+	                    	<a href="{{ path('app_extra_set',{'id':3})  }}"  class="btn btn-primary btn-icon  btn-block">Ja dit wil ik!</a> 
+	                    		<br/>	                    	
+                           		<a href="{{ path('app_betalen_index') }}"  class="btn btn-danger btn-icon  btn-block">Ik hoef geen extra opties</a> 
+                    	</div>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- .row end -->
+            
+		</div>
+        <!-- .container end -->
+{% endblock %}

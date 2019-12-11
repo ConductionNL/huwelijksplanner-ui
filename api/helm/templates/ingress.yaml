@@ -20,7 +20,7 @@ spec:
   tls: 
   - hosts:
     - {{ .Values.settings.domain }}
-    secretName: {{ include "name" . }}-tls-cert
+    secretName: {{ include "name" . }}-{{ .Values.settings.env }}-cert
   rules:
 #    - host: {{ .Values.settings.name }}.{{ .Values.settings.env }}.{{ .Values.settings.domain }}
 #      http:

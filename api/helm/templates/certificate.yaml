@@ -8,6 +8,7 @@ spec:
   renewBefore: 12h
   dnsNames:
   {{- if eq .Values.settings.env "prod" }}
+  - www.{{ .Values.settings.domain }}    
   - {{ .Values.settings.domain }}    
   {{- else }}      
   - {{ .Values.settings.env }}.{{ .Values.settings.domain }}    

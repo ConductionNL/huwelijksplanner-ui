@@ -31,7 +31,7 @@ class LocatieController extends AbstractController
 			return $this->redirect($this->generateUrl('app_locatie_view', ['id'=> (int)$locatie['id']]));
 		}	
 		
-		$products = $productService->getAllFromGroup('170788e7-b238-4c28-8efc-97bdada02c2e');
+		$products = $productService->getProducts(['group.id'=>'170788e7-b238-4c28-8efc-97bdada02c2e']);
 		
 		return $this->render('ambtenaar/index.html.twig', [
 				'user' => $user,

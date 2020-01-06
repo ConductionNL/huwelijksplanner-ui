@@ -29,7 +29,7 @@ class AmbtenaarController extends AbstractController
 			return $this->redirect($this->generateUrl('app_ambtenaar_view', ['id'=> (int)$ambtenaar['id']]));			
 		}		
 		
-		$products = $productService->getAllFromGroup('7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc');
+		$products = $productService->getProducts(['group.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
 				
 		return $this->render('ambtenaar/index.html.twig', [
 				'user' => $user,

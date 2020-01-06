@@ -22,9 +22,12 @@ class ExtraController extends AbstractController
 		$request= $session->get('request');
 		$user = $session->get('user');
 		
+		$products = $productService->getProducts(['group.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
+		
 		return $this->render('extra/index.html.twig', [
 				'request' => $request,
 				'user' => $user,
+				'products' => $products,
 		]);
 	}
 	

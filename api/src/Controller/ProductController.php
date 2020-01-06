@@ -26,7 +26,7 @@ class ProductController extends AbstractController
 		$request = $session->get('request');
 		$user = $session->get('user');
 		
-		$producten = $productService->getAll();
+		$products = $productService->getProducts(['group.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
 		
 		$ceremonie= null;
 		if($request && isset($request['properties']['ceremonie']) && $request['properties']['ceremonie']){
@@ -36,7 +36,7 @@ class ProductController extends AbstractController
 		return $this->render('product/index.html.twig', [
 				'user' => $user,
 				'request' => $request,
-				'producten' => $producten,
+				'producten' => $products,
 				'ceremonie' => $ceremonie,
 		]);
 	}

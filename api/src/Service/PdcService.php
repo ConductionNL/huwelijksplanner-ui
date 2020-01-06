@@ -23,14 +23,13 @@ class PdcService
 		]);
 	}
 	
-	public function getProducts($query)
+	public function getProducts($query = [])
 	{
 	    $response = $this->client->request('GET','/products', [
-	        'headers' => [
-	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-	        ]
-	    ]
-	        );
+	    	'headers' => ['Accept' => 'application/json'],
+	    	'query' => $query
+	    	]
+	    );
 	    
 	    $response = json_decode($response->getBody(), true);
 	    return $response['_embedded']['item'];
@@ -66,7 +65,7 @@ class PdcService
 	{
 	    $response = $this->client->request('GET','/groups/'.$id, [
 	        'headers' => [
-	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+	            'Accept' => 'application/json'
 	           ]
 	       ]
 	    );

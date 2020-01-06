@@ -11,7 +11,7 @@
                 app.request.attributes.get("_route") != 'app_assent_assent' and 
                 (employeeContact is not defined or (employeeContact is defined and employeeContact is empty)) and
                 (user is not defined or (user is defined and user is empty)) %} 
-				<a href="http://sso.zaakonline.nl?responceUrl={{ absolute_url(path('app_employee_login'))|replace({'https://': 'http://'}) }}" class="btn btn-login"><span class="fas fa-sign-in-alt"></span> Inloggen voor medewerkers</a>
+				<a href="http://sso.zaakonline.nl?responceUrl={{ absolute_url(path('app_default_login'))|replace({'https://': 'http://'}) }}" class="btn btn-login"><span class="fas fa-sign-in-alt"></span> Inloggen voor medewerkers</a>
 				{% endif %}
         </div>
         

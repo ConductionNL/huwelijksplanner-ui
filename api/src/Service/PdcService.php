@@ -32,7 +32,7 @@ class PdcService
 	    );
 	    
 	    $response = json_decode($response->getBody(), true);
-	    return $response['_embedded']['item'];
+	    return $response;
 	}
 	
 	public function getProduct($id)

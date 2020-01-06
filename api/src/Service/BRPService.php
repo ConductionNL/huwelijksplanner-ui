@@ -16,7 +16,7 @@ class BRPService
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
-				'base_uri' => 'https://www.haalcentraal.nl/haalcentraal/api/brp/',
+				'base_uri' => 'https://brp.zaakonline.nl/',
 				// You can set any number of default request options.
 				'timeout'  => 4000.0,
 		]);
@@ -24,7 +24,7 @@ class BRPService
 	
 	public function getPersonOnBsn($bsn)
 	{		
-		$response = $this->client->request('GET','https://www.haalcentraal.nl/haalcentraal/api/brp/ingeschrevenpersonen/'.$bsn, [
+		$response = $this->client->request('GET','https://brp.zaakonline.nl/ingeschrevenpersonen/'.$bsn, [
 					'headers' => [
 							'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
 					]

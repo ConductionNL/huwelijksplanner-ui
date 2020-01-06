@@ -83,9 +83,8 @@ class HomeController extends AbstractController
 				$assent['status'] = 'granted';
 				$assent['requester'] = $persoon['burgerservicenummer'];
 				
-				$assent= $assentService->createAssent($assent);
-				
-				$request['properties']['partner1']= 'http://irc.zaakonline.nl'.$assent['_links']['self']['href']; 				
+				//$assent= $assentService->createAssent($assent);
+				//$request['properties']['partner1']= 'http://irc.zaakonline.nl'.$assent['_links']['self']['href']; 				
 				
 				$request = $requestService->updateRequest($request);
 				

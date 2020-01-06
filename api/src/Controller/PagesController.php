@@ -26,11 +26,10 @@ class PagesController extends AbstractController
 		$user = $session->get('user');
 		
 		$variables = ["huwelijk"=>$huwelijk,"user"=>$user];		
-		$paginas = $sjabloonService->getSlug($slug);
 		
-		if($paginas[0]){
+		if($template = $sjabloonService->getOnSlug($slug)){
 			// We want to include the html in our own template
-			$html = "{% extends 'base.html.twig' %}{% block body %}".$paginas[0]['inhoud']."{% endblock %}";
+			$html = "{% extends 'base.html.twig' %}{% block body %}".$template['content']."{% endblock %}";
 			
 			$template = $this->get('twig')->createTemplate($html);
 			$template = $template->render($variables);

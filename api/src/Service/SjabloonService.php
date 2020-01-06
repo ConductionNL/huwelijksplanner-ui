@@ -32,7 +32,7 @@ class SjabloonService
 		$response =  $this->client->request('GET', $slug);
 		
 		$response = json_decode($response->getBody()->getContents(), true);
-		return $response["template"]["content"];
+		return $response["template"];
 	}
 	
 }

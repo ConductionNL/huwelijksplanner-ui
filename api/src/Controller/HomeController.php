@@ -45,7 +45,7 @@ class HomeController extends AbstractController
 			$bsn =  $request->query->get('bsn');
 		}
 		
-		if($persoon = $brpService->getPersonOnBsn($bsn)){
+		if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
 			//var_dump($persoon);
 			$session->set('user', $persoon);
 			

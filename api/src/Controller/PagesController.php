@@ -29,7 +29,7 @@ class PagesController extends AbstractController
 		
 		if($template = $sjabloonService->getOnSlug($slug)){
 			// We want to include the html in our own template
-			$html = "{% extends 'base.html.twig' %}{% block body %}".$template['content']."{% endblock %}";
+			$html = $template['content'];
 			
 			$template = $this->get('twig')->createTemplate($html);
 			$template = $template->render($variables);

@@ -25,7 +25,7 @@ class RequestTypeService
 	
 	public function getRequestTypes($query)
 	{
-	    $response = $this->client->request('GET','/requests_types', [
+	    $response = $this->client->request('GET','/request_types', [
 	        'headers' => [
 	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
 	        ]
@@ -38,12 +38,17 @@ class RequestTypeService
 	
 	public function getRequestType($id)
 	{
-		$response = $this->client->request('GET','/requests_types/'.$id, [
+		// In the case of linked data we might get an full url instead of just an id
+		if(filter_var($id, FILTER_VALIDATE_URL)){
+			$id = basename($id);
+		}
+		
+		$response = $this->client->request('GET','/request_types/'.$id, [
 				'headers' => [
 						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
 				]
-		]
-				);
+			]
+		);
 		
 		$response = json_decode($response->getBody(), true);
 		return $response;
@@ -65,7 +70,7 @@ class RequestTypeService
 	
 	public function createRequestType($request)
 	{
-		$response = $this->client->request('POST','/requests_types', [
+		$response = $this->client->request('POST','/request_types', [
 				'json' => $request,
 				'headers' => [
 						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
@@ -80,7 +85,7 @@ class RequestTypeService
 	
 	public function updateRequestType($request)
 	{
-		$response = $this->client->request('PUT','/requests_types/'.$request['id'], [
+		$response = $this->client->request('PUT','/request_types/'.$request['id'], [
 				'json' => $request,
 				'headers' => [
 						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'

@@ -20,7 +20,7 @@ class ResourceService
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
-				'base_uri' => 'http://resources.zaakonline.nl/producten',
+				'base_uri' => 'https://wrc.zaakonline.nl/producten',
 				// You can set any number of default request options.
 				'timeout'  => 4000.0,
 		]);

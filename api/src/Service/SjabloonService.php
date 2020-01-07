@@ -20,7 +20,7 @@ class SjabloonService
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
-				'base_uri' => 'http://wrc.zaakonline.nl/applications/536bfb73-63a5-4719-b535-d835607b88b2/',
+				'base_uri' => 'https://wrc.zaakonline.nl/applications/536bfb73-63a5-4719-b535-d835607b88b2/',
 				// You can set any number of default request options.
 				'timeout'  => 4000.0,
 		]);

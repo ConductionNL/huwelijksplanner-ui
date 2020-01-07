@@ -264,13 +264,12 @@ class DefaultController extends AbstractController
 				break;
 			case 'ambtenaren':
 				$variables['products']  = $pdcService->getProducts(['groups.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
-				var_dump($variables['products']);
 				break;
 			case 'locaties':
 				$variables['products'] = $pdcService->getProducts(['groups.id'=>'170788e7-b238-4c28-8efc-97bdada02c2e']);
 				break;
 			case 'plechtigheid': 
-				$variables['roducts'] = $pdcService->getProducts(['groups.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
+				$variables['products'] = $pdcService->getProducts(['groups.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
 				break;
 			case 'extras':
 				$variables['products'] = $pdcService->getProducts(['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);

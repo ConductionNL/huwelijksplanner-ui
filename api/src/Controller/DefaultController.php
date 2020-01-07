@@ -52,6 +52,55 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
+	 * @Route("request/new")
+	 */
+	public function newrequestAction(Session $session, RequestService $requestService, $id)
+	{
+		
+		$user = $session->get('user');
+		
+		// Okey we don't have ay requests so lets start a marige request
+		$request= [];
+		$request['request_type']='http://vtc.zaakonline.nl/request_types/16f43fb8-735c-42bc-8918-02388cffa229';
+		$request['target_organization']='002220647';
+		$request['submitter']=$user['burgerservicenummer'];
+		$request['status']='incomplete';
+		$request['properties']= [];
+		
+		$request = $requestService->createRequest($request);
+		
+		$assent = [];
+		$assent['name'] = 'Instemming huwelijk partnerschap';
+		$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
+		$assent['person'] = $user['burgerservicenummer'];
+		$assent['request'] = $request['id'];
+		$assent['status'] = 'granted';
+		$assent['requester'] = $user['burgerservicenummer'];
+		
+		$assent = $assentService->createAssent($assent);
+		
+		$request['properties']['partner1']= 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
+		
+		$request = $requestService->updateRequest($request);
+		
+		$session->set('request', $request);
+		
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"products"]));
+	}
+	
+	/**
+	 * @Route("request/{id}")
+	 */
+	public function loadrequestAction(Session $session, RequestService $requestService, $id)
+	{
+		
+		$request = $requestService->getRequestOnId($id);
+		$session->set('request', $request);
+		
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"products"]));
+	}
+	
+	/**
 	 * @Route("/login")
 	 */
 	public function loginAction(Session $session, Request $request, BRPService $brpService, RequestService $requestService,  ContactService $contactService, AssentService $assentService)

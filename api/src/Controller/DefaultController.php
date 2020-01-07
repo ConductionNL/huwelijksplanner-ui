@@ -73,23 +73,23 @@ class DefaultController extends AbstractController
 		$request = $requestService->createRequest($request);
 		
 		$contact = [];
-		$contact['given_name']= $user['naam']['voornamen'];
-		$contact['family_name']= $user['naam']['geslachtsnaam'];
-		//$contact= $contactService->createContact($contact);
+		$contact['givenName']= $user['naam']['voornamen'];
+		$contact['familyName']= $user['naam']['geslachtsnaam'];
+		$contact= $contactService->createContact($contact);
 		
 		$assent = [];
 		$assent['name'] = 'Instemming huwelijk partnerschp';
 		$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-		//$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
 		$assent['person'] = $user['burgerservicenummer'];
 		$assent['request'] = $request['id'];
 		$assent['status'] = 'granted';
 		
-		//$assent = $assentService->createAssent($assent);
+		$assent = $assentService->createAssent($assent);
 		if(!array_key_exists('partners',$request['properties'])){
 			$request['properties']['partners'] = [];
 		}
-		//$request['properties']['partners'][] = ['http://irc.zaakonline.nl'.$assent['_links']['self']['href']];
+		$request['properties']['partners'][] = ['http://irc.zaakonline.nl'.$assent['_links']['self']['href']];
 		
 		$request = $requestService->updateRequest($request);
 		
@@ -97,13 +97,14 @@ class DefaultController extends AbstractController
 		
 		// Lets also set the request type
 		$requestType = $requestTypeService->getRequestType($request['requestType']);
+		$requestType = $requestService->checkRequestType($request, $requestType);
 		$session->set('requestType', $requestType);
 		
 		
 		
 		// If we have a starting position lets start there
-		if(array_key_exists ("currentStage", $request) && $request["currentStage"] != null){
-			$start = $request["currentStage"];
+		if(array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
+			$start = $request["current_stage"];
 		}
 		elseif(count($requestType['stages']) >0){
 			$start = $requestType['stages'][0]["slug"];
@@ -125,13 +126,15 @@ class DefaultController extends AbstractController
 		$session->set('request', $request);
 		
 		// Lets also set the request type
-		$requestType = $requestTypeService->getRequestType($request['requestType']);
+		$requestType = $requestTypeService->getRequestType($request['requestType']);		
+		$requestType = $requestService->checkRequestType($request, $requestType);
+		
 		$session->set('requestType', $requestType);
 		
 		
 		// If we have a starting position lets start there
-		if(array_key_exists ("currentStage", $request) && $request["currentStage"] != null){
-			$start = $request["currentStage"];
+		if(array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
+			$start = $request["current_stage"];
 		}
 		elseif(count($requestType['stages']) >0){
 			$start = $requestType['stages'][0]["slug"];
@@ -156,47 +159,43 @@ class DefaultController extends AbstractController
 		}
 		
 		if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
-			//var_dump($persoon);
 			$session->set('user', $persoon);
 			
-			/*
-			 $huwelijk = $huwelijkService->getHuwelijkOnPersoon($persoon);
-			 $session->set('huwelijk', $huwelijk);
-			 */
+			
 			if($requests = $requestService->getRequestOnSubmitter($persoon['burgerservicenummer'])){
 				return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"requests"]));;
 			}
 			else{
 				// Okey we don't have ay requests so lets start a marige request
 				$request= [];
-				$request['requestType']='http://vtc.zaakonline.nl/request_types/47577f44-0ede-4655-a629-027f051d2b07';
+				$request['requestType']='http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1';
 				$request['targetOrganization']='002220647';
 				$request['submitter']=$persoon['burgerservicenummer'];
 				$request['status']='incomplete';
 				$request['properties']= [];
 				$request['properties']['partner1']= $persoon['burgerservicenummer'];
 				
-				//$request = $requestService->createRequest($request);
+				$request = $requestService->createRequest($request);
 				
 				$contact = [];
-				$contact['given_name']= $persoon['naam']['voornamen'];
-				$contact['family_name']= $persoon['naam']['geslachtsnaam'];
+				$contact['givenName']= $persoon['naam']['voornamen'];
+				$contact['familyName']= $persoon['naam']['geslachtsnaam'];
 				$contact= $contactService->createContact($contact);
 				
 				$assent = [];
 				$assent['name'] = 'Instemming huwelijk partnerschp';
 				$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-				//$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+				$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
 				$assent['person'] = $persoon['burgerservicenummer'];
 				$assent['request'] = $request['id'];
 				$assent['status'] = 'granted';
 				$assent['requester'] = $persoon['burgerservicenummer'];
 				
-				//$assent= $assentService->createAssent($assent);
+				$assent= $assentService->createAssent($assent);
 				if(!array_key_exists('partners',$request['properties'])){
 					$request['properties']['partners'] = [];
 				}
-				//$request['properties']['partners'][] = ['http://irc.zaakonline.nl'.$assent['_links']['self']['href']];
+				$request['properties']['partners'][] = ['http://irc.zaakonline.nl'.$assent['_links']['self']['href']];
 				
 				$request = $requestService->updateRequest($request);
 				
@@ -204,6 +203,7 @@ class DefaultController extends AbstractController
 				
 				// Lets also set the request type
 				$requestType = $requestTypeService->getRequestType($request['requestType']);
+				$requestType = $requestService->checkRequestType($request, $requestType);
 				$session->set('requestType', $requestType);
 				
 				// If we have a starting position lets start there
@@ -234,6 +234,7 @@ class DefaultController extends AbstractController
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"trouwen"]));
 	}
 	
+		
 	/**
 	 * @Route("/data")
 	 */
@@ -244,7 +245,7 @@ class DefaultController extends AbstractController
 		
 		$response = new JsonResponse($request);
 		return $response;
-	}
+	}	
 	
 	/**
 	 * @Route("/{slug}")
@@ -256,22 +257,23 @@ class DefaultController extends AbstractController
 		$user = $session->get('user');
 		$products = [];
 		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
-		
+				
 		switch ($slug) {
 			case null :
 				$slug = 'trouwen';
 				break;
 			case 'ambtenaren':
-				$variables['products']  = $pdcService->getProducts(['group.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
+				$variables['products']  = $pdcService->getProducts(['groups.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
+				var_dump($variables['products']);
 				break;
 			case 'locaties':
-				$variables['products'] = $pdcService->getProducts(['group.id'=>'170788e7-b238-4c28-8efc-97bdada02c2e']);
+				$variables['products'] = $pdcService->getProducts(['groups.id'=>'170788e7-b238-4c28-8efc-97bdada02c2e']);
 				break;
-			case 'ceremonies': 
-				$variables['roducts'] = $pdcService->getProducts(['group.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
+			case 'plechtigheid': 
+				$variables['roducts'] = $pdcService->getProducts(['groups.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
 				break;
 			case 'extras':
-				$variables['products'] = $pdcService->getProducts(['group.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
+				$variables['products'] = $pdcService->getProducts(['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
 				break; 
 			case 'requests':
 				$variables['requests'] = $requestService->getRequestOnSubmitter($user['burgerservicenummer']);
@@ -297,6 +299,78 @@ class DefaultController extends AbstractController
 		}	
 	}
 	
+	/**
+	 * @Route("/{slug}/assent/{role}")
+	 */
+	public function assentAction(Session $session, Request $httpRequest, $slug, $role, RequestService $requestService, ContactService $contactService, AssentService $assentService)
+	{
+		
+		$requestType = $session->get('requestType');
+		$request = $session->get('request');
+		$user = $session->get('user');
+		
+		
+		if (!$httpRequest->isMethod('POST')) {
+			return false;
+		}
+		
+		// First we need to create an assent	
+		$contact = [];
+		$contact['givenName']= $httpRequest->request->get('givenName');;
+		$contact['familyName']= $httpRequest->request->get('familyName');;
+		$contact['emails']=[];
+		$contact['emails'][]=["name"=>"primary","email"=> $httpRequest->request->get('email')];
+		$contact['telephones']=[];
+		$contact['telephones'][]=["name"=>"primary","telephone"=> $httpRequest->request->get('telephone')];
+		$contact= $contactService->createContact($contact);
+		
+		/* @todo onderstaande gaat een fout gooien als getuigen worden uitgenodigd voordat het huwelijkstype isgeselecteer (ja dat kan) */
+		$assent = [];
+		$assent['name'] = 'Instemming als '.$role.' bij '.$request["properties"]["type"];
+		$assent['description'] = 'U bent uitgenodigd als '.$role.' voor het '.$request["properties"]["type"].' van A en B';
+		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+		$assent['request'] = $request['id'];
+		$assent['status'] = 'requested';
+		$assent['requester'] = $user['burgerservicenummer'];
+		
+		$assent= $assentService->createAssent($assent);
+		
+		// Lets get the curent property
+		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+		
+		foreach ($arrIt as $sub) {
+			$subArray = $arrIt->getSubIterator();
+			if ($subArray['slug'] === $slug) {
+				$property = iterator_to_array($subArray);
+				break;
+			}
+		}
+		
+		// Lets see if an array already exisits for this property
+		if(!$request['properties'][$property["name"]]){
+			$request['properties'][$property["name"]] = [];
+		}		
+		
+		$request['properties'][$property["name"]][] = $assent;
+		
+		if($request = $requestService->updateRequest($request)){
+			$request["current_stage"] = $property["next"];
+			$request = $requestService->updateRequest($request);
+			$session->set('request', $request);
+			
+			$requestType = $requestService->checkRequestType($request, $requestType);
+			$session->set('requestType', $requestType);
+			
+			
+			$this->addFlash('success', ucfirst($slug).' is ingesteld');
+			$slug = $property["next"];
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
+		}
+		else{
+			$this->addFlash('danger', ucfirst($slug).' kon niet worden ingesteld');
+			return $this->redirect($this->generateUrl('app_default_view',["slug"=>$slug,"id"=>$id]));
+		}
+	}
 	
 	/**
 	 * @Route("/{slug}/add/{id}")
@@ -320,19 +394,24 @@ class DefaultController extends AbstractController
 		}
 		
 		// Lets see if an array already exisits for this property
-		if(!$request['properties'][$property["name"]]){
+		if(!array_key_exists($request['properties'], $property["name"])){
 			$request['properties'][$property["name"]] = [];
 		}
 			
 				
-		$request['properties'][$property["name"]][] = [$id];
+		$request['properties'][$property["name"]][] = $id;
 		
 		if($request = $requestService->updateRequest($request)){
-			$session->set('request', $request);			
-						
-			$slug = $property["next"];
+			$request["current_stage"] = $property["next"];
+			$request = $requestService->updateRequest($request);
+			$session->set('request', $request);						
 			
-			$this->addFlash('success', ucfirst($slug).' is ingesteld');			
+			$requestType = $requestService->checkRequestType($request, $requestType);
+			$session->set('requestType', $requestType);			
+						
+			
+			$this->addFlash('success', ucfirst($slug).' is ingesteld');
+			$slug = $property["next"];
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
@@ -361,17 +440,29 @@ class DefaultController extends AbstractController
 			}
 		}
 		
-		$request['properties'][$property["name"]] = [$id];
+		$request['properties'][$property["name"]] = $id;
+		
+		// hardcode overwrite for "gratis trouwen"
+		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "0cd41e70-2a20-4e82-a3ec-22ee9451b3b8"){
+			$request['properties']['locatie']="5a0ad366-9f10-4002-adcb-bac47143b93b";
+			$request['properties']['ambtenaar']="9d7c1c5b-3e65-4429-90ec-16e7371f2360";
+		}
+		
 				
 		if($request = $requestService->updateRequest($request)){
+			$request["current_stage"] = $property["next"];
+			$request = $requestService->updateRequest($request);
 			$session->set('request', $request);
+			
+			$requestType = $requestService->checkRequestType($request, $requestType);
+			$session->set('requestType', $requestType);	
 			
 			// Lets find the stage that we are add
 			$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
 			
-			$slug = $property["next"];
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
+			$slug = $property["next"];
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{			
@@ -381,6 +472,63 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
+	 * @Route("/{slug}/datum")
+	 */
+	public function datumAction(Session $session, $slug, RequestService $requestService)
+	{
+		$requestType = $session->get('requestType');
+		$request = $session->get('request');
+		$user = $session->get('user');
+		
+		// Lets get the curent property
+		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+		
+		foreach ($arrIt as $sub) {
+			$subArray = $arrIt->getSubIterator();
+			if ($subArray['slug'] === $slug) {
+				$property = iterator_to_array($subArray);
+				break;
+			}
+		}
+		/* @todo we should turn this into symfony form */
+		if ($httprequest->isMethod('POST') && $httprequest->request->get('datum')) {
+			
+			//var_dump($request->request->get('datum'));
+			
+			$dateArray = (explode(" ", $httprequest->request->get('datum')));
+			$date = strtotime($dateArray[1].' '.$dateArray[2].' '.$dateArray[3]);
+			$postdate = date('Y-m-d',$date);
+			$displaydate = date('d-m-Y',$date);
+			
+			
+			$request['properties']['datum'] = $displaydate;			
+		}
+		
+		$request['properties'][$property["name"]] = $displaydate;
+				
+		
+		if($request = $requestService->updateRequest($request)){
+			$request["current_stage"] = $property["next"];
+			$request = $requestService->updateRequest($request);
+			$session->set('request', $request);
+			
+			$requestType = $requestService->checkRequestType($request, $requestType);
+			$session->set('requestType', $requestType);
+			
+			// Lets find the stage that we are add
+			$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+			
+			
+			$this->addFlash('success', ucfirst($slug).' is ingesteld');
+			$slug = $property["next"];
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
+		}
+		else{
+			$this->addFlash('danger', ucfirst($slug).' kon niet worden ingesteld');
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));;
+		}
+	}
+	/**
 	 * @Route("/{slug}/unset/{id}")
 	 */
 	public function unsetAction(Session $session, $id, RequestService $requestService)
@@ -389,15 +537,34 @@ class DefaultController extends AbstractController
 		$request= $session->get('request');
 		$user = $session->get('user');
 		
-		if(is_array($request['properties'][$slug])){			
-			$key = array_search($id, $request['properties']); 
-			unset($request['properties'][$slug][$key]);
-		}
-		else{
-			$request['properties'][$slug] = null;
+		// Lets get the curent property
+		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+		
+		foreach ($arrIt as $sub) {
+			$subArray = $arrIt->getSubIterator();
+			if ($subArray['slug'] === $slug) {
+				$property = iterator_to_array($subArray);
+				break;
+			}
 		}
 		
-		if($request = $requestService->updateRequest($request)){
+		if(is_array($request['properties'][$property["name"]])){			
+			$key = array_search($id, $request['properties']); 
+			unset($request['properties'][$property["name"]][$key]);
+		}
+		else{
+			$request['properties'][$property["name"]] = null;
+		}
+		
+		if($request = $requestService->updateRequest($request)){			
+			
+			$request["current_stage"] = $property["slug"];
+			$request = $requestService->updateRequest($request);
+			
+			$requestType = $requestService->checkRequestType($request, $requestType);
+			$session->set('request', $request);	
+			$session->set('requestType', $requestType);	
+			
 			$this->addFlash('success', ucfirst($slug).' geanuleerd');
 			return $this->redirect($this->generateUrl('app_ambtenaar_index'));
 		}
@@ -418,7 +585,7 @@ class DefaultController extends AbstractController
 		$user = $session->get('user');
 		$product = $pdcService->getProduct($id);
 		
-		$variables = ["request"=>$request,"user"=>$user,"products"=>$products];
+		$variables = ["request"=>$request,"user"=>$user,"product"=>$product];
 		
 		if($template = $sjabloonService->getOnSlug($slug)){
 			// We want to include the html in our own template

@@ -45,7 +45,7 @@ class RequestTypeService
 		
 		$response = $this->client->request('GET','/request_types/'.$id, [
 				'headers' => [
-						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+					'Accept' => 'application/json'
 				]
 			]
 		);

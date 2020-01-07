@@ -23,7 +23,7 @@ class AssentService
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
-				'base_uri' => 'http://irc.zaakonline.nl',
+				'base_uri' => 'https://irc.zaakonline.nl',
 				// You can set any number of default request options.
 				'timeout'  => 4000.0,
 				'body' => 'raw data',

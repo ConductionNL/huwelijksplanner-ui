@@ -27,11 +27,12 @@ class DefaultController extends AbstractController
 	 */
 	public function indexAction(Session $session, SjabloonService $sjabloonService)
 	{
+		$requestType = $session->get('requestType');
 		$request = $session->get('request');
 		$user = $session->get('user');
 		$products = [];
 		
-		$variables = ["request"=>$request,"user"=>$user,"products"=>$products];
+		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
 		
 		if($template = $sjabloonService->getOnSlug('trouwen')){
 			// We want to include the html in our own template
@@ -61,8 +62,8 @@ class DefaultController extends AbstractController
 		
 		// Okey we don't have ay requests so lets start a marige request
 		$request= [];
-		$request['request_type']='http://vtc.zaakonline.nl/request_types/16f43fb8-735c-42bc-8918-02388cffa229';
-		$request['target_organization']='002220647';
+		$request['requestType']='http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1';
+		$request['targetOrganization']='002220647';
 		$request['submitter']=$user['burgerservicenummer'];
 		$request['status']='incomplete';
 		$request['properties']= [];
@@ -79,7 +80,7 @@ class DefaultController extends AbstractController
 		
 		$assent = $assentService->createAssent($assent);
 		
-		$request['properties']['partner1']= 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
+		$request['properties']['partners'] = ['http://irc.zaakonline.nl'.$assent['_links']['self']['href']];
 		
 		$request = $requestService->updateRequest($request);
 		
@@ -97,6 +98,7 @@ class DefaultController extends AbstractController
 		$request = $requestService->getRequestOnId($id);
 		$session->set('request', $request);
 		
+		$requestType = $session->get('requestType');
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"products"]));
 	}
 	
@@ -168,6 +170,7 @@ class DefaultController extends AbstractController
 	 */
 	public function logoutAction(Session $session)
 	{
+		$session->set('requestType',false);
 		$session->set('request',false);
 		$session->set('user',false);
 		$session->set('employee',false);
@@ -318,6 +321,7 @@ class DefaultController extends AbstractController
 	 */
 	public function viewAction(Session $session, $slug, $id, SjabloonService $sjabloonService, PdcService $pdcService)
 	{
+		$requestType = $session->get('requestType');
 		$request = $session->get('request');
 		$user = $session->get('user');
 		$product = $pdcService->getProduct($id);

@@ -89,7 +89,7 @@ class DefaultController extends AbstractController
 		if(!array_key_exists('partners',$request['properties'])){
 			$request['properties']['partners'] = [];
 		}
-		$request['properties']['partners'][] = ['http://irc.zaakonline.nl'.$assent['_links']['self']['href']];
+		$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
 		
 		$request = $requestService->updateRequest($request);
 		
@@ -195,7 +195,7 @@ class DefaultController extends AbstractController
 				if(!array_key_exists('partners',$request['properties'])){
 					$request['properties']['partners'] = [];
 				}
-				$request['properties']['partners'][] = ['http://irc.zaakonline.nl'.$assent['_links']['self']['href']];
+				$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
 				
 				$request = $requestService->updateRequest($request);
 				
@@ -234,6 +234,37 @@ class DefaultController extends AbstractController
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"trouwen"]));
 	}
 	
+	/**
+	 * @Route("/assent/{id}")
+	 */
+	public function assentLoginAction(Session $session, Request $httpRequest, $id, RequestService $requestService, ContactService $contactService, AssentService $assentService)
+	{
+		$requestType = $session->get('requestType');
+		$request = $session->get('request');
+		$user = $session->get('user');
+		$products = [];
+		
+		
+		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
+		$assent= $assentService->getAssent($id);
+		
+		if($template = $sjabloonService->getTemplate('016d30d8-34dd-4841-a4af-8ad0a0f9d23f')){
+			// We want to include the html in our own template
+			$html = $template['content'];
+			
+			$template = $this->get('twig')->createTemplate($html);
+			$template = $template->render($variables);
+			
+			return $response = new Response(
+					$template,
+					Response::HTTP_OK,
+					['content-type' => 'text/html']
+					);
+		}
+		else{
+			throw $this->createNotFoundException('This page could not be found');
+		}	
+	}
 		
 	/**
 	 * @Route("/data")
@@ -350,7 +381,7 @@ class DefaultController extends AbstractController
 			$request['properties'][$property["name"]] = [];
 		}		
 		
-		$request['properties'][$property["name"]][] = $assent;
+		$request['properties'][$property["name"]][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
 		
 		if($request = $requestService->updateRequest($request)){
 			$request["current_stage"] = $property["next"];

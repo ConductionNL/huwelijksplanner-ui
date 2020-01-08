@@ -19,6 +19,8 @@ use App\Service\RequestTypeService;
 use App\Service\ContactService;
 use App\Service\AssentService;
 
+use App\Service\CommongroundService;
+
 /**
  */
 class DefaultController extends AbstractController
@@ -200,6 +202,10 @@ class DefaultController extends AbstractController
 		if(!$bsn){
 			$bsn =  $request->query->get('bsn');
 		}
+		if(!$bsn){
+			// No login suplied so redirect to digispoof
+			return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath()));
+		}
 		
 		if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
 			$session->set('user', $persoon);
@@ -284,20 +290,70 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
+	 * @Route("/assent/add/{property}")
+	 */
+	public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService, ContactService $contactService, AssentService $assentService)
+	{
+		// First we need to make an new assent
+		$assent = [];
+		$assent['name'] = 'Instemming huwelijk partnerschp';
+		$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
+		$assent['requester'] = $requestType['source_organization'];
+		$assent['person'] = $persoon['burgerservicenummer'];
+		$assent['request'] = $request['id'];
+		$assent['status'] = 'granted';
+		$assent['requester'] = $persoon['burgerservicenummer'];
+		
+		$assent= $assentService->createAssent($assent);
+		if(!array_key_exists($property ,$request['properties'])){
+			$request['properties'][$property] = [];
+		}
+		$request['properties'][$property][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
+		
+		$request = $requestService->updateRequest($request);
+		
+		$session->set('requestType',false);
+		$session->set('request',false);		
+		
+		return $this->redirect($this->generateUrl('app_default_assentLogin',["id"=>$assent["id"]]));
+	}
+	
+	/**
 	 * @Route("/assent/{id}")
 	 */
-	public function assentLoginAction(Session $session, Request $httpRequest, $id, RequestService $requestService, ContactService $contactService, AssentService $assentService)
+	public function assentLoginAction(Session $session, Request $httpRequest, $id, RequestService $requestService, CommongroundService $commongroundService, BRPService $brpService, AssentService $assentService)
 	{
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
-		$products = [];
-		
-		
-		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
-		$assent= $assentService->getAssent($id);
-		
-		if($template = $sjabloonService->getTemplate('016d30d8-34dd-4841-a4af-8ad0a0f9d23f')){
+		// Lets first see if we have a login
+		$bsn = $request->request->get('bsn');
+		if(!$bsn){
+			$bsn =  $request->query->get('bsn');
+		}
+		if(!$bsn){ 
+			// No login suplied so redirect to digispoof
+			return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath()));
+		}
+			
+		if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
+			
+			$session->set('user', $persoon);
+			$assent = $assentService->getAssent($id);
+			$request = $commongroundService->get($assent['request']);
+			$session->set('request', $request);
+			
+			// Lets also set the request type
+			$requestType = $requestTypeService->getRequestType($request['requestType']);
+			$requestType = $requestService->checkRequestType($request, $requestType);
+			
+			$session->set('requestType', $requestType);
+			
+			$this->addFlash('success', 'Welkom '.$persoon['naam']['voornamen']);
+			
+			
+			$products = [];
+			$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products,"assent"=>$assent];
+			
+			$template = $sjabloonService->getOnSlug('assent');
+			
 			// We want to include the html in our own template
 			$html = $template['content'];
 			
@@ -305,14 +361,18 @@ class DefaultController extends AbstractController
 			$template = $template->render($variables);
 			
 			return $response = new Response(
-					$template,
-					Response::HTTP_OK,
-					['content-type' => 'text/html']
-					);
+				$template,
+				Response::HTTP_OK,
+				['content-type' => 'text/html']
+			);
+				
 		}
 		else{
-			throw $this->createNotFoundException('This page could not be found');
-		}	
+			$this->addFlash('danger', 'U kon helaas niet worden ingelogd');
+		}
+		
+		// If nothing sticks we redirect the user to the home page
+		return $this->redirect($this->generateUrl('app_default_index'));
 	}
 		
 	/**

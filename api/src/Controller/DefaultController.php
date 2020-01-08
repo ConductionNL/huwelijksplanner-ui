@@ -119,6 +119,46 @@ class DefaultController extends AbstractController
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$start]));
 	}
 	
+	
+	/**
+	 * @Route("request/submit")
+	 */
+	public function submitrequestAction(Session $session, RequestService $requestService)
+	{		
+		$request = $session->get('request');
+		$request['status'] = 'submited';
+		
+		if($request = $requestService->updateRequest($request)){
+			$session->set('request', $request);
+			
+			$this->addFlash('Uw verzoek is ingediend');
+		}
+		else{
+			$this->addFlash('Uw verzoek kon niet worden ingediend');
+		}
+		
+		return $this->redirect($this->generateUrl('app_default_view',["slug"=>"checklist"]));
+	}
+	
+	/**
+	 * @Route("request/cancel")
+	 */
+	public function cancelrequestAction(Session $session, RequestService $requestService)
+	{		
+		$request = $session->get('request');
+		$request['status'] = 'cancelled';
+		
+		if($request = $requestService->updateRequest($request)){
+			$session->set('request', $request);						
+			$this->addFlash('Uw verzoek is geanuleerd');
+		}
+		else{
+			$this->addFlash('Uw verzoek kon niet worden geanuleerd');
+		}
+		
+		return $this->redirect($this->generateUrl('app_default_view',["slug"=>"checklist"]));
+	}
+	
 	/**
 	 * @Route("request/{id}")
 	 */

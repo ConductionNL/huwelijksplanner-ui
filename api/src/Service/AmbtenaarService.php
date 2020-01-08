@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use GuzzleHttp\Client ;
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 
 use App\Service\CommonGroundService;
 
@@ -11,12 +12,14 @@ use App\Service\CommonGroundService;
 class AmbtenaarService
 {
 	private $params;
+	private $cache;
 	private $client;
 	private $commonGroundService;
 	
-	public function __construct(ParameterBagInterface $params, CommonGroundService $commonGroundService)
+	public function __construct(ParameterBagInterface $params, CommonGroundService $commonGroundService, CacheInterface $cache)
 	{
 		$this->params = $params;
+		$this->cash = $cache;
 		$this->commonGroundService = $commonGroundService;
 		
 		$this->client= new Client([

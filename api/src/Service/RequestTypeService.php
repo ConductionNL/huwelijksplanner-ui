@@ -4,15 +4,18 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use GuzzleHttp\Client;
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 
 class RequestTypeService
 {
 	private $params;
+	private $cache;
 	private $client;
 	
-	public function __construct(ParameterBagInterface $params)
+	public function __construct(ParameterBagInterface $params, CacheInterface $cache)
 	{
 		$this->params = $params;
+		$this->cash = $cache;
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
@@ -36,12 +39,18 @@ class RequestTypeService
 	    return $response['_embedded']['item'];
 	}
 	
-	public function getRequestType($id)
+	public function getRequestType($id, $force = false)
 	{
 		// In the case of linked data we might get an full url instead of just an id
 		if(filter_var($id, FILTER_VALIDATE_URL)){
 			$id = basename($id);
 		}
+		
+		
+		$item = $this->cash->getItem('requesttype_'.$id);
+		if ($item->isHit() && !$force) {
+			return $item->get();
+		}		
 		
 		$response = $this->client->request('GET','/request_types/'.$id, [
 				'headers' => [
@@ -50,7 +59,12 @@ class RequestTypeService
 			]
 		);
 		
-		$response = json_decode($response->getBody(), true);
+		$response = json_decode($response->getBody(), true);		
+		
+		$item->set($response);
+		$item->expiresAt(new \DateTime('tomorrow'));
+		$this->cash->save($item);
+		
 		return $response;
 	}
 	

@@ -4,15 +4,18 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use GuzzleHttp\Client;
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 
 class PdcService
 {
 	private $params;
+	private $cache;
 	private $client;
 	
-	public function __construct(ParameterBagInterface $params)
+	public function __construct(ParameterBagInterface $params, CacheInterface $cache)
 	{
 		$this->params = $params;
+		$this->cash = $cache;
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests

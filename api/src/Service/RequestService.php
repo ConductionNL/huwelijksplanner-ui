@@ -4,15 +4,18 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use GuzzleHttp\Client;
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 
 class RequestService
 {
 	private $params;
+	private $cache;
 	private $client;
 	
-	public function __construct(ParameterBagInterface $params)
+	public function __construct(ParameterBagInterface $params, CacheInterface $cache)
 	{
 		$this->params = $params;
+		$this->cash = $cache;
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
@@ -75,16 +78,27 @@ class RequestService
 		return $response;
 	}
 	
-	public function getRequestOnId($id)
+	public function getRequestOnId($id, $force = false)
 	{
-		$response = $this->client->request('GET','/requests/'.$id, [
-				'headers' => [
-						'Accept' => 'application/json'
-				]
-		]
-				);
+		$item = $this->cash->getItem('request_'.$id);
+		if ($item->isHit() && !$force) {
+			return $item->get();
+		}		
 		
-		$response = json_decode($response->getBody(), true);
+		$response = $this->client->request('GET','/requests/'.$id, [
+			'headers' => [
+			'Accept' => 'application/json'
+			]
+		]
+		);
+		
+		$response = json_decode($response->getBody(), true);		
+		
+		
+		$item->set($response);
+		$item->expiresAt(new \DateTime('tomorrow'));
+		$this->cash->save($item);
+		
 		return $response;
 	}
 	

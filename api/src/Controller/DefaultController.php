@@ -571,7 +571,7 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/{slug}/unset/{id}")
 	 */
-	public function unsetAction(Session $session, $id, RequestService $requestService)
+	public function unsetAction(Session $session, $slug, $id, RequestService $requestService)
 	{
 		$requestType = $session->get('requestType');
 		$request= $session->get('request');
@@ -606,11 +606,11 @@ class DefaultController extends AbstractController
 			$session->set('requestType', $requestType);	
 			
 			$this->addFlash('success', ucfirst($slug).' geanuleerd');
-			return $this->redirect($this->generateUrl('app_ambtenaar_index'));
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
 			$this->addFlash('danger', ucfirst($slug).' kon niet worden geanuleerd');
-			return $this->redirect($this->generateUrl('app_ambtenaar_index'));
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		
 	}

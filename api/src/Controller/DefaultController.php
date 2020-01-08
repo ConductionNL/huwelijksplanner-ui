@@ -62,15 +62,21 @@ class DefaultController extends AbstractController
 		
 		$user = $session->get('user');
 		
+		// Lets also set the request type
+		$requestType = $requestTypeService->getRequestType('5b10c1d6-7121-4be2-b479-7523f1b625f1');
+		
 		// Okey we don't have ay requests so lets start a marige request
 		$request= [];
-		$request['requestType']='http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1';
+		$request['requestType']='http://vtc.zaakonline.nl/request_types/'.$requestType['id'];
 		$request['targetOrganization']='002220647';
 		$request['submitter']=$user['burgerservicenummer'];
 		$request['status']='incomplete';
 		$request['properties']= [];
 		
-		$request = $requestService->createRequest($request);
+		$request = $requestService->createRequest($request);		
+		
+		$requestType = $requestService->checkRequestType($request, $requestType);
+		$session->set('requestType', $requestType);
 		
 		$contact = [];
 		$contact['givenName']= $user['naam']['voornamen'];
@@ -81,6 +87,7 @@ class DefaultController extends AbstractController
 		$assent['name'] = 'Instemming huwelijk partnerschp';
 		$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
 		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+		$assent['requester'] = $requestType['source_organization']; 
 		$assent['person'] = $user['burgerservicenummer'];
 		$assent['request'] = $request['id'];
 		$assent['status'] = 'granted';
@@ -95,10 +102,6 @@ class DefaultController extends AbstractController
 		
 		$session->set('request', $request);
 		
-		// Lets also set the request type
-		$requestType = $requestTypeService->getRequestType($request['requestType']);
-		$requestType = $requestService->checkRequestType($request, $requestType);
-		$session->set('requestType', $requestType);
 		
 		
 		
@@ -167,8 +170,12 @@ class DefaultController extends AbstractController
 			}
 			else{
 				// Okey we don't have ay requests so lets start a marige request
+				
+				// Lets also set the request type
+				$requestType = $requestTypeService->getRequestType('5b10c1d6-7121-4be2-b479-7523f1b625f1');
+				
 				$request= [];
-				$request['requestType']='http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1';
+				$request['requestType']='http://vtc.zaakonline.nl/request_types/'.$requestType['id'];
 				$request['targetOrganization']='002220647';
 				$request['submitter']=$persoon['burgerservicenummer'];
 				$request['status']='incomplete';
@@ -176,6 +183,11 @@ class DefaultController extends AbstractController
 				$request['properties']['partner1']= $persoon['burgerservicenummer'];
 				
 				$request = $requestService->createRequest($request);
+				$session->set('requestType', $requestType);
+				
+				$requestType = $requestService->checkRequestType($request, $requestType);
+				
+				$requestType = $requestService->checkRequestType($request, $requestType);
 				
 				$contact = [];
 				$contact['givenName']= $persoon['naam']['voornamen'];
@@ -186,6 +198,7 @@ class DefaultController extends AbstractController
 				$assent['name'] = 'Instemming huwelijk partnerschp';
 				$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
 				$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+				$assent['requester'] = $requestType['source_organization']; 
 				$assent['person'] = $persoon['burgerservicenummer'];
 				$assent['request'] = $request['id'];
 				$assent['status'] = 'granted';
@@ -201,10 +214,6 @@ class DefaultController extends AbstractController
 				
 				$session->set('request', $request);				
 				
-				// Lets also set the request type
-				$requestType = $requestTypeService->getRequestType($request['requestType']);
-				$requestType = $requestService->checkRequestType($request, $requestType);
-				$session->set('requestType', $requestType);
 				
 				// If we have a starting position lets start there
 				if(count($requestType['stages']) >0){
@@ -359,6 +368,7 @@ class DefaultController extends AbstractController
 		$assent['name'] = 'Instemming als '.$role.' bij '.$request["properties"]["type"];
 		$assent['description'] = 'U bent uitgenodigd als '.$role.' voor het '.$request["properties"]["type"].' van A en B';
 		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+		$assent['requester'] = $requestType['source_organization']; 
 		$assent['request'] = $request['id'];
 		$assent['status'] = 'requested';
 		$assent['requester'] = $user['burgerservicenummer'];
@@ -377,7 +387,7 @@ class DefaultController extends AbstractController
 		}
 		
 		// Lets see if an array already exisits for this property
-		if(!$request['properties'][$property["name"]]){
+		if(!array_key_exists($property["name"], $request['properties'])){
 			$request['properties'][$property["name"]] = [];
 		}		
 		
@@ -424,7 +434,7 @@ class DefaultController extends AbstractController
 		}
 		
 		// Lets see if an array already exisits for this property
-		if(!array_key_exists($request['properties'], $property["name"])){
+		if(!array_key_exists($property["name"], $request['properties'])){
 			$request['properties'][$property["name"]] = [];
 		}
 			
@@ -504,7 +514,7 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/{slug}/datum")
 	 */
-	public function datumAction(Session $session, $slug, RequestService $requestService)
+	public function datumAction(Session $session, $slug, Request $httprequest, RequestService $requestService)
 	{
 		$requestType = $session->get('requestType');
 		$request = $session->get('request');

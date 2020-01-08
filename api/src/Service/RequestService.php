@@ -136,7 +136,8 @@ class RequestService
 	public function checkRequestType($request, $requestType)
 	{
 		
-		foreach($requestType["stages"] as $key=>$stage){				
+		foreach($requestType["stages"] as $key=>$stage){	
+			
 			
 			// Overwrites for omzetten
 			if(
@@ -179,7 +180,8 @@ class RequestService
 				
 				foreach ($arrIt as $sub) {
 					$subArray = $arrIt->getSubIterator();
-					if ($subArray['name'] === $stage["name"]) {
+										
+					if (array_key_exists("name", $subArray) and $subArray['name'] === $stage["name"]) {
 						$property = iterator_to_array($subArray);
 						break;
 					}

@@ -398,7 +398,7 @@ class DefaultController extends AbstractController
 		$products = [];
 		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
 		
-		var_dump($request);
+		// var_dump($request);
 		
 		switch ($slug) {
 			case null :

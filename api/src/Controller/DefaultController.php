@@ -397,7 +397,7 @@ class DefaultController extends AbstractController
 		$user = $session->get('user');
 		$products = [];
 		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
-				
+						
 		switch ($slug) {
 			case null :
 				$slug = 'trouwen';

@@ -397,7 +397,9 @@ class DefaultController extends AbstractController
 		$user = $session->get('user');
 		$products = [];
 		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
-						
+		
+		var_dump($request);
+		
 		switch ($slug) {
 			case null :
 				$slug = 'trouwen';
@@ -513,7 +515,7 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{slug}/add/{id}")
+	 * @Route("/{slug}/add/{id}", requirements={"id"=".+"})
 	 */
 	public function addAction(Session $session, $slug, $id, RequestService $requestService)
 	{
@@ -561,7 +563,7 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{slug}/set/{id}")
+	 * @Route("/{slug}/set/{id}" , requirements={"id"=".+"})
 	 */
 	public function setAction(Session $session, $slug, $id, RequestService $requestService)
 	{
@@ -583,9 +585,9 @@ class DefaultController extends AbstractController
 		$request['properties'][$property["name"]] = $id;
 		
 		// hardcode overwrite for "gratis trouwen"
-		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "0cd41e70-2a20-4e82-a3ec-22ee9451b3b8"){
-			$request['properties']['locatie']="5a0ad366-9f10-4002-adcb-bac47143b93b";
-			$request['properties']['ambtenaar']="9d7c1c5b-3e65-4429-90ec-16e7371f2360";
+		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/0cd41e70-2a20-4e82-a3ec-22ee9451b3b8"){
+			$request['properties']['locatie']="https://pdc.zaakonline.nl/products/5a0ad366-9f10-4002-adcb-bac47143b93b";
+			$request['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/9d7c1c5b-3e65-4429-90ec-16e7371f2360";
 		}
 		
 				

@@ -32,11 +32,11 @@ class SjabloonService
 	public function getOnSlug($slug, $force = false)
 	{
 		$item = $this->cash->getItem('sjabloon_'.$slug);
-		/*
+		
 		if ($item->isHit() && !$force) {
-			return $item->get();
+			//return $item->get();
 		}
-		*/
+		
 		$response =  $this->client->request('GET', $slug);
 		
 		$response = json_decode($response->getBody()->getContents(), true);

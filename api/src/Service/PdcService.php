@@ -4,15 +4,18 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use GuzzleHttp\Client;
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 
 class PdcService
 {
 	private $params;
+	private $cache;
 	private $client;
 	
-	public function __construct(ParameterBagInterface $params)
+	public function __construct(ParameterBagInterface $params, CacheInterface $cache)
 	{
 		$this->params = $params;
+		$this->cash = $cache;
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
@@ -23,17 +26,16 @@ class PdcService
 		]);
 	}
 	
-	public function getProducts($query)
+	public function getProducts($query = [])
 	{
 	    $response = $this->client->request('GET','/products', [
-	        'headers' => [
-	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-	        ]
-	    ]
-	        );
+	    	'headers' => ['Accept' => 'application/json'],
+	    	'query' => $query
+	    	]
+	    );
 	    
 	    $response = json_decode($response->getBody(), true);
-	    return $response['_embedded']['item'];
+	    return $response;
 	}
 	
 	public function getProduct($id)
@@ -66,7 +68,7 @@ class PdcService
 	{
 	    $response = $this->client->request('GET','/groups/'.$id, [
 	        'headers' => [
-	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+	            'Accept' => 'application/json'
 	           ]
 	       ]
 	    );

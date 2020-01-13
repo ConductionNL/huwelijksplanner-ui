@@ -8,102 +8,24 @@
     	<div class="container">            
             <!-- .row -->
             <div class="row">
-            	{% if user is defined and request is defined and request is not empty %}
+            	{% if requestType.stages is defined and requestType.stages is not empty %}
             	<div class="col-md-12 text-center flow"> 
                     <ul>
-                        <li class="animation {% if request.properties.type is defined and request.properties.type is not empty %}completed{% endif %}" data-animation="animation-bounce-in">                    
-                        	<a href="{{ path('app_huwelijk_index') }}">
-                        		<i class="fas fa-ring fa-3x "></i>
-                            <br/>{% if request.properties.type is defined and request.properties.type is not empty %}{{ request.properties.type|capitalize }}{% else %} Wat wilt u? {% endif %}v
+                    
+                        {% for stage in requestType.stages  %}  
+                        <li class="animation {% if stage.completed  is defined and stage.completed is not empty %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="{{ loop.index*200 }}">                    
+                        	<a href="{{ stage.slug }}">
+                        		<i class="{{ stage.icon }} fa-3x "></i>
+                            <br/>{{ stage.name|capitalize }}
                             </a>
-    					</li>
-                        <li class="animation  {% if request.properties.partner1 is defined and request.properties.partner2 is defined  %}completed"{% endif %}" data-animation="animation-bounce-in" data-delay="200">          
-                        	<a href="{{ path('app_partner_index') }}">
-                            	<i class="fas fa-user-friends fa-3x "></i>
-                           <br/> Partner
-                            </a>
-    					</li>
-                        <li class="animation  {% if request.properties.product is defined  %}completed"{% endif %}" data-animation="animation-bounce-in" data-delay="400">          
-                        	<a href="{{ path('app_product_index') }}">
-                            	<i class="fas fa-glass-cheers fa-3x "></i>
-                           <br/> Ceremonie 
-                            </a>
-    					</li>
-                        <li class="animation  {% if request.properties.datum is defined %}completed"{% endif %}" data-animation="animation-bounce-in" data-delay="600">             
-                        	<a href="{{ path('app_datum_index') }}">
-                        		<i class="fas fa-calendar-day fa-3x"></i> 
-                            <br/>Datum
-                            </a>
-    					</li>
-                        <li class="animation  {% if request.properties.locatie is defined %}completed"{% endif %}" data-animation="animation-bounce-in" data-delay="800">            
-                        	<a href="{{ path('app_locatie_index') }}" >
-                            	<i class="fas fa-building  fa-3x "></i>
-                            <br/>Locatie
-                            </a>
-    					</li>
-                        <li class="animation  {% if request.properties.ambtenaar is defined %}completed"{% endif %}" data-animation="animation-bounce-in" data-delay="1000">              
-                        	<a href="{{ path('app_ambtenaar_index') }}" >
-                        		<i class="fas fa-user-tie fa-3x "></i>
-                            <br/>Ambtenaar
-                            </a>
-    					</li>
-                        <li class="animation 
-						
-            	{% if 
-            	    request['properties']['getuigenPartner1'] is defined and request['properties']['getuigenPartner1']|length >= 2
-            	    and 
-            	    request['properties']['getuigenPartner2'] is defined and request['properties']['getuigenPartner2']|length >= 2
-            	 %}	
-
-						completed"{% endif %}" data-animation="animation-bounce-in" data-delay="1600">             
-                        	<a href="{{ path('app_getuigen_index') }}">
-                            	<i class="fas fa-users  fa-3x"></i>
-                            <br/>Getuigen
-                            </a>
-    					</li>
-                        <li class="animation" data-animation="animation-bounce-in" data-delay="1800">             
-                        	<a href="{{ path('app_extra_index') }}">
-                        		<i class="fas fa-gift fa-3x"></i>
-                            <br/>Extras       
-                            </a>
-    					</li>
-    					<!-- 
-                        <li  class="animation {% if request.properties.melding is defined and request.properties.melding is defined  %}completed{% endif %}">      
-                        	<a href="{{ path('app_melding_index') }}"> 
-                            	<i class="fas fa-envelope fa-3x"></i>
-                            </a>
-                            <br/>Melding
-    					</li>-->
-                        <li  class="animation {% if request.properties.betaling is defined and request.properties.betaling is defined  %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="2000">      
-                        	<a href="{{ path('app_betalen_index') }}">
-                        		<i class="fas fa-cash-register fa-3x"></i>
-                            <br/>Betalen
-                            </a>
-    					</li>
-                        <li class="animation  {% if request.properties.aanvraag is defined   and request.properties.aanvraag is not empty %}completed"{% endif %}" data-animation="animation-bounce-in" data-delay="1200">             
-                        	<a href="{{ path('app_reservering_index') }}" >
-                        		<i class="fas fa-calendar-check fa-3x" ></i>
-                            <br/>Reserveren
-                            </a>
-    					</li>
-                        <li class="animation" data-animation="animation-bounce-in" data-delay="1400">      
-                        	<a href="{{ path('app_melding_index') }}"> 
-                            	<i class="fas fa-envelope fa-3x"></i>
-                            <br/>Melding
-                            </a>
+    					</li>                        
+                        {% endfor %} 
     					</li>
                     </ul>          
                 </div><!-- .col end -->  
-                {% elseif  
-                app.request.attributes.get("_route") != 'app_assent_index' and 
-                app.request.attributes.get("_route") != 'app_assent_reject' and  
-                app.request.attributes.get("_route") != 'app_assent_confirm' and
-                app.request.attributes.get("_route") != 'app_assent_processed' and 
-                app.request.attributes.get("_route") != 'app_assent_assent' and
-                (employeeContact is not defined or (employeeContact is defined and employeeContact is empty)) and
-                (user is not defined or (user is defined and user is empty)) %} 
+                {% elseif (user is not defined or (user is defined and user is empty)) %} 
             	<div class="col-md-12 text-center">     
-                    	<a href="http://digispoof.zaakonline.nl?responceUrl={{ absolute_url(path('app_home_login'))|replace({'https://': 'http://'}) }}" class="btn btn-login btn-lg"><span class="fas fa-sign-in-alt"></span> Log hier in om te beginnen</a>
+                    	<a href="http://digispoof.zaakonline.nl?responceUrl={{ absolute_url(path('app_default_login'))|replace({'https://': 'http://'}) }}" class="btn btn-login btn-lg"><span class="fas fa-sign-in-alt"></span> Log hier in om te beginnen</a>
                 </div><!-- .col end -->  
                 {% endif %}                   
             </div><!-- .row end -->                  

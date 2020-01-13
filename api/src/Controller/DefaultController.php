@@ -19,7 +19,7 @@ use App\Service\RequestTypeService;
 use App\Service\ContactService;
 use App\Service\AssentService;
 
-use App\Service\CommongroundService;
+use App\Service\CommonGroundService;
 
 /**
  */
@@ -326,7 +326,7 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/assent/{id}")
 	 */
-	public function assentLoginAction(Session $session, Request $httpRequest, $id, RequestService $requestService, CommongroundService $commongroundService, BRPService $brpService, AssentService $assentService)
+	public function assentLoginAction(Session $session, Request $httpRequest, $id, RequestService $requestService, CommonGroundService $commongroundService, BRPService $brpService, AssentService $assentService)
 	{
 		// Lets first see if we have a login
 		$bsn = $request->request->get('bsn');

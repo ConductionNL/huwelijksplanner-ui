@@ -285,6 +285,8 @@ class DefaultController extends AbstractController
 		$session->set('user',false);
 		$session->set('employee',false);
 		$session->set('contact',false);
+				
+		$this->addFlash('success', 'U bent uitgelogd');
 		
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"trouwen"]));
 	}

@@ -13,7 +13,7 @@
                     <ul>
                     
                         {% for stage in requestType.stages  %}  
-                        <li class="animation {% if stage.completed  is defined and stage.completed is not empty %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="200">                    
+                        <li class="animation {% if stage.completed  is defined and stage.completed is not empty %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="{{ loop.index*200 }}">                    
                         	<a href="{{ stage.slug }}">
                         		<i class="{{ stage.icon }} fa-3x "></i>
                             <br/>{{ stage.name|capitalize }}

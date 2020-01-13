@@ -69,7 +69,7 @@ class DefaultController extends AbstractController
 		
 		// Okey we don't have ay requests so lets start a marige request
 		$request= [];
-		$request['requestType']='http://vtc.zaakonline.nl/request_types/'.$requestType['id'];
+		$request['request_type']='http://vtc.zaakonline.nl/request_types/'.$requestType['id'];
 		$request['target_organization']='002220647';
 		$request['submitter']=$user['burgerservicenummer'];
 		$request['status']='incomplete';
@@ -78,7 +78,7 @@ class DefaultController extends AbstractController
 		$request = $requestService->createRequest($request);		
 		
 		$requestType = $requestService->checkRequestType($request, $requestType);
-		$session->set('request_type', $requestType);
+		$session->set('requestType', $requestType);
 		
 		$contact = [];
 		$contact['givenName']= $user['naam']['voornamen'];

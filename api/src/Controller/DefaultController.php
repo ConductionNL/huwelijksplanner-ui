@@ -70,7 +70,7 @@ class DefaultController extends AbstractController
 		// Okey we don't have ay requests so lets start a marige request
 		$request= [];
 		$request['requestType']='http://vtc.zaakonline.nl/request_types/'.$requestType['id'];
-		$request['targetOrganization']='002220647';
+		$request['target_organization']='002220647';
 		$request['submitter']=$user['burgerservicenummer'];
 		$request['status']='incomplete';
 		$request['properties']= [];
@@ -78,7 +78,7 @@ class DefaultController extends AbstractController
 		$request = $requestService->createRequest($request);		
 		
 		$requestType = $requestService->checkRequestType($request, $requestType);
-		$session->set('requestType', $requestType);
+		$session->set('request_type', $requestType);
 		
 		$contact = [];
 		$contact['givenName']= $user['naam']['voornamen'];
@@ -171,7 +171,7 @@ class DefaultController extends AbstractController
 		$session->set('request', $request);
 		
 		// Lets also set the request type
-		$requestType = $requestTypeService->getRequestType($request['requestType']);		
+		$requestType = $requestTypeService->getRequestType($request['request_type']);		
 		$requestType = $requestService->checkRequestType($request, $requestType);
 		
 		$session->set('requestType', $requestType);
@@ -727,7 +727,7 @@ class DefaultController extends AbstractController
 		$user = $session->get('user');
 		$product = $pdcService->getProduct($id);
 		
-		$variables = ["request"=>$request,"user"=>$user,"product"=>$product];
+		$variables = ["request"=>$request,"user"=>$user,"product"=>$product,"requestType"=>$requestType,];
 		
 		if($template = $sjabloonService->getOnSlug($slug)){
 			// We want to include the html in our own template

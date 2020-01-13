@@ -59,7 +59,7 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("request/new")
 	 */
-	public function newrequestAction(Session $session, RequestService $requestService, RequestTypeService $requestTypeService, ContactService $contactService, AssentService $assentService)
+	public function newrequestAction(Session $session, RequestService $requestService, RequestTypeService $requestTypeService, ContactService $contactService, AssentService $assentService, CommonGroundService $commonGroundService)
 	{
 		
 		$user = $session->get('user');
@@ -94,6 +94,12 @@ class DefaultController extends AbstractController
 		$assent['request'] = $request['id'];
 		$assent['status'] = 'granted';
 		
+		$order = [];
+		$order['name'] = 'Huwelijk of Partnerschap';
+		$order['description'] = 'Huwelijk of Partnerschap';
+		$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
+		$request['properties']['order'] = 'https://orc.zaakonline.nl'.$order['_links']['self']['href'];
+		
 		$assent = $assentService->createAssent($assent);
 		if(!array_key_exists('partners',$request['properties'])){
 			$request['properties']['partners'] = [];
@@ -103,9 +109,6 @@ class DefaultController extends AbstractController
 		$request = $requestService->updateRequest($request);
 		
 		$session->set('request', $request);
-		
-		
-		
 		
 		// If we have a starting position lets start there
 		if(array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
@@ -339,7 +342,7 @@ class DefaultController extends AbstractController
 			
 			$session->set('user', $persoon);
 			$assent = $assentService->getAssent($id);
-			$request = $commongroundService->get($assent['request']);
+			$request = $commongroundService->getResource($assent['request']);
 			$session->set('request', $request);
 			
 			// Lets also set the request type

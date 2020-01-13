@@ -16,8 +16,28 @@ class CommongroundRuntime implements RuntimeExtensionInterface
 		$this->commongroundService = $commongroundService;
 	}
 	
-	public function getFromCommonground($object)
+	public function getResource($resource)
 	{
-		return $this->commongroundService->get($object);
+		return $this->commongroundService->getResource($resource);
+	}
+	
+	public function getResourceList($query)
+	{
+		return $this->commongroundService->getResourceList($query);
+	}
+	
+	public function getComponentList()
+	{
+		return $this->commongroundService->getComponentList();
+	}
+	
+	public function getComponentHealth($component)
+	{
+		return $this->commongroundService->getComponentHealth($component);
+	}
+	
+	public function getComponentResources($component)
+	{
+		return $this->commongroundService->getComponentResources($component);
 	}
 }

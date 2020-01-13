@@ -140,12 +140,16 @@ class CommonGroundService
 			return false;
 		}
 		
+		var_dump(json_encode($resource));
+		
 		$response = $this->client->request('post',$url, [
 				'body' => json_encode($resource)
 			]
 		);
 		
 		$response = json_decode($response->getBody(), true);
+		
+		var_dump($response);
 		
 		// Lets cash this item for speed purposes
 		$item = $this->cash->getItem('commonground_'.md5 ($url.'/'.$response['id']));

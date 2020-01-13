@@ -95,8 +95,12 @@ class DefaultController extends AbstractController
 		$assent['status'] = 'granted';
 		
 		$order = [];
-		$order['name'] = 'Huwelijk of Partnerschap';
+		$order['name'] = 'Huwelijk of Partnerschap'; 
 		$order['description'] = 'Huwelijk of Partnerschap';
+		//$order['targetOrganization'] = $requestType['source_organization'];
+		$order['targetOrganization'] = '002220647';
+		$order['customer'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];		
+		
 		$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
 		$request['properties']['order'] = 'https://orc.zaakonline.nl'.$order['_links']['self']['href'];
 		
@@ -106,6 +110,7 @@ class DefaultController extends AbstractController
 		}
 		$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
 		
+		//$request['target_organization'] = $requestType['source_organization']; 
 		$request = $requestService->updateRequest($request);
 		
 		$session->set('request', $request);

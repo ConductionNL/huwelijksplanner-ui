@@ -30,6 +30,42 @@ class HuwelijkService
 		]);
 	}
 	
+	
+	public function requestToOrder($request)
+	{
+		$orderItems =[];
+		
+		foreach($request['properties'] as $property){
+			
+			// Is the property an array
+			if(is_array($property)){
+				
+				foreach($property as $item){
+					
+					if(strpos($item, 'https://pdc.zaakonline.nl/products/') !== false){
+						$object = $this->commonGroundService->getResource($property);
+						$orderItems[] = ["quantity"=>1,"product"=>$item,"name"=>$object['name'],"price"=>$object['price'],"curency"=>$object['curency']];
+					}
+				}
+			}
+			else{
+				
+				if(strpos($property, 'https://pdc.zaakonline.nl/products/') !== false){
+					$object = $this->commonGroundService->getResource($property);
+					$orderItems[] = ["quantity"=>1,"product"=>$property,"name"=>$object['name'],"price"=>$object['price'],"curency"=>$object['curency']];					
+				}
+			}	
+		}
+		
+	}
+	
+	public function orderToInvoice($order)
+	{
+		
+	}
+	
+	
+	/* @depracticed */
 	public function getAll()
 	{
 		$response = $this->client->request('GET');

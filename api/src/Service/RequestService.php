@@ -141,8 +141,11 @@ class RequestService
 			]
 		);
 		
+		
 		$response = json_decode($response->getBody(), true);
+				
 		return $response;
+		
 	}
 	
 	

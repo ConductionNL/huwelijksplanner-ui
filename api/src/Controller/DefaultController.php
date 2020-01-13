@@ -95,13 +95,13 @@ class DefaultController extends AbstractController
 		$assent['status'] = 'granted';
 		
 		//$order = [];
-		//$order['name'] = 'Huwelijk of Partnerschap'; 
-		//$order['description'] = 'Huwelijk of Partnerschap';
+		$order['name'] = 'Huwelijk of Partnerschap'; 
+		$order['description'] = 'Huwelijk of Partnerschap';
 		//$order['targetOrganization'] = $requestType['source_organization'];
-		//$order['targetOrganization'] = '002220647';
-		//$order['customer'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];		
+		$order['targetOrganization'] = '002220647';
+		$order['customer'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];		
 		
-		//$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
+		$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
 		//$request['properties']['order'] = 'https://orc.zaakonline.nl'.$order['_links']['self']['href'];
 		
 		$assent = $assentService->createAssent($assent);
@@ -133,40 +133,42 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("request/submit")
 	 */
-	public function submitrequestAction(Session $session, RequestService $requestService)
+	public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, RequestService $requestService)
 	{		
 		$request = $session->get('request');
-		$request['status'] = 'submited';
+		$request['status'] = 'submitted';
 		
-		if($request = $requestService->updateRequest($request)){
+		if($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/requests/".$request['id'])){
+		//if($request = $requestService->updateRequest($request)){
 			$session->set('request', $request);
 			
-			$this->addFlash('Uw verzoek is ingediend');
+			$this->addFlash('success', 'Uw verzoek is ingediend');
 		}
 		else{
-			$this->addFlash('Uw verzoek kon niet worden ingediend');
+			$this->addFlash('danger', 'Uw verzoek kon niet worden ingediend');
 		}
-		
-		return $this->redirect($this->generateUrl('app_default_view',["slug"=>"checklist"]));
+				
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"checklist"]));
 	}
 	
 	/**
 	 * @Route("request/cancel")
 	 */
-	public function cancelrequestAction(Session $session, RequestService $requestService)
+	public function cancelrequestAction(Session $session, CommonGroundService $commonGroundService, RequestService $requestService)
 	{		
 		$request = $session->get('request');
 		$request['status'] = 'cancelled';
 		
-		if($request = $requestService->updateRequest($request)){
+		if($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/request/".$request['id'])){
+		//if($request = $requestService->updateRequest($request)){
 			$session->set('request', $request);						
-			$this->addFlash('Uw verzoek is geanuleerd');
+			$this->addFlash('success', 'Uw verzoek is geanuleerd');
 		}
 		else{
-			$this->addFlash('Uw verzoek kon niet worden geanuleerd');
+			$this->addFlash('danger', 'Uw verzoek kon niet worden geanuleerd');
 		}
 		
-		return $this->redirect($this->generateUrl('app_default_view',["slug"=>"checklist"]));
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"checklist"]));
 	}
 	
 	/**
@@ -595,9 +597,9 @@ class DefaultController extends AbstractController
 		$request['properties'][$property["name"]] = $id;
 		
 		// hardcode overwrite for "gratis trouwen"
-		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/0cd41e70-2a20-4e82-a3ec-22ee9451b3b8"){
-			$request['properties']['locatie']="https://pdc.zaakonline.nl/products/5a0ad366-9f10-4002-adcb-bac47143b93b";
-			$request['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/9d7c1c5b-3e65-4429-90ec-16e7371f2360";
+		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/190c3611-010d-4b0e-a31c-60dadf4d1c62"){
+			$request['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
+			$request['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}
 		
 				

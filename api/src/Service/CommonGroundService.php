@@ -122,6 +122,7 @@ class CommonGroundService
 		
 		$response = json_decode($response->getBody(), true);
 		
+		
 		// Lets cash this item for speed purposes
 		$item = $this->cash->getItem('commonground_'.md5 ($url));
 		$item->set($response);
@@ -139,9 +140,7 @@ class CommonGroundService
 		if(!$url){
 			return false;
 		}
-		
-		var_dump(json_encode($resource));
-		
+				
 		$response = $this->client->request('post',$url, [
 				'body' => json_encode($resource)
 			]
@@ -149,7 +148,7 @@ class CommonGroundService
 		
 		$response = json_decode($response->getBody(), true);
 		
-		var_dump($response);
+		var_dump(json_encode($response));
 		
 		// Lets cash this item for speed purposes
 		$item = $this->cash->getItem('commonground_'.md5 ($url.'/'.$response['id']));

@@ -94,15 +94,15 @@ class DefaultController extends AbstractController
 		$assent['request'] = $request['id'];
 		$assent['status'] = 'granted';
 		
-		$order = [];
-		$order['name'] = 'Huwelijk of Partnerschap'; 
-		$order['description'] = 'Huwelijk of Partnerschap';
+		//$order = [];
+		//$order['name'] = 'Huwelijk of Partnerschap'; 
+		//$order['description'] = 'Huwelijk of Partnerschap';
 		//$order['targetOrganization'] = $requestType['source_organization'];
-		$order['targetOrganization'] = '002220647';
-		$order['customer'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];		
+		//$order['targetOrganization'] = '002220647';
+		//$order['customer'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];		
 		
-		$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
-		$request['properties']['order'] = 'https://orc.zaakonline.nl'.$order['_links']['self']['href'];
+		//$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
+		//$request['properties']['order'] = 'https://orc.zaakonline.nl'.$order['_links']['self']['href'];
 		
 		$assent = $assentService->createAssent($assent);
 		if(!array_key_exists('partners',$request['properties'])){

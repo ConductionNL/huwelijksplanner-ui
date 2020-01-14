@@ -12,11 +12,12 @@
           </div>
           {% if user is defined and user%}
           <div class="header-loginbar">
-          	<i class="fas fa-lock-alt"></i> Beste {{ user.naam.voornamen }} {{  user.naam.geslachtsnaam}} u bent ingelogd over een beveiligde verbinding, klik <a href="{{ path('app_home_logout') }}"> hier om uit te loggen</a>
+          	<i class="fas fa-lock-alt"></i> Beste {{ user.naam.voornamen }} {{  user.naam.geslachtsnaam}} u bent ingelogd over een beveiligde verbinding, klik <a href="{{ path('app_default_logout') }}"> hier om uit te loggen</a>
           </div>         
           {% elseif employeeContact is defined and employeeContact %} 
           <div class="header-loginbar">
-          	<i class="fas fa-lock-alt"></i> Beste {{ employeeContact.given_name }} {{ employeeContact.additional_name }} {{ employeeContact.family_name }} u bent ingelogd over een beveiligde verbinding, klik <a href="{{ path('app_home_logout') }}"> hier om uit te loggen</a>
-          {% endif %}            
+          	<i class="fas fa-lock-alt"></i> Beste {{ employeeContact.given_name }} {{ employeeContact.additional_name }} {{ employeeContact.family_name }} u bent ingelogd over een beveiligde verbinding, klik <a href="{{ path('app_default_logout') }}"> hier om uit te loggen</a>
+          </div>
+          {% endif %} 
         </div>        
       </div>

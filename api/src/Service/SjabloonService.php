@@ -4,103 +4,48 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 use GuzzleHttp\Client ;
 use GuzzleHttp\RequestOptions;
 
 class SjabloonService
 {
 	private $params;
+	private $cache;
 	private $client;
 	private $session;
 	
-	public function __construct(ParameterBagInterface $params, SessionInterface $session)
+	public function __construct(ParameterBagInterface $params, SessionInterface $session, CacheInterface $cache)
 	{
 		$this->params = $params;
 		$this->session = $session;
+		$this->cash = $cache;
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
-				'base_uri' => 'http://resources.demo.zaakonline.nl/',
+				'base_uri' => 'https://wrc.zaakonline.nl/applications/536bfb73-63a5-4719-b535-d835607b88b2/',
 				// You can set any number of default request options.
 				'timeout'  => 4000.0,
 		]);
 	}	
 	
-	public function getAll()
+	public function getOnSlug($slug, $force = false)
 	{
-		$response = $this->client->request('GET');
-		$response = json_decode($response->getBody()->getContents(), true);
-		return $response["hydra:member"];
-	}
-	
-	public function getPaginas()
-	{
-		$response =  $this->client->request('GET', '/sjablonen', [
-				'query' => ['type' => 'pagina']
-		]);
+		$item = $this->cash->getItem('sjabloon_'.$slug);
 		
-		$response = json_decode($response->getBody()->getContents(), true);
-		
-		return $response["hydra:member"];
-	}
-	
-	public function getBerichten()
-	{
-		$response =  $this->client->request('GET', '/sjablonen', [
-				'query' => ['type' => 'bericht']
-		]);
-		
-		$response = json_decode($response->getBody()->getContents(), true);
-		return $response["hydra:member"];
-	}
-	
-	public function getSlug($slug)
-	{
-		
-		$response =  $this->client->request('GET', '/sjablonen', [
-				'query' => ['slug' => $slug]
-		]);
-		
-		$response = json_decode($response->getBody()->getContents(), true);
-		return $response["hydra:member"];
-	}
-	
-	public function getOne($id)
-	{
-		$response = $this->client->request('GET','/sjablonen/'.$id);
-		$response = json_decode($response->getBody()->getContents(), true);
-		return $response;
-	}
-	
-	public function render($id, $variabelen)
-	{
-		$response = $this->client->post('/sjablonen/'.$id.'/render', [
-				\GuzzleHttp\RequestOptions::JSON => $variabelen
-		]);
-		$response = json_decode($response->getBody()->getContents(), true);
-		return $response;
-	}
-	
-	
-	public function save($sjabloon)
-	{
-		unset($sjabloon['bericht']);
-		unset($sjabloon['pagina']);
-		
-		if($sjabloon['id']){
-			$response = $this->client->put('sjablonen/'.$sjabloon['id'], [
-					\GuzzleHttp\RequestOptions::JSON => $sjabloon
-			]);
-		}
-		else{
-			unset($sjabloon['id']);
-			$response = $this->client->post('sjablonen', [
-					\GuzzleHttp\RequestOptions::JSON => $sjabloon
-			]);
+		if ($item->isHit() && !$force) {
+			//return $item->get();
 		}
 		
-		//$response=  $this->client->send($request);
+		$response =  $this->client->request('GET', $slug);
+		
 		$response = json_decode($response->getBody()->getContents(), true);
+		$response = $response["template"];
+		
+		$item->set($response);
+		$item->expiresAt(new \DateTime('tomorrow'));
+		$this->cash->save($item);
+		
 		return $response;
 	}
 	

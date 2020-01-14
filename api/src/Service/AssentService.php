@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use GuzzleHttp\Client;
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 
 use App\Service\BRPService;
 use App\Service\ContactService; 
@@ -11,19 +12,21 @@ use App\Service\ContactService;
 class AssentService
 {
 	private $params;
+	private $cache;
 	private $brpService;
 	private $contactService;
 	private $client;
 	
-	public function __construct(ParameterBagInterface $params, BRPService $brpService, ContactService $contactService)
+	public function __construct(ParameterBagInterface $params, BRPService $brpService, ContactService $contactService, CacheInterface $cache)
 	{
 		$this->params = $params;
+		$this->cash = $cache;
 		$this->brpService= $brpService;
 		$this->contactService= $contactService;
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
-				'base_uri' => 'http://irc.zaakonline.nl',
+				'base_uri' => 'https://irc.zaakonline.nl',
 				// You can set any number of default request options.
 				'timeout'  => 4000.0,
 				'body' => 'raw data',
@@ -31,8 +34,13 @@ class AssentService
 	}
 	
 	
-	public function getAssent($id)
+	public function getAssent($id, $force = false)
 	{
+		$item = $this->cash->getItem('assent'.$id);
+		if ($item->isHit() && !$force) {
+			return $item->get();
+		}	
+		
 	    $response = $this->client->request('GET','/assents/'.$id, [
 	        'headers' => [
 	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
@@ -40,10 +48,12 @@ class AssentService
 	    ]
 	        );
 	    
-	    $response = json_decode($response->getBody(), true);
+	    $response = json_decode($response->getBody(), true);	    	    
 	    
-	    if($response['contact']){$response['contactObject'] = $this->contactService->getContactOnUri($response['contact']);}
-	    if($response['person']){$response['personObject'] = $this->brpService->getPersonOnBsn($response['person']);}
+	    $item->set($response);
+	    $item->expiresAt(new \DateTime('tomorrow'));
+	    $this->cash->save($item);
+	    
 	    return $response;
 	}
 	

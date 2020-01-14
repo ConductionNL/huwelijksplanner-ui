@@ -4,15 +4,18 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use GuzzleHttp\Client;
+use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 
 class RequestTypeService
 {
 	private $params;
+	private $cache;
 	private $client;
 	
-	public function __construct(ParameterBagInterface $params)
+	public function __construct(ParameterBagInterface $params, CacheInterface $cache)
 	{
 		$this->params = $params;
+		$this->cash = $cache;
 		
 		$this->client= new Client([
 				// Base URI is used with relative requests
@@ -25,7 +28,7 @@ class RequestTypeService
 	
 	public function getRequestTypes($query)
 	{
-	    $response = $this->client->request('GET','/requests_types', [
+	    $response = $this->client->request('GET','/request_types', [
 	        'headers' => [
 	            //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
 	        ]
@@ -36,16 +39,32 @@ class RequestTypeService
 	    return $response['_embedded']['item'];
 	}
 	
-	public function getRequestType($id)
+	public function getRequestType($id, $force = false)
 	{
-		$response = $this->client->request('GET','/requests_types/'.$id, [
-				'headers' => [
-						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-				]
-		]
-				);
+		// In the case of linked data we might get an full url instead of just an id
+		if(filter_var($id, FILTER_VALIDATE_URL)){
+			$id = basename($id);
+		}
 		
-		$response = json_decode($response->getBody(), true);
+		
+		$item = $this->cash->getItem('requesttype_'.$id);
+		if ($item->isHit() && !$force) {
+			return $item->get();
+		}		
+		
+		$response = $this->client->request('GET','/request_types/'.$id, [
+				'headers' => [
+					'Accept' => 'application/json'
+				]
+			]
+		);
+		
+		$response = json_decode($response->getBody(), true);		
+		
+		$item->set($response);
+		$item->expiresAt(new \DateTime('tomorrow'));
+		$this->cash->save($item);
+		
 		return $response;
 	}
 	
@@ -65,7 +84,7 @@ class RequestTypeService
 	
 	public function createRequestType($request)
 	{
-		$response = $this->client->request('POST','/requests_types', [
+		$response = $this->client->request('POST','/request_types', [
 				'json' => $request,
 				'headers' => [
 						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
@@ -80,7 +99,7 @@ class RequestTypeService
 	
 	public function updateRequestType($request)
 	{
-		$response = $this->client->request('PUT','/requests_types/'.$request['id'], [
+		$response = $this->client->request('PUT','/request_types/'.$request['id'], [
 				'json' => $request,
 				'headers' => [
 						//'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'

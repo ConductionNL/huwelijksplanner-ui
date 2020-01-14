@@ -555,8 +555,8 @@ class DefaultController extends AbstractController
 		
 		/* @todo onderstaande gaat een fout gooien als getuigen worden uitgenodigd voordat het huwelijkstype isgeselecteer (ja dat kan) */
 		$assent = [];
-		$assent['name'] = 'Instemming als '.$role.' bij '.$request["properties"]["type"];
-		$assent['description'] = 'U bent uitgenodigd als '.$role.' voor het '.$request["properties"]["type"].' van A en B';
+		$assent['name'] = 'Instemming als '.$property.' bij '.$request["properties"]["type"];
+		$assent['description'] = 'U bent uitgenodigd als '.$property.' voor het '.$request["properties"]["type"].' van A en B';
 		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
 		$assent['requester'] = $requestType['source_organization'];
 		$assent['request'] = $request['id'];
@@ -570,21 +570,24 @@ class DefaultController extends AbstractController
 		
 		foreach ($arrIt as $sub) {
 			$subArray = $arrIt->getSubIterator();
-			if ($subArray['slug'] === $slug) {
-				$property = iterator_to_array($subArray);
+			if ($subArray['slug'] === $property) {
+				$stage = iterator_to_array($subArray);
 				break;
 			}
-		}
+		}		
+		
+		var_dump($property);
+		var_dump($requestType['stages']);
 		
 		// Lets see if an array already exisits for this property
-		if(!array_key_exists($property["name"], $request['properties'])){
-			$request['properties'][$property["name"]] = [];
+		if(!array_key_exists($stage["name"], $request['properties'])){
+			$request['properties'][$stage["name"]] = [];
 		}
 		
-		$request['properties'][$property["name"]][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
+		$request['properties'][$stage["name"]][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
 		
 		if($request = $requestService->updateRequest($request)){
-			$request["current_stage"] = $property["next"];
+			$request["current_stage"] = $stage["next"];
 			$request = $requestService->updateRequest($request);
 			$session->set('request', $request);
 			
@@ -592,11 +595,11 @@ class DefaultController extends AbstractController
 			$session->set('requestType', $requestType);
 			
 			
-			$this->addFlash('success', ucfirst($slug).' is ingesteld');
+			$this->addFlash('success', ucfirst($property).' is ingesteld');
 			$slug = $property["next"];
 		}
 		else{
-			$this->addFlash('danger', ucfirst($slug).' kon niet worden ingesteld');
+			$this->addFlash('danger', ucfirst($property).' kon niet worden ingesteld');
 		}
 		
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$request["current_stage"]]));

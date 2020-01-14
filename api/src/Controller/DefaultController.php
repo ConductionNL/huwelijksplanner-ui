@@ -463,7 +463,6 @@ class DefaultController extends AbstractController
 		$products = [];
 		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
 		
-		// var_dump($request);
 		
 		switch ($slug) {
 			case null :
@@ -580,8 +579,6 @@ class DefaultController extends AbstractController
 			}
 		}		
 		
-		var_dump($property);
-		var_dump($requestType['stages']);
 		
 		// Lets see if an array already exisits for this property
 		if(!array_key_exists($stage["name"], $request['properties'])){
@@ -734,7 +731,6 @@ class DefaultController extends AbstractController
 		/* @todo we should turn this into symfony form */
 		if ($httprequest->isMethod('POST') && $httprequest->request->get('datum')) {
 			
-			//var_dump($request->request->get('datum'));
 			
 			$dateArray = (explode(" ", $httprequest->request->get('datum')));
 			$date = strtotime($dateArray[1].' '.$dateArray[2].' '.$dateArray[3]);

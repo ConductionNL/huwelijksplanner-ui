@@ -121,8 +121,7 @@ class CommonGroundService
 		);
 		
 		$response = json_decode($response->getBody(), true);
-		
-		
+				
 		// Lets cash this item for speed purposes
 		$item = $this->cash->getItem('commonground_'.md5 ($url));
 		$item->set($response);

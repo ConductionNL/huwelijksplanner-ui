@@ -94,21 +94,24 @@ class DefaultController extends AbstractController
 		$assent['request'] = $request['id'];
 		$assent['status'] = 'granted';
 		
-		//$order = [];
-		$order['name'] = 'Huwelijk of Partnerschap'; 
-		$order['description'] = 'Huwelijk of Partnerschap';
-		//$order['targetOrganization'] = $requestType['source_organization'];
-		$order['targetOrganization'] = '002220647';
-		$order['customer'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];		
-		
-		$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
 		//$request['properties']['order'] = 'https://orc.zaakonline.nl'.$order['_links']['self']['href'];
 		
 		$assent = $assentService->createAssent($assent);
 		if(!array_key_exists('partners',$request['properties'])){
 			$request['properties']['partners'] = [];
 		}
-		$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
+		$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];	
+		
+		
+		//$order = [];
+		$order['name'] = 'Huwelijk of Partnerschap';
+		$order['description'] = 'Huwelijk of Partnerschap';
+		//$order['targetOrganization'] = $requestType['source_organization'];
+		$order['targetOrganization'] = '002220647';
+		$order['customer'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];		
+		
+		$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
+		$request['properties']['order']= 'https://orc.zaakonline.nl/orders'.$order['_links']['self']['href'];	
 		
 		//$request['target_organization'] = $requestType['source_organization']; 
 		$request = $requestService->updateRequest($request);
@@ -202,13 +205,13 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/login")
 	 */
-	public function loginAction(Session $session, Request $request, BRPService $brpService, RequestService $requestService, RequestTypeService $requestTypeService, ContactService $contactService, AssentService $assentService)
+	public function loginAction(Session $session, Request $httpRequest, BRPService $brpService, RequestService $requestService, RequestTypeService $requestTypeService, ContactService $contactService, AssentService $assentService)
 	{
 		$start = "ceremonies";
 		
-		$bsn = $request->request->get('bsn');
+		$bsn = $httpRequest->request->get('bsn');
 		if(!$bsn){
-			$bsn =  $request->query->get('bsn');
+			$bsn =  $httpRequest->query->get('bsn');
 		}
 		if(!$bsn){
 			// No login suplied so redirect to digispoof
@@ -302,19 +305,24 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/assent/add/{property}")
 	 */
-	public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService, ContactService $contactService, AssentService $assentService)
+	public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService, ContactService $contactService, AssentService $assentService, CommonGroundService $commonGroundService)
 	{
+		$requestType = $session->get('requestType');
+		$request = $session->get('request');
+		$user = $session->get('user');
+		
 		// First we need to make an new assent
 		$assent = [];
-		$assent['name'] = 'Instemming huwelijk partnerschp';
-		$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-		$assent['requester'] = $requestType['source_organization'];
-		$assent['person'] = $persoon['burgerservicenummer'];
-		$assent['request'] = $request['id'];
+		$assent['name'] = 'Instemming huwelijk of partnerschap';
+		$assent['description'] = 'U is gevraagd of u wilt instemmen met een huwelijk of partnerschaps';
+		//$assent['requester'] = (string) $requestType['sourceOrganization'];
+		//$assent['request'] = $request['id'];
+		$assent['request'] = 'http://vrc.zaakonline.nl'.$request['_links']['self']['href'];
 		$assent['status'] = 'granted';
-		$assent['requester'] = $persoon['burgerservicenummer'];
+		$assent['requester'] = $user['burgerservicenummer'];
 		
-		$assent= $assentService->createAssent($assent);
+		//$assent= $assentService->createAssent($assent);
+		$assent = $commonGroundService->createResource($assent, "https://irc.zaakonline.nl/assents");
 		if(!array_key_exists($property ,$request['properties'])){
 			$request['properties'][$property] = [];
 		}
@@ -323,44 +331,68 @@ class DefaultController extends AbstractController
 		$request = $requestService->updateRequest($request);
 		
 		$session->set('requestType',false);
-		$session->set('request',false);		
+		$session->set('request',false);
+		$session->set('user',false);		
 		
-		return $this->redirect($this->generateUrl('app_default_assentLogin',["id"=>$assent["id"]]));
+		return $this->redirect($this->generateUrl('app_default_assentlogin',["id"=>$assent["id"]]));
 	}
 	
 	/**
 	 * @Route("/assent/{id}")
 	 */
-	public function assentLoginAction(Session $session, Request $httpRequest, $id, RequestService $requestService, CommonGroundService $commongroundService, BRPService $brpService, AssentService $assentService)
+	public function assentLoginAction(Session $session, Request $httpRequest, $id, RequestService $requestService, RequestTypeService $requestTypeService, CommonGroundService $commonGroundService, BRPService $brpService, AssentService $assentService, ContactService $contactService, SjabloonService $sjabloonService)
 	{
+		//
+		$user = $session->get('user');
 		// Lets first see if we have a login
-		$bsn = $request->request->get('bsn');
+		$bsn = $httpRequest->request->get('bsn');
 		if(!$bsn){
-			$bsn =  $request->query->get('bsn');
+			$bsn =  $httpRequest->query->get('bsn');
 		}
-		if(!$bsn){ 
+		if(!$bsn && !$user){ 
 			// No login suplied so redirect to digispoof
-			return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath()));
+			//return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath())); 
+			return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.$httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath().$this->generateUrl('app_default_assentlogin',["id"=>$id]));
 		}
 			
-		if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
+		if($bsn && ($persoon = $brpService->getPersonOnBsn($bsn) || $user)){
 			
-			$session->set('user', $persoon);
 			$assent = $assentService->getAssent($id);
-			$request = $commongroundService->getResource($assent['request']);
+			$request = $commonGroundService->getResource($assent['request']);
 			$session->set('request', $request);
-			
 			// Lets also set the request type
-			$requestType = $requestTypeService->getRequestType($request['requestType']);
+			$requestType = $requestTypeService->getRequestType($request['request_type']);
 			$requestType = $requestService->checkRequestType($request, $requestType);
 			
 			$session->set('requestType', $requestType);
 			
-			$this->addFlash('success', 'Welkom '.$persoon['naam']['voornamen']);
+			// If user is loged in
+			if($user){
+				$persoon = $user;
+			}
+			// If user is not loged in
+			else{			
+				
+				$contact = [];
+				$contact['givenName']= $persoon['naam']['voornamen'];
+				$contact['familyName']= $persoon['naam']['geslachtsnaam'];
+				$contact= $contactService->createContact($contact);
+				
+				$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+				$assent['person'] = $persoon['burgerservicenummer'];
+				
+				$assent =  $assentService->updateAssent($assent);
+				
+				$session->set('user', $persoon);
+			}
+				
+			
+			
+			$this->addFlash('success', 'Welkom '.$persoon['naam']['voornamen']);			
 			
 			
 			$products = [];
-			$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products,"assent"=>$assent];
+			$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$persoon,"products"=>$products,"assent"=>$assent];
 			
 			$template = $sjabloonService->getOnSlug('assent');
 			
@@ -384,7 +416,29 @@ class DefaultController extends AbstractController
 		// If nothing sticks we redirect the user to the home page
 		return $this->redirect($this->generateUrl('app_default_index'));
 	}
+	
+	/**
+	 * @Route("/assent/{id}/{status}")
+	 */
+	public function assentStatusAction(Session $session, Request $httpRequest, $id, $status, RequestService $requestService, RequestTypeService $requestTypeService, CommonGroundService $commonGroundService, BRPService $brpService, AssentService $assentService, ContactService $contactService, SjabloonService $sjabloonService)
+	{
+		$request = $session->get('request');
+		$requestType = $session->get('requestType');
+		$user = $session->get('user');
 		
+		$assent = $assentService->getAssent($id);
+		$assent['status'] = $status;
+		
+		if($$assentService->updateAssent($assent)){
+			$this->addFlash('success', 'Uw instemmings status is bijgewerkt naar '.$status);				
+		}
+		else{			
+			$this->addFlash('danger', 'Uw instemmings status kon niet worden bijgewerkt');
+		}
+		
+		return $this->redirect($this->generateUrl('app_default_assentlogin',["id"=>$assent["id"]]));		
+	}
+	
 	/**
 	 * @Route("/data")
 	 */

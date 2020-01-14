@@ -385,13 +385,13 @@ class DefaultController extends AbstractController
 		if(!$assent['contact'] && $user){
 			
 			$contact = [];
-			$contact['givenName']= $persoon['naam']['voornamen'];
-			$contact['familyName']= $persoon['naam']['geslachtsnaam'];
+			$contact['givenName']= $user['naam']['voornamen'];
+			$contact['familyName']= $user['naam']['geslachtsnaam'];
 			
 			$contact= $contactService->createContact($contact);
 			
 			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
-			$assent['person'] = $persoon['burgerservicenummer'];
+			$assent['person'] = $user['burgerservicenummer'];
 			
 			$assent =  $assentService->updateAssent($assent);					
 		}
@@ -399,7 +399,7 @@ class DefaultController extends AbstractController
 		// Let render stuff			
 		
 		$products = [];
-		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$persoon,"products"=>$products,"assent"=>$assent];
+		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products,"assent"=>$assent];
 			
 		$template = $sjabloonService->getOnSlug('assent');
 			
@@ -429,7 +429,7 @@ class DefaultController extends AbstractController
 		$assent = $assentService->getAssent($id);
 		$assent['status'] = $status;
 		
-		if($$assentService->updateAssent($assent)){
+		if($assentService->updateAssent($assent)){
 			$this->addFlash('success', 'Uw instemmings status is bijgewerkt naar '.$status);				
 		}
 		else{			

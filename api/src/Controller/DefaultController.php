@@ -516,8 +516,10 @@ class DefaultController extends AbstractController
 		
 		$assent  = $assentService->getAssent($id);
 		$contact = $commonGroundService->getResource($assent['contact']);
-		$contact['givenName']= $httpRequest->request->get('givenName');
-		$contact['familyName']= $httpRequest->request->get('familyName');
+		
+		if($httpRequest->request->get('givenName')){$contact['givenName']= $httpRequest->request->get('givenName');}
+		if($httpRequest->request->get('familyName')){$contact['familyName']= $httpRequest->request->get('familyName');}		
+		
 		$contact['emails'][0]=["name"=>"primary","email"=> $httpRequest->request->get('email')];
 		$contact['telephones'][0]=["name"=>"primary","telephone"=> $httpRequest->request->get('telephone')];
 		
@@ -672,6 +674,11 @@ class DefaultController extends AbstractController
 		
 		// hardcode overwrite for "gratis trouwen"
 		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/190c3611-010d-4b0e-a31c-60dadf4d1c62"){
+			$request['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
+			$request['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
+		}
+		// hardcode overwrite for "eenvoudig trouwen"
+		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/16353702-4614-42ff-92af-7dd11c8eef9f"){
 			$request['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
 			$request['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}

@@ -39,6 +39,7 @@ class DefaultController extends AbstractController
 
             $template = $this->get('twig')->createTemplate($html);
             $template = $template->render($variables);
+        }
 
 		// If user is not loged in
 		if(!$assent['contact'] && $user){
@@ -72,9 +73,9 @@ class DefaultController extends AbstractController
 			$template,
 			Response::HTTP_OK,
 			['content-type' => 'text/html']
-		);
-		
+		);		
 	}
+	
 	
 	/**
 	 * @Route("/assent/{id}/{status}")

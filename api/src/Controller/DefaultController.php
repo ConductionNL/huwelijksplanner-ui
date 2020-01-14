@@ -543,7 +543,7 @@ class DefaultController extends AbstractController
 		$request = $session->get('request');
 		$user = $session->get('user');
 		
-		if(!in_array("type", $request["properties"])){
+		if($request && !in_array("type", $request["properties"])){
 			$request["properties"]["type"] = "huwelijk/partnerschap";
 		}
 		

@@ -31,7 +31,7 @@ class CommonGroundService
 				// To work with NLX we need a couple of default headers
 				'headers' => [
 						'Accept'  => 'application/hal+json',
-						'Content-Type'  => 'application/vnd.api+json',
+						'Content-Type'  => 'application/json',
 						//'X-NLX-Request-User-Id' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'				// the id of the user performing the request
 						//'X-NLX-Request-Application-Id' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn' 		// the id of the application performing the request
 						//'X-NLX-Request-Subject-Identifier' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn' 	// an subject identifier for purpose registration (doelbinding)
@@ -115,7 +115,7 @@ class CommonGroundService
 		unset($resource['_links']);
 		unset($resource['_embedded']);
 		
-		$response = $this->client->request('PATCH',$url, [
+		$response = $this->client->request('PUT',$url, [
 				'body' => json_encode($resource)
 			]
 		);
@@ -141,7 +141,7 @@ class CommonGroundService
 			return false;
 		}
 				
-		$response = $this->client->request('post',$url, [
+		$response = $this->client->request('POST',$url, [
 				'body' => json_encode($resource)
 			]
 		);

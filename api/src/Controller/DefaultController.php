@@ -543,6 +543,10 @@ class DefaultController extends AbstractController
 		$request = $session->get('request');
 		$user = $session->get('user');
 		
+		if(!in_array("type", $request["properties"])){
+			$request["properties"]["type"] = "huwelijk/partnerschap";
+		}
+		
 		// First we need to create an assent
 		$contact = [];
 		$contact['givenName']= $httpRequest->request->get('givenName');

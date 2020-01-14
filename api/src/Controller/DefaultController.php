@@ -318,7 +318,7 @@ class DefaultController extends AbstractController
 		//$assent['requester'] = (string) $requestType['sourceOrganization'];
 		//$assent['request'] = $request['id'];
 		$assent['request'] = 'http://vrc.zaakonline.nl'.$request['_links']['self']['href'];
-		$assent['status'] = 'granted';
+		$assent['status'] = 'requested';
 		$assent['requester'] = $user['burgerservicenummer'];
 		
 		//$assent= $assentService->createAssent($assent);
@@ -342,8 +342,9 @@ class DefaultController extends AbstractController
 	 */
 	public function assentLoginAction(Session $session, Request $httpRequest, $id, RequestService $requestService, RequestTypeService $requestTypeService, CommonGroundService $commonGroundService, BRPService $brpService, AssentService $assentService, ContactService $contactService, SjabloonService $sjabloonService)
 	{
-		//
+		// We might have a returning user
 		$user = $session->get('user');
+		
 		// Lets first see if we have a login
 		$bsn = $httpRequest->request->get('bsn');
 		if(!$bsn){
@@ -354,67 +355,66 @@ class DefaultController extends AbstractController
 			//return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath())); 
 			return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.$httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath().$this->generateUrl('app_default_assentlogin',["id"=>$id]));
 		}
-			
-		if($bsn && ($persoon = $brpService->getPersonOnBsn($bsn) || $user)){
-			
-			$assent = $assentService->getAssent($id);
-			$request = $commonGroundService->getResource($assent['request']);
-			$session->set('request', $request);
-			// Lets also set the request type
-			$requestType = $requestTypeService->getRequestType($request['request_type']);
-			$requestType = $requestService->checkRequestType($request, $requestType);
-			
-			$session->set('requestType', $requestType);
-			
-			// If user is loged in
-			if($user){
-				$persoon = $user;
-			}
-			// If user is not loged in
-			else{			
-				
-				$contact = [];
-				$contact['givenName']= $persoon['naam']['voornamen'];
-				$contact['familyName']= $persoon['naam']['geslachtsnaam'];
-				$contact= $contactService->createContact($contact);
-				
-				$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
-				$assent['person'] = $persoon['burgerservicenummer'];
-				
-				$assent =  $assentService->updateAssent($assent);
-				
-				$session->set('user', $persoon);
-			}
-				
+		
+		
+		// if we have a login, lets do a login
+		if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
+			$session->set('user', $persoon);
+			$user = $session->get('user');	
 			
 			
-			$this->addFlash('success', 'Welkom '.$persoon['naam']['voornamen']);			
-			
-			
-			$products = [];
-			$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$persoon,"products"=>$products,"assent"=>$assent];
-			
-			$template = $sjabloonService->getOnSlug('assent');
-			
-			// We want to include the html in our own template
-			$html = $template['content'];
-			
-			$template = $this->get('twig')->createTemplate($html);
-			$template = $template->render($variables);
-			
-			return $response = new Response(
-				$template,
-				Response::HTTP_OK,
-				['content-type' => 'text/html']
-			);
-				
+			$this->addFlash('success', 'Welkom '.$persoon['naam']['voornamen']);
 		}
-		else{
+			
+		// If we do not have a user at this point we need to error
+		if(!$user){			
 			$this->addFlash('danger', 'U kon helaas niet worden ingelogd');
+			return $this->redirect($this->generateUrl('app_default_index'));			
 		}
 		
-		// If nothing sticks we redirect the user to the home page
-		return $this->redirect($this->generateUrl('app_default_index'));
+		$assent = $assentService->getAssent($id);
+		$request = $commonGroundService->getResource($assent['request']);
+		$session->set('request', $request);
+		
+		// Lets also set the request type
+		$requestType = $requestTypeService->getRequestType($request['request_type']);
+		$requestType = $requestService->checkRequestType($request, $requestType);
+		$session->set('requestType', $requestType);			
+
+		// If user is not loged in
+		if(!$assent['contact'] && $user){
+			
+			$contact = [];
+			$contact['givenName']= $persoon['naam']['voornamen'];
+			$contact['familyName']= $persoon['naam']['geslachtsnaam'];
+			
+			$contact= $contactService->createContact($contact);
+			
+			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+			$assent['person'] = $persoon['burgerservicenummer'];
+			
+			$assent =  $assentService->updateAssent($assent);					
+		}
+		
+		// Let render stuff			
+		
+		$products = [];
+		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$persoon,"products"=>$products,"assent"=>$assent];
+			
+		$template = $sjabloonService->getOnSlug('assent');
+			
+		// We want to include the html in our own template
+		$html = $template['content'];
+			
+		$template = $this->get('twig')->createTemplate($html);
+		$template = $template->render($variables);
+			
+		return $response = new Response(
+			$template,
+			Response::HTTP_OK,
+			['content-type' => 'text/html']
+		);
+		
 	}
 	
 	/**

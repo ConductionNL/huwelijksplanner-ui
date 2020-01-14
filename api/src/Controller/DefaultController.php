@@ -697,8 +697,7 @@ class DefaultController extends AbstractController
 			
 			// Lets find the stage that we are add
 			$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-			
-			
+						
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			$slug = $property["next"];
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
@@ -755,6 +754,14 @@ class DefaultController extends AbstractController
 			
 			// Lets find the stage that we are add
 			$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+			
+			foreach ($arrIt as $sub) {
+				$subArray = $arrIt->getSubIterator();
+				if ($subArray['slug'] === $slug) {
+					$property = iterator_to_array($subArray);
+					break;
+				}
+			}
 			
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');

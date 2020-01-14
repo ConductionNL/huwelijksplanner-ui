@@ -505,24 +505,45 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{slug}/assent/{role}")
+	 * @Route("/update/assent/{id}", methods={"POST"})
 	 */
-	public function assentAction(Session $session, Request $httpRequest, $slug, $role, RequestService $requestService, ContactService $contactService, AssentService $assentService)
+	public function updateAssentAction(Session $session, Request $httpRequest, $id, RequestService $requestService, ContactService $contactService, AssentService $assentService, CommonGroundService $commonGroundService)
+	{		
+		$requestType = $session->get('requestType');
+		$request = $session->get('request');
+		$user = $session->get('user');
+		
+		$assent  = $assentService->getAssent($id);
+		$contact = $commonGroundService->getResource($assent['contact']);
+		$contact['givenName']= $httpRequest->request->get('givenName');
+		$contact['familyName']= $httpRequest->request->get('familyName');
+		$contact['emails'][0]=["name"=>"primary","email"=> $httpRequest->request->get('email')];
+		$contact['telephones'][0]=["name"=>"primary","telephone"=> $httpRequest->request->get('telephone')];	
+		
+		if($contact = $commonGroundService->updateResource($contact, $assent['contact'])){
+			$this->addFlash('success', $contact['name'].' is bijgewerkt');			
+		}
+		else{
+			$this->addFlash('danger', $contact['name'].' kon niet worden bijgewerkt');			
+		}				
+		
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$request["current_stage"]]));
+	}
+	
+	/**
+	 * @Route("/create/assent/{property}", methods={"POST"})
+	 */
+	public function createAssentAction(Session $session, Request $httpRequest, $property, RequestService $requestService, ContactService $contactService, AssentService $assentService, CommonGroundService $commonGroundService)
 	{
 		
 		$requestType = $session->get('requestType');
 		$request = $session->get('request');
 		$user = $session->get('user');
-		
-		
-		if (!$httpRequest->isMethod('POST')) {
-			return false;
-		}
-		
+					
 		// First we need to create an assent	
 		$contact = [];
-		$contact['givenName']= $httpRequest->request->get('givenName');;
-		$contact['familyName']= $httpRequest->request->get('familyName');;
+		$contact['givenName']= $httpRequest->request->get('givenName');
+		$contact['familyName']= $httpRequest->request->get('familyName');
 		$contact['emails']=[];
 		$contact['emails'][]=["name"=>"primary","email"=> $httpRequest->request->get('email')];
 		$contact['telephones']=[];
@@ -570,12 +591,12 @@ class DefaultController extends AbstractController
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			$slug = $property["next"];
-			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
 			$this->addFlash('danger', ucfirst($slug).' kon niet worden ingesteld');
-			return $this->redirect($this->generateUrl('app_default_view',["slug"=>$slug,"id"=>$id]));
 		}
+		
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$request["current_stage"]]));
 	}
 	
 	/**

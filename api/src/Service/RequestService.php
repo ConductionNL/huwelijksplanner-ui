@@ -213,7 +213,7 @@ class RequestService
 				}
 				// als de array een minimum waarde heeft en die waarde wordt gehaald
 				elseif(array_key_exists("min_items",$property) && $property["min_items"] && count($request["properties"][$stage["name"]]) >= (int) $property["min_items"]){
-					//$requestType["stages"][$key]["completed"] = true;					
+					$requestType["stages"][$key]["completed"] = true;					
 				}
 				else{
 					$requestType["stages"][$key]["completed"] = false;	

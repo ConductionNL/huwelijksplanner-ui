@@ -600,7 +600,7 @@ class DefaultController extends AbstractController
 			
 			
 			$this->addFlash('success', ucfirst($property).' is ingesteld');
-			$slug = $property["next"];
+			$slug = $stage["next"];
 		}
 		else{
 			$this->addFlash('danger', ucfirst($property).' kon niet worden ingesteld');

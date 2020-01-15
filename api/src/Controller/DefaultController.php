@@ -253,7 +253,7 @@ class DefaultController extends AbstractController
 				
 				$assent = [];
 				$assent['name'] = 'Instemming huwelijk partnerschp';
-				$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
+				$assent['description'] = 'U bent automatisch toegevoegd aan een huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
 				$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
 				$assent['requester'] = $requestType['source_organization'];
 				$assent['person'] = $persoon['burgerservicenummer'];
@@ -558,7 +558,7 @@ class DefaultController extends AbstractController
 		
 		/* @todo onderstaande gaat een fout gooien als getuigen worden uitgenodigd voordat het huwelijkstype isgeselecteer (ja dat kan) */
 		$assent = [];
-		$assent['name'] = 'Instemming als '.$property.' bij '.$request["properties"]["type"];
+		$assent['name'] = 'Instemming als '.$property.' bij '.$request["properties"]["ceremonie"];
 		$assent['description'] = 'U bent uitgenodigd als '.$property.' voor het '.$request["properties"]["type"].' van A en B';
 		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
 		$assent['requester'] = $requestType['source_organization'];
@@ -605,6 +605,69 @@ class DefaultController extends AbstractController
 		
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$request["current_stage"]]));
 	}
+		
+	/*
+	public function unsetAction(Session $session, Request $httpRequest, $property, $value, RequestService $requestService, CommonGroundService $commonGroundService)
+	{
+		$requestType = $session->get('requestType');
+		$request = $session->get('request');
+		$user = $session->get('user');
+		
+		// Lets get the curent property
+		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+		
+		foreach ($arrIt as $sub) {
+			$subArray = $arrIt->getSubIterator();
+			if ($subArray['name'] === $property) {
+				$slug  = iterator_to_array($subArray);
+				break;
+			}
+		}
+		
+		if($request && !in_array($property, $request["properties"])){
+			$this->addFlash('danger', ucfirst($property).' kon niet worden verwijderd');
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug["slug"]]));	
+		}
+		
+		if(is_array($request["properties"][$property])){
+			unset($request["properties"][$property][$value]);
+		}
+		else{
+			unset($request["properties"][$property]);
+		}
+		
+		$this->addFlash('success', ucfirst($property).' is verwijderd');
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug["slug"]]));		
+	}
+	
+	public function setAssentAction(Session $session, Request $httpRequest, $property, $value ,RequestService $requestService, CommonGroundService $commonGroundService)
+	{
+		$requestType = $session->get('requestType');
+		$request = $session->get('request');
+		$user = $session->get('user');
+		
+		// Lets get the curent property
+		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+		
+		foreach ($arrIt as $sub) {
+			$subArray = $arrIt->getSubIterator();
+			if ($subArray['name'] === $property) {
+				$slug  = iterator_to_array($subArray);
+				break;
+			}
+		}
+		
+		if(is_array($request["properties"][$property])){
+			$request["properties"][$property][] = $value;
+		}
+		else{
+			$request["properties"][$property] = $value;
+		}
+		
+		$this->addFlash('success', ucfirst($property).' is ingesteld');
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug["next"]]));		
+	}
+	*/
 	
 	/**
 	 * @Route("/{slug}/add/{id}", requirements={"id"=".+"})
@@ -773,6 +836,9 @@ class DefaultController extends AbstractController
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));;
 		}
 	}
+	
+	
+	
 	/**
 	 * @Route("/{slug}/unset/{id}")
 	 */

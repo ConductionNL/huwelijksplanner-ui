@@ -542,8 +542,8 @@ class DefaultController extends AbstractController
 		$request = $session->get('request');
 		$user = $session->get('user');
 		
-		if($request && !in_array("type", $request["properties"])){
-			$request["properties"]["type"] = "huwelijk/partnerschap";
+		if($request && !in_array("ceremonie", $request["properties"])){
+			$request["properties"]["ceremonie"] = "huwelijk/partnerschap";
 		}
 		
 		// First we need to create an assent
@@ -559,7 +559,7 @@ class DefaultController extends AbstractController
 		/* @todo onderstaande gaat een fout gooien als getuigen worden uitgenodigd voordat het huwelijkstype isgeselecteer (ja dat kan) */
 		$assent = [];
 		$assent['name'] = 'Instemming als '.$property.' bij '.$request["properties"]["ceremonie"];
-		$assent['description'] = 'U bent uitgenodigd als '.$property.' voor het '.$request["properties"]["type"].' van A en B';
+		$assent['description'] = 'U bent uitgenodigd als '.$property.' voor het '.$request["properties"]["ceremonie"].' van A en B';
 		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
 		$assent['requester'] = $requestType['source_organization'];
 		$assent['request'] = $request['id'];

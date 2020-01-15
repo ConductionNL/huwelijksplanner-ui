@@ -718,6 +718,53 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
+	 * @Route("/{slug}/unset/{id}", requirements={"id"=".+"})
+	 */
+	public function unsetAction(Session $session, $slug, $id, RequestService $requestService)
+	{
+		$requestType = $session->get('requestType');
+		$request= $session->get('request');
+		$user = $session->get('user');
+		
+		// Lets get the curent property
+		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+		
+		foreach ($arrIt as $sub) {
+			$subArray = $arrIt->getSubIterator();
+			if ($subArray['slug'] === $slug) {
+				$property = iterator_to_array($subArray);
+				break;
+			}
+		}
+		
+		if(is_array($request['properties'][$property["name"]])){
+			$key = array_search($id, $request['properties']);
+			unset($request['properties'][$property["name"]][$key]);
+		}
+		else{
+			$request['properties'][$property["name"]] = null;
+		}
+		
+		if($request = $requestService->updateRequest($request)){
+			
+			$request["current_stage"] = $property["slug"];
+			$request = $requestService->updateRequest($request);
+			
+			$requestType = $requestService->checkRequestType($request, $requestType);
+			$session->set('request', $request);
+			$session->set('requestType', $requestType);
+			
+			$this->addFlash('success', ucfirst($slug).' geanuleerd');
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
+		}
+		else{
+			$this->addFlash('danger', ucfirst($slug).' kon niet worden geanuleerd');
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
+		}
+		
+	}
+	
+	/**
 	 * @Route("/{slug}/set/{id}" , requirements={"id"=".+"})
 	 */
 	public function setAction(Session $session, $slug, $id, RequestService $requestService)
@@ -838,53 +885,6 @@ class DefaultController extends AbstractController
 	}
 	
 	
-	
-	/**
-	 * @Route("/{slug}/unset/{id}")
-	 */
-	public function unsetAction(Session $session, $slug, $id, RequestService $requestService)
-	{
-		$requestType = $session->get('requestType');
-		$request= $session->get('request');
-		$user = $session->get('user');
-		
-		// Lets get the curent property
-		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-		
-		foreach ($arrIt as $sub) {
-			$subArray = $arrIt->getSubIterator();
-			if ($subArray['slug'] === $slug) {
-				$property = iterator_to_array($subArray);
-				break;
-			}
-		}
-		
-		if(is_array($request['properties'][$property["name"]])){
-			$key = array_search($id, $request['properties']);
-			unset($request['properties'][$property["name"]][$key]);
-		}
-		else{
-			$request['properties'][$property["name"]] = null;
-		}
-		
-		if($request = $requestService->updateRequest($request)){
-			
-			$request["current_stage"] = $property["slug"];
-			$request = $requestService->updateRequest($request);
-			
-			$requestType = $requestService->checkRequestType($request, $requestType);
-			$session->set('request', $request);
-			$session->set('requestType', $requestType);
-			
-			$this->addFlash('success', ucfirst($slug).' geanuleerd');
-			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
-		}
-		else{
-			$this->addFlash('danger', ucfirst($slug).' kon niet worden geanuleerd');
-			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
-		}
-		
-	}
 	
 	/**
 	 * @Route("/{slug}/{id}")

@@ -1,23 +1,32 @@
- 	 <!-- Header section. Update the background by changing the .header class background image. -->
-      <div class="header">
-        <div class="container fluid-container header-content content-area">
-          <i class="header-icon far fa-rings-wedding"></i>
-          <div class="header-title">
+<!-- Header section. Update the background by changing the .header class background image. -->
+<div class="header">
+    <div class="container fluid-container header-content content-area">
+        <i class="header-icon far fa-rings-wedding"></i>
+        <div class="header-title">
             {% if request.properties.type is defined and request.properties.type is not empty %}
-            <h1>{{ request.properties.type|capitalize }}</h1>     
-            {% else %} 
-            <h1>Trouwen of Partnerschap</h1>            
-            {% endif %}            
+                <h1>{{ request.properties.type|capitalize }}</h1>
+            {% else %}
+                <h1>Trouwen of Partnerschap</h1>
+            {% endif %}
             <h3>In Utrecht</h3>
-          </div>
-          {% if user is defined and user%}
-          <div class="header-loginbar">
-          	<i class="fas fa-lock-alt"></i> Beste {{ user.naam.voornamen }} {{  user.naam.geslachtsnaam}} u bent ingelogd over een beveiligde verbinding, klik <a href="{{ path('app_default_logout') }}"> hier om uit te loggen</a>
-          </div>         
-          {% elseif employeeContact is defined and employeeContact %} 
-          <div class="header-loginbar">
-          	<i class="fas fa-lock-alt"></i> Beste {{ employeeContact.given_name }} {{ employeeContact.additional_name }} {{ employeeContact.family_name }} u bent ingelogd over een beveiligde verbinding, klik <a href="{{ path('app_default_logout') }}"> hier om uit te loggen</a>
-          </div>
-          {% endif %} 
-        </div>        
-      </div>
+        </div>
+        {% if user is defined and user %}
+            <div class="header-loginbar" style="margin-right: 110px;">
+                <div class="row" style="text-align: center;">
+                    <i class="fas fa-lock-alt"></i> Beste {{ user.naam.voornamen }} {{ user.naam.geslachtsnaam }} u bent
+                    ingelogd over een beveiligde verbinding.
+                </div>
+                <a class="btn btn-block" style="width: 150px; margin: auto; margin-top: -17.5px" href="{{ path('app_default_logout') }}">Uitloggen</a>
+            </div>
+        {% elseif employeeContact is defined and employeeContact %}
+            <div class="header-loginbar" style="margin-right: 110px;">
+                <div class="row" style="text-align: center;">
+                    <i class="fas fa-lock-alt"></i>
+                    Beste {{ employeeContact.given_name }} {{ employeeContact.additional_name }} {{ employeeContact.family_name }}
+                    u bent ingelogd over een beveiligde verbinding.
+                </div>
+                <a class="btn btn-block" style="width: 150px; margin: auto; margin-top: -17.5px" href="{{ path('app_default_logout') }}">Uitloggen</a>
+            </div>
+        {% endif %}
+    </div>
+</div>

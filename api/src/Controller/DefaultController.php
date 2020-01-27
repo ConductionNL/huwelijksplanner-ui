@@ -597,7 +597,14 @@ class DefaultController extends AbstractController
 			
 			
 			$this->addFlash('success', ucfirst($property).' is ingesteld');
-			$slug = $stage["next"];
+			
+			if($stage["completed"]){
+				$slug = $stage["next"];				
+			}
+			else{
+				$slug = $stage["slug"];					
+			}
+			
 		}
 		else{
 			$this->addFlash('danger', ucfirst($property).' kon niet worden ingesteld');
@@ -708,7 +715,14 @@ class DefaultController extends AbstractController
 			
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
-			$slug = $property["next"];
+			
+			if($stage["completed"]){
+				$slug = $stage["next"];
+			}
+			else{
+				$slug = $stage["slug"];
+			}
+			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
@@ -810,7 +824,14 @@ class DefaultController extends AbstractController
 			$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
 						
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
-			$slug = $property["next"];
+			
+			if($stage["completed"]){
+				$slug = $stage["next"];
+			}
+			else{
+				$slug = $stage["slug"];
+			}
+			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
@@ -875,7 +896,14 @@ class DefaultController extends AbstractController
 			
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
-			$slug = $property["next"];
+			
+			if($stage["completed"]){
+				$slug = $stage["next"];
+			}
+			else{
+				$slug = $stage["slug"];
+			}
+			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{

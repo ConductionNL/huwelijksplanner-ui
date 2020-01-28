@@ -210,6 +210,7 @@ class DefaultController extends AbstractController
 		$start = "ceremonies";
 		
 		$bsn = $httpRequest->request->get('bsn');
+		$slug =  $httpRequest->query->get('slug');
 		if(!$bsn){
 			$bsn =  $httpRequest->query->get('bsn');
 		}
@@ -223,8 +224,9 @@ class DefaultController extends AbstractController
 			
 			
 			if($requests = $requestService->getRequestOnSubmitter($persoon['burgerservicenummer'])){
-				return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"requests"]));;
+				return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"requests","redirect"=>$slug]));;
 			}
+			
 			else{
 				// Okey we don't have ay requests so lets start a marige request
 				
@@ -283,6 +285,9 @@ class DefaultController extends AbstractController
 			$this->addFlash('danger', 'U kon helaas niet worden ingelogd');
 		}
 		
+		if($slug){
+			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));			
+		}
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$start]));
 	}
 	
@@ -825,10 +830,10 @@ class DefaultController extends AbstractController
 						
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if($stage && $stage["completed"]){
+			if(isset($stage) && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			elseif($stage){
+			elseif(isset($stage)){
 				$slug = $stage["slug"];
 			}
 			
@@ -897,10 +902,10 @@ class DefaultController extends AbstractController
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if($stage && $stage["completed"]){
+			if(isset($stage) && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			elseif($stage){
+			elseif(isset($stage)){
 				$slug = $stage["slug"];
 			}
 			
@@ -917,7 +922,7 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/{slug}/{id}")
 	 */
-	public function viewAction(Session $session, $slug, $id, SjabloonService $sjabloonService, PdcService $pdcService)
+	public function viewAction(Session $session, $slug, $id, SjabloonService $sjabloonService, PdcService $pdcService, Request $httpRequest)
 	{
 		// Lets handle a posible login		
 		$bsn = $httpRequest->request->get('bsn');

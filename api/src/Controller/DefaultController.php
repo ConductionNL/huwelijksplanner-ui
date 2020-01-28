@@ -745,7 +745,7 @@ class DefaultController extends AbstractController
 			$slug="trouwen";
 		}
 		
-		if(array_key_exists('request',$variables) && array_key_exists('requestType',$variables)){			
+		if(array_key_exists('request',$variables) && array_key_exists('requestType',$variables) && $variables['request'] && $variables['requestType']){			
 			$variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
 		}
 		

@@ -64,7 +64,7 @@ class CommonGroundService
             'query' => $query,
         ]
                 );
-
+        
         $response = json_decode($response->getBody(), true);
 
         $item->set($response);
@@ -110,7 +110,10 @@ class CommonGroundService
         if (!$url) {
             return false;
         }
-
+        
+        unset($resource['@context']);
+        unset($resource['@id']);
+        unset($resource['@type']);
         unset($resource['id']);
         unset($resource['_links']);
         unset($resource['_embedded']);
@@ -118,7 +121,14 @@ class CommonGroundService
         $response = $this->client->request('PUT', $url, [
             'body' => json_encode($resource),
         ]
-        );
+        		);
+        
+        if($response->getStatusCode() != 200){
+        	var_dump(json_encode($resource));
+        	var_dump(json_encode($url));
+        	var_dump(json_encode($response->getBody()));
+        	die;
+        }
 
         $response = json_decode($response->getBody(), true);
 
@@ -145,9 +155,17 @@ class CommonGroundService
         ]
         );
 
+        
+        if($response->getStatusCode() != 201){
+        	var_dump(json_encode($resource));
+        	var_dump(json_encode($url));
+        	var_dump(json_encode($response->getBody()));
+        	die;
+        }
+        
+        
         $response = json_decode($response->getBody(), true);
 
-        //var_dump(json_encode($response));
 
         // Lets cash this item for speed purposes
         $item = $this->cash->getItem('commonground_'.md5($url.'/'.$response['id']));

@@ -696,7 +696,7 @@ class DefaultController extends AbstractController
 			$contact = [];
 			$contact['givenName']= $variables['user']['naam']['voornamen'];
 			$contact['familyName']= $variables['user']['naam']['geslachtsnaam'];
-			$contact= $commonGroundService->createResource($request, 'https://cc.zaakonline.nl/people');
+			$contact= $commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
 			
 			$assent = [];
 			$assent['name'] = 'Instemming huwelijk partnerschp';
@@ -706,12 +706,20 @@ class DefaultController extends AbstractController
 			$assent['person'] = $variables['user']['burgerservicenummer'];
 			$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
 			$assent['status'] = 'granted';			
-			$assent = $commonGroundService->createResource($request, 'https://irc.zaakonline.nl/assents');			
+			$assent = $commonGroundService->createResource($assent, 'https://irc.zaakonline.nl/assents');			
 			
 			$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['@id'];
-			$request = $commonGroundService->updateResource($request, 'https://vrc.zaakonline.nl/requests');				
+			$request = $commonGroundService->updateResource($request, 'https://vrc.zaakonline.nl'.$request['@id']);				
 			
 			$session->set('request', $request);
+			
+			// If we dont have a user requested slug lets go to the current request stage
+			if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
+				$slug = $request["current_stage"];
+			}
+			elseif(!$slug && $requestType){
+				$slug = $requestType['stages'][0]['slug'];
+			}
 		}
 				
 		// Lets handle the loading of a request

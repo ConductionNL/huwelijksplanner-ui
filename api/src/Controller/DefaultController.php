@@ -669,9 +669,6 @@ class DefaultController extends AbstractController
 		$bsn = $httpRequest->request->get('bsn');
 		if($bsn || $bsn =  $httpRequest->query->get('bsn')){
 			$user = $commonGroundService->getResource('https://brp.zaakonline.nl/ingeschrevenpersonen/'.$bsn);
-			
-			// Dit is quick fix
-			$user['naam'] = $user['naam'];
 			$session->set('user', $user);
 			
 			//var_dump($user);
@@ -745,7 +742,7 @@ class DefaultController extends AbstractController
 				$variables['products'] = $pdcService->getProducts(['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
 				break;
 			case 'requests':
-				$variables['requests'] = $requestService->getRequestOnSubmitter($user['burgerservicenummer']);
+				$variables['requests'] = $commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['submitter' => $variables['user']['burgerservicenummer']]);
 				break;
 		}
 				

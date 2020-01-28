@@ -598,11 +598,11 @@ class DefaultController extends AbstractController
 			
 			$this->addFlash('success', ucfirst($property).' is ingesteld');
 			
-			if($stage["completed"]){
-				$slug = $stage["next"];				
+			if($stage && $stage["completed"]){
+				$slug = $stage["next"];
 			}
-			else{
-				$slug = $stage["slug"];					
+			elseif($stage){
+				$slug = $stage["slug"];
 			}
 			
 		}
@@ -714,12 +714,12 @@ class DefaultController extends AbstractController
 			$session->set('requestType', $requestType);
 			
 			
-			$this->addFlash('success', ucfirst($slug).' is ingesteld');
+			$this->addFlash('success', ucfirst($slug).' is ingesteld');			
 			
-			if($stage["completed"]){
+			if($stage && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			else{
+			elseif($stage){
 				$slug = $stage["slug"];
 			}
 			
@@ -825,10 +825,10 @@ class DefaultController extends AbstractController
 						
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if($stage["completed"]){
+			if($stage && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			else{
+			elseif($stage){
 				$slug = $stage["slug"];
 			}
 			
@@ -897,10 +897,10 @@ class DefaultController extends AbstractController
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if($stage["completed"]){
+			if($stage && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			else{
+			elseif($stage){
 				$slug = $stage["slug"];
 			}
 			
@@ -919,6 +919,16 @@ class DefaultController extends AbstractController
 	 */
 	public function viewAction(Session $session, $slug, $id, SjabloonService $sjabloonService, PdcService $pdcService)
 	{
+		// Lets handle a posible login		
+		$bsn = $httpRequest->request->get('bsn');
+		if(!$bsn){
+			$bsn =  $httpRequest->query->get('bsn');
+		}
+		if($bsn){			
+			return $this->redirect($this->generateUrl('app_default_login',["slug"=>$slug,"bsn"=>$bsn]));
+		}
+		
+		
 		$requestType = $session->get('requestType');
 		$request = $session->get('request');
 		$user = $session->get('user');

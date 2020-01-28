@@ -688,9 +688,28 @@ class DefaultController extends AbstractController
 			$request['target_organization']=$requestType['source_organization'];
 			$request['submitter']=$variables['user']['burgerservicenummer'];
 			$request['status']='incomplete';
-			$request['properties']= [];
+			$request['properties']= [];			
+			$request = $commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');			
 			
-			$request = $commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');
+			$contact = [];
+			$contact['givenName']= $user['naam']['voornamen'];
+			$contact['familyName']= $user['naam']['geslachtsnaam'];
+			$contact= $contactService->createContact($contact);
+			$contact= $commonGroundService->createResource($request, 'https://cc.zaakonline.nl/people');
+			
+			$assent = [];
+			$assent['name'] = 'Instemming huwelijk partnerschp';
+			$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
+			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
+			$assent['requester'] = $requestType['source_organization'];
+			$assent['person'] = $user['burgerservicenummer'];
+			$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
+			$assent['status'] = 'granted';			
+			$assent = $commonGroundService->createResource($request, 'https://irc.zaakonline.nl/assents');			
+			
+			$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['@id'];
+			$request = $commonGroundService->updateResource($request, 'https://vrc.zaakonline.nl/requests');				
+			
 			$session->set('request', $request);
 		}
 				

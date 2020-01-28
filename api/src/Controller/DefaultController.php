@@ -567,11 +567,11 @@ class DefaultController extends AbstractController
 						
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
-				$slug = $stage["next"];
+			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
+				$slug = $property["next"];
 			}
 			elseif(isset($stage) && array_key_exists("slug", $stage)){
-				$slug = $stage["slug"];
+				$slug = $property["slug"];
 			}
 			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
@@ -699,7 +699,6 @@ class DefaultController extends AbstractController
 		if($request || $request =  $httpRequest->query->get('request')){
 			$request = $commonGroundService->getResource($request);
 			$requestType = $commonGroundService->getResource($request['request_type']);
-			$requestType = $requestService->checkRequestType($request, $requestType);
 			$session->set('request', $request);
 			$session->set('requestType', $requestType);
 			//var_dump($request);
@@ -725,6 +724,10 @@ class DefaultController extends AbstractController
 		if(!$slug){
 			/*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
 			$slug="trouwen";
+		}
+		
+		if(array_key_exists('request',$variables) && array_key_exists('requestType',$variables)){			
+			$variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
 		}
 		
 		/*@todo olld skool overwite variabel maken */

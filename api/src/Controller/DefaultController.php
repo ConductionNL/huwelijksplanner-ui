@@ -708,6 +708,9 @@ class DefaultController extends AbstractController
 			if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
 				$slug = $request["current_stage"];
 			}
+			elseif(!$slug && $requestType){
+				$slug = $requestType['stages'][0]['slug'];
+			}
 		}		
 		$variables['request'] = $session->get('request');
 		$variables['requestType'] = $session->get('requestType');

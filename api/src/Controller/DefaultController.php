@@ -742,7 +742,7 @@ class DefaultController extends AbstractController
 				$variables['products'] = $pdcService->getProducts(['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
 				break;
 			case 'requests':
-				$variables['requests'] = $commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['submitter' => $variables['user']['burgerservicenummer']]);
+				$variables['requests'] = $commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
 				break;
 		}
 				

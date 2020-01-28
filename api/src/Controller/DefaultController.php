@@ -659,7 +659,7 @@ class DefaultController extends AbstractController
 	 * @Route("/{slug}", name="app_default_slug")
 	 * @Route("/{slug}/{id}", name="app_default_view")
 	 */
-	public function viewAction(Session $session, $slug = false, $id = false, SjabloonService $sjabloonService, PdcService $pdcService, Request $httpRequest, CommonGroundService $commonGroundService)
+	public function viewAction(Session $session, $slug = false, $id = false, SjabloonService $sjabloonService, PdcService $pdcService, Request $httpRequest, CommonGroundService $commonGroundService, RequestService $requestService)
 	{
 		$variables=[];
 		

@@ -20,42 +20,12 @@ use App\Service\ContactService;
 use App\Service\AssentService;
 
 use App\Service\CommonGroundService;
+use App\Service\HuwelijkService;
 
 /**
  */
 class DefaultController extends AbstractController
 {
-	/**
-	 * @Route("/")
-	 */
-	public function indexAction(Session $session, SjabloonService $sjabloonService)
-	{
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
-		$products = [];
-		
-		
-		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
-		
-		if($template = $sjabloonService->getOnSlug('trouwen')){
-			// We want to include the html in our own template
-			$html = $template['content'];
-			
-			$template = $this->get('twig')->createTemplate($html);
-			$template = $template->render($variables);
-			
-			return $response = new Response(
-					$template,
-					Response::HTTP_OK,
-					['content-type' => 'text/html']
-					);
-		}
-		else{
-			throw $this->createNotFoundException('This page could not be found');
-		}
-	}
-	
 	/**
 	 * @Route("request/new")
 	 */
@@ -170,125 +140,6 @@ class DefaultController extends AbstractController
 		}
 		
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"checklist"]));
-	}
-	
-	/**
-	 * @Route("request/{id}")
-	 */
-	public function loadrequestAction(Session $session, RequestService $requestService, RequestTypeService $requestTypeService , $id)
-	{
-		
-		$request = $requestService->getRequestOnId($id);
-		$session->set('request', $request);
-		
-		// Lets also set the request type
-		$requestType = $requestTypeService->getRequestType($request['request_type']);
-		$requestType = $requestService->checkRequestType($request, $requestType);
-		
-		$session->set('requestType', $requestType);
-		
-		
-		// If we have a starting position lets start there
-		if(array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
-			$start = $request["current_stage"];
-		}
-		elseif(count($requestType['stages']) >0){
-			$start = $requestType['stages'][0]["slug"];
-		}
-		else{
-			$start = "ceremonies";
-		}
-		
-		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$start]));
-	}
-	
-	/**
-	 * @Route("/login")
-	 */
-	public function loginAction(Session $session, Request $httpRequest, BRPService $brpService, RequestService $requestService, RequestTypeService $requestTypeService, ContactService $contactService, AssentService $assentService)
-	{
-		$start = "ceremonies";
-		
-		$bsn = $httpRequest->request->get('bsn');
-		$slug =  $httpRequest->query->get('slug');
-		if(!$bsn){
-			$bsn =  $httpRequest->query->get('bsn');
-		}
-		if(!$bsn){
-			// No login suplied so redirect to digispoof
-			return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath()));
-		}
-		
-		if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
-			$session->set('user', $persoon);
-			
-			
-			if($requests = $requestService->getRequestOnSubmitter($persoon['burgerservicenummer'])){
-				return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"requests","redirect"=>$slug]));;
-			}
-			
-			else{
-				// Okey we don't have ay requests so lets start a marige request
-				
-				// Lets also set the request type
-				$requestType = $requestTypeService->getRequestType('5b10c1d6-7121-4be2-b479-7523f1b625f1');
-				
-				$request= [];
-				$request['requestType']='http://vtc.zaakonline.nl/request_types/'.$requestType['id'];
-				$request['targetOrganization']='002220647';
-				$request['submitter']=$persoon['burgerservicenummer'];
-				$request['status']='incomplete';
-				$request['properties']= [];
-				$request['properties']['partner1']= $persoon['burgerservicenummer'];
-				
-				$request = $requestService->createRequest($request);
-				$session->set('requestType', $requestType);
-				
-				$requestType = $requestService->checkRequestType($request, $requestType);
-				
-				$requestType = $requestService->checkRequestType($request, $requestType);
-				
-				$contact = [];
-				$contact['givenName']= $persoon['naam']['voornamen'];
-				$contact['familyName']= $persoon['naam']['geslachtsnaam'];
-				$contact= $contactService->createContact($contact);
-				
-				$assent = [];
-				$assent['name'] = 'Instemming huwelijk partnerschp';
-				$assent['description'] = 'U bent automatisch toegevoegd aan een huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-				$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
-				$assent['requester'] = $requestType['source_organization'];
-				$assent['person'] = $persoon['burgerservicenummer'];
-				$assent['request'] = $request['id'];
-				$assent['status'] = 'granted';
-				$assent['requester'] = $persoon['burgerservicenummer'];
-				
-				$assent= $assentService->createAssent($assent);
-				if(!array_key_exists('partners',$request['properties'])){
-					$request['properties']['partners'] = [];
-				}
-				$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
-				
-				$request = $requestService->updateRequest($request);
-				
-				$session->set('request', $request);
-				
-				
-				// If we have a starting position lets start there
-				if(count($requestType['stages']) >0){
-					$start = $requestType['stages'][0]["slug"];
-				}
-			}
-			$this->addFlash('success', 'Welkom '.$persoon['naam']['voornamen']);
-		}
-		else{
-			$this->addFlash('danger', 'U kon helaas niet worden ingelogd');
-		}
-		
-		if($slug){
-			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));			
-		}
-		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$start]));
 	}
 	
 	/**
@@ -457,57 +308,6 @@ class DefaultController extends AbstractController
 		return $response;
 	}
 	
-	/**
-	 * @Route("/{slug}")
-	 */
-	public function slugAction(Session $session, SjabloonService $sjabloonService, PdcService $pdcService, RequestService $requestService, $slug)
-	{
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
-		$products = [];
-		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products];
-		
-		
-		switch ($slug) {
-			case null :
-				$slug = 'trouwen';
-				break;
-			case 'ambtenaar':
-				$variables['products']  = $pdcService->getProducts(['groups.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
-				break;
-			case 'locatie':
-				$variables['products'] = $pdcService->getProducts(['groups.id'=>'170788e7-b238-4c28-8efc-97bdada02c2e']);
-				break;
-			case 'plechtigheid':
-				$variables['products'] = $pdcService->getProducts(['groups.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
-				break;
-			case 'extra':
-				$variables['products'] = $pdcService->getProducts(['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
-				break;
-			case 'requests':
-				$variables['requests'] = $requestService->getRequestOnSubmitter($user['burgerservicenummer']);
-				break;
-		}
-		
-		
-		if($template = $sjabloonService->getOnSlug($slug)){
-			// We want to include the html in our own template
-			$html = $template['content'];
-			
-			$template = $this->get('twig')->createTemplate($html);
-			$template = $template->render($variables);
-			
-			return $response = new Response(
-					$template,
-					Response::HTTP_OK,
-					['content-type' => 'text/html']
-					);
-		}
-		else{
-			throw $this->createNotFoundException('This page could not be found');
-		}
-	}
 	
 	/**
 	 * @Route("/update/assent/{id}", methods={"POST"})
@@ -603,10 +403,10 @@ class DefaultController extends AbstractController
 			
 			$this->addFlash('success', ucfirst($property).' is ingesteld');
 			
-			if($stage && $stage["completed"]){
+			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			elseif($stage){
+			elseif(isset($stage) && array_key_exists("slug", $stage)){
 				$slug = $stage["slug"];
 			}
 			
@@ -618,69 +418,6 @@ class DefaultController extends AbstractController
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$request["current_stage"]]));
 	}
 		
-	/*
-	public function unsetAction(Session $session, Request $httpRequest, $property, $value, RequestService $requestService, CommonGroundService $commonGroundService)
-	{
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
-		
-		// Lets get the curent property
-		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-		
-		foreach ($arrIt as $sub) {
-			$subArray = $arrIt->getSubIterator();
-			if ($subArray['name'] === $property) {
-				$slug  = iterator_to_array($subArray);
-				break;
-			}
-		}
-		
-		if($request && !in_array($property, $request["properties"])){
-			$this->addFlash('danger', ucfirst($property).' kon niet worden verwijderd');
-			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug["slug"]]));	
-		}
-		
-		if(is_array($request["properties"][$property])){
-			unset($request["properties"][$property][$value]);
-		}
-		else{
-			unset($request["properties"][$property]);
-		}
-		
-		$this->addFlash('success', ucfirst($property).' is verwijderd');
-		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug["slug"]]));		
-	}
-	
-	public function setAssentAction(Session $session, Request $httpRequest, $property, $value ,RequestService $requestService, CommonGroundService $commonGroundService)
-	{
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
-		
-		// Lets get the curent property
-		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-		
-		foreach ($arrIt as $sub) {
-			$subArray = $arrIt->getSubIterator();
-			if ($subArray['name'] === $property) {
-				$slug  = iterator_to_array($subArray);
-				break;
-			}
-		}
-		
-		if(is_array($request["properties"][$property])){
-			$request["properties"][$property][] = $value;
-		}
-		else{
-			$request["properties"][$property] = $value;
-		}
-		
-		$this->addFlash('success', ucfirst($property).' is ingesteld');
-		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug["next"]]));		
-	}
-	*/
-	
 	/**
 	 * @Route("/{slug}/add/{id}", requirements={"id"=".+"})
 	 */
@@ -719,12 +456,12 @@ class DefaultController extends AbstractController
 			$session->set('requestType', $requestType);
 			
 			
-			$this->addFlash('success', ucfirst($slug).' is ingesteld');			
+			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if($stage && $stage["completed"]){
+			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			elseif($stage){
+			elseif(isset($stage) && array_key_exists("slug", $stage)){
 				$slug = $stage["slug"];
 			}
 			
@@ -830,10 +567,10 @@ class DefaultController extends AbstractController
 						
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if(isset($stage) && $stage["completed"]){
+			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			elseif(isset($stage)){
+			elseif(isset($stage) && array_key_exists("slug", $stage)){
 				$slug = $stage["slug"];
 			}
 			
@@ -902,10 +639,10 @@ class DefaultController extends AbstractController
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if(isset($stage) && $stage["completed"]){
+			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
 				$slug = $stage["next"];
 			}
-			elseif(isset($stage)){
+			elseif(isset($stage) && array_key_exists("slug", $stage)){
 				$slug = $stage["slug"];
 			}
 			
@@ -917,30 +654,98 @@ class DefaultController extends AbstractController
 		}
 	}
 	
-	
-	
 	/**
-	 * @Route("/{slug}/{id}")
+	 * @Route("/", name="app_default_index")
+	 * @Route("/{slug}", name="app_default_slug")
+	 * @Route("/{slug}/{id}", name="app_default_view")
 	 */
-	public function viewAction(Session $session, $slug, $id, SjabloonService $sjabloonService, PdcService $pdcService, Request $httpRequest)
+	public function viewAction(Session $session, $slug = false, $id = false, SjabloonService $sjabloonService, PdcService $pdcService, Request $httpRequest, CommonGroundService $commonGroundService)
 	{
+		$variables=[];
+		
+		// @todo iets metorganisaties en applicaties
+		
 		// Lets handle a posible login		
 		$bsn = $httpRequest->request->get('bsn');
-		if(!$bsn){
-			$bsn =  $httpRequest->query->get('bsn');
+		if($bsn || $bsn =  $httpRequest->query->get('bsn')){
+			$user = $commonGroundService->getResource('https://brp.zaakonline.nl/ingeschrevenpersonen/'.$bsn);
+			$session->set('user', $user);
+			
+			//var_dump($user);
 		}
-		if($bsn){			
-			return $this->redirect($this->generateUrl('app_default_login',["slug"=>$slug,"bsn"=>$bsn]));
+		$variables['user']  = $session->get('user');
+		
+		// Let handle posible request creation
+		$requestType= $httpRequest->request->get('requestType');
+		if($requestType || $requestType=  $httpRequest->query->get('requestType')){
+			
+			$requestTypeUri = $requestType;
+			$requestType = $commonGroundService->getResource($requestType);
+			$session->set('requestType', $requestType);
+						
+			$request= [];
+			$request['request_type'] = $requestTypeUri;
+			$request['target_organization']=$requestType['source_organization'];
+			$request['submitter']=$variables['user']['burgerservicenummer'];
+			$request['status']='incomplete';
+			$request['properties']= [];
+			
+			$request = $commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');
+			$session->set('request', $request);
+		}
+				
+		// Lets handle the loading of a request
+		$request= $httpRequest->request->get('request');
+		if($request || $request =  $httpRequest->query->get('request')){
+			$request = $commonGroundService->getResource($request);
+			$requestType = $commonGroundService->getResource($request['request_type']);
+			$requestType = $requestService->checkRequestType($request, $requestType);
+			$session->set('request', $request);
+			$session->set('requestType', $requestType);
+			//var_dump($request);
+			
+			// If we dont have a user requested slug lets go to the current request stage
+			if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
+				$slug = $request["current_stage"];
+			}
+		}		
+		$variables['request'] = $session->get('request');
+		$variables['requestType'] = $session->get('requestType');
+		
+		
+		// Lets handle the loading of a product is we have one
+		if($id){
+			/*@todo dit zou de commonground service moeten zijn */
+			$variables['product'] = $pdcService->getProduct($id);			
 		}
 		
+		if(!$slug){
+			/*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
+			$slug="trouwen";
+		}
 		
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
-		$product = $pdcService->getProduct($id);
-		
-		$variables = ["request"=>$request,"user"=>$user,"product"=>$product,"requestType"=>$requestType,];
-		
+		/*@todo olld skool overwite variabel maken */
+		switch ($slug) {
+			case null :
+				$slug = 'trouwen';
+				break;
+			case 'ambtenaar':
+				$variables['products']  = $pdcService->getProducts(['groups.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
+				break;
+			case 'locatie':
+				$variables['products'] = $pdcService->getProducts(['groups.id'=>'170788e7-b238-4c28-8efc-97bdada02c2e']);
+				break;
+			case 'plechtigheid':
+				$variables['products'] = $pdcService->getProducts(['groups.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
+				break;
+			case 'extra':
+				$variables['products'] = $pdcService->getProducts(['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
+				break;
+			case 'requests':
+				$variables['requests'] = $commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+				break;
+		}
+				
 		if($template = $sjabloonService->getOnSlug($slug)){
 			// We want to include the html in our own template
 			$html = $template['content'];

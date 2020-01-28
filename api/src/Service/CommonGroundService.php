@@ -31,7 +31,7 @@ class CommonGroundService
             'timeout'  => 4000.0,
             // To work with NLX we need a couple of default headers
             'headers' => [
-                'Accept'        => 'application/hal+json',
+                'Accept'        => 'application/ld+json',
                 'Content-Type'  => 'application/json',
                 //'X-NLX-Request-User-Id' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'				// the id of the user performing the request
                 //'X-NLX-Request-Application-Id' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn' 		// the id of the application performing the request
@@ -147,7 +147,7 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        var_dump(json_encode($response));
+        //var_dump(json_encode($response));
 
         // Lets cash this item for speed purposes
         $item = $this->cash->getItem('commonground_'.md5($url.'/'.$response['id']));

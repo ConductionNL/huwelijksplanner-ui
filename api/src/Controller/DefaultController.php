@@ -566,13 +566,21 @@ class DefaultController extends AbstractController
 			
 			// Lets find the stage that we are add
 			$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+			
+			foreach ($arrIt as $sub) {
+				$subArray = $arrIt->getSubIterator();
+				if ($subArray['slug'] === $slug) {
+					$property = iterator_to_array($subArray);
+					break;
+				}
+			}
 						
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
 			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
 				$slug = $property["next"];
 			}
-			elseif(isset($stage) && array_key_exists("slug", $stage)){
+			else{
 				$slug = $property["slug"];
 			}
 			

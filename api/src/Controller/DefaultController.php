@@ -404,9 +404,11 @@ class DefaultController extends AbstractController
 			$this->addFlash('success', ucfirst($property).' is ingesteld');
 			
 			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
-				$slug = $stage["next"];
+				//$slug = $stage["next"];
+				
+				$slug = $stage["slug"];
 			}
-			elseif(isset($stage) && array_key_exists("slug", $stage)){
+			else{
 				$slug = $stage["slug"];
 			}
 			
@@ -415,7 +417,7 @@ class DefaultController extends AbstractController
 			$this->addFlash('danger', ucfirst($property).' kon niet worden ingesteld');
 		}
 		
-		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$request["current_stage"]]));
+		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 	}
 		
 	/**
@@ -458,11 +460,11 @@ class DefaultController extends AbstractController
 			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
-			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
-				$slug = $stage["next"];
+			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
+				$slug = $property["next"];
 			}
 			elseif(isset($stage) && array_key_exists("slug", $stage)){
-				$slug = $stage["slug"];
+				$slug = $property["slug"];
 			}
 			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
@@ -692,9 +694,8 @@ class DefaultController extends AbstractController
 			$request = $commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');			
 			
 			$contact = [];
-			$contact['givenName']= $user['naam']['voornamen'];
-			$contact['familyName']= $user['naam']['geslachtsnaam'];
-			$contact= $contactService->createContact($contact);
+			$contact['givenName']= $variables['user']['naam']['voornamen'];
+			$contact['familyName']= $variables['user']['naam']['geslachtsnaam'];
 			$contact= $commonGroundService->createResource($request, 'https://cc.zaakonline.nl/people');
 			
 			$assent = [];
@@ -702,7 +703,7 @@ class DefaultController extends AbstractController
 			$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
 			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
 			$assent['requester'] = $requestType['source_organization'];
-			$assent['person'] = $user['burgerservicenummer'];
+			$assent['person'] = $variables['user']['burgerservicenummer'];
 			$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
 			$assent['status'] = 'granted';			
 			$assent = $commonGroundService->createResource($request, 'https://irc.zaakonline.nl/assents');			

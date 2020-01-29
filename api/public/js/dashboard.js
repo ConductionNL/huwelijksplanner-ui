@@ -9,13 +9,11 @@ angular.module('MyApp',['ngMaterial', 'ngMessages', 'material.svgAssetsCache']).
      };
 
 }).controller('AppCtrl', ['$mdDateLocale','$scope', function($mdDateLocale,$scope) {
-
 	// Excluding dates
 	$scope.availabledates = function(date) {
 	    var day = date.getDay();
-	    return day === 2;//day === 1 || day === 2 || day === 3|| day === 5;
+	    return day === 4 || day === 1 || day === 2 || day === 3|| day === 5 || day === 6 || day === 0;
 	  };
-
 }]);
 
 

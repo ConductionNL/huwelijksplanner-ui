@@ -786,6 +786,9 @@ class DefaultController extends AbstractController
 			case 'requests':
 				$variables['requests'] = $commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
 				break;
+			case 'new-request':
+				$variables['requestTypes'] = $commonGroundService->getResourceList('http://vtc.zaakonline.nl/request_types', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+				break;
 		}
 				
 		if($template = $sjabloonService->getOnSlug($slug)){

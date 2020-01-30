@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="nl" target-language="nl" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="xqke5.k" resname="requested">
+        <source>requested</source>
+        <target>aangevraagd</target>
+      </trans-unit>
+      <trans-unit id="3VFdGXW" resname="granted">
+        <source>granted</source>
+        <target>ingestemd</target>
+      </trans-unit>
+      <trans-unit id="4G_M.Dn" resname="submitted">
+        <source>submitted</source>
+        <target>ingediend</target>
+      </trans-unit>
+      <trans-unit id="qL_s87z" resname="declined">
+        <source>declined</source>
+        <target>afgewezen</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

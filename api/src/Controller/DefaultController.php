@@ -96,7 +96,7 @@ class DefaultController extends AbstractController
 		$assent['description'] = 'U is gevraagd of u wilt instemmen met een huwelijk of partnerschaps';
 		//$assent['requester'] = (string) $requestType['sourceOrganization'];
 		//$assent['request'] = $request['id'];
-		$assent['request'] = 'http://vrc.zaakonline.nl'.$request['_links']['self']['href'];
+		$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
 		$assent['status'] = 'requested';
 		$assent['requester'] = $user['burgerservicenummer'];
 		
@@ -105,7 +105,7 @@ class DefaultController extends AbstractController
 		if(!array_key_exists($property ,$request['properties'])){
 			$request['properties'][$property] = [];
 		}
-		$request['properties'][$property][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
+		$request['properties'][$property][] = 'http://irc.zaakonline.nl'.$assent['@id'];
 		
 		$request = $requestService->updateRequest($request);
 		
@@ -169,7 +169,7 @@ class DefaultController extends AbstractController
 			
 			$contact= $contactService->createContact($contact);
 			
-			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
 			$assent['person'] = $user['burgerservicenummer'];
 			
 			$assent =  $assentService->updateAssent($assent);
@@ -288,7 +288,7 @@ class DefaultController extends AbstractController
 		$assent = [];
 		$assent['name'] = 'Instemming als '.$property.' bij '.$request["properties"]["ceremonie"];
 		$assent['description'] = 'U bent uitgenodigd als '.$property.' voor het '.$request["properties"]["ceremonie"].' van A en B';
-		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
+		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
 		$assent['requester'] = $requestType['source_organization'];
 		$assent['request'] = $request['id'];
 		$assent['status'] = 'requested';
@@ -313,7 +313,7 @@ class DefaultController extends AbstractController
 			$request['properties'][$stage["name"]] = [];
 		}
 		
-		$request['properties'][$stage["name"]][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
+		$request['properties'][$stage["name"]][] = 'http://irc.zaakonline.nl'.$assent['@id'];
 		
 		if($request = $requestService->updateRequest($request)){
 			$request["current_stage"] = $stage["next"];

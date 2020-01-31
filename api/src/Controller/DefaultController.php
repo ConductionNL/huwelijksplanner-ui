@@ -27,83 +27,6 @@ use App\Service\HuwelijkService;
 class DefaultController extends AbstractController
 {
 	/**
-	 * @Route("request/new")
-	 */
-	public function newrequestAction(Session $session, RequestService $requestService, RequestTypeService $requestTypeService, ContactService $contactService, AssentService $assentService, CommonGroundService $commonGroundService)
-	{
-		
-		$user = $session->get('user');
-		
-		// Lets also set the request type
-		$requestType = $requestTypeService->getRequestType('5b10c1d6-7121-4be2-b479-7523f1b625f1');
-		
-		// Okey we don't have ay requests so lets start a marige request
-		$request= [];
-		$request['request_type']='http://vtc.zaakonline.nl/request_types/'.$requestType['id'];
-		$request['target_organization']='002220647';
-		$request['submitter']=$user['burgerservicenummer'];
-		$request['status']='incomplete';
-		$request['properties']= [];
-		
-		$request = $requestService->createRequest($request);
-		
-		$requestType = $requestService->checkRequestType($request, $requestType);
-		$session->set('requestType', $requestType);
-		
-		$contact = [];
-		$contact['givenName']= $user['naam']['voornamen'];
-		$contact['familyName']= $user['naam']['geslachtsnaam'];
-		$contact= $contactService->createContact($contact);
-		
-		$assent = [];
-		$assent['name'] = 'Instemming huwelijk partnerschp';
-		$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
-		$assent['requester'] = $requestType['source_organization'];
-		$assent['person'] = $user['burgerservicenummer'];
-		$assent['request'] = $request['id'];
-		$assent['status'] = 'granted';
-		
-		//$request['properties']['order'] = 'https://orc.zaakonline.nl'.$order['_links']['self']['href'];
-		
-		$assent = $assentService->createAssent($assent);
-		if(!array_key_exists('partners',$request['properties'])){
-			$request['properties']['partners'] = [];
-		}
-		$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['_links']['self']['href'];
-		
-		
-		//$order = [];
-		$order['name'] = 'Huwelijk of Partnerschap';
-		$order['description'] = 'Huwelijk of Partnerschap';
-		//$order['targetOrganization'] = $requestType['source_organization'];
-		$order['targetOrganization'] = '002220647';
-		$order['customer'] = 'http://cc.zaakonline.nl'.$contact['_links']['self']['href'];
-		
-		$order = $commonGroundService->createResource($order, "https://orc.zaakonline.nl/orders");
-		$request['properties']['order']= 'https://orc.zaakonline.nl/orders'.$order['_links']['self']['href'];
-		
-		//$request['target_organization'] = $requestType['source_organization'];
-		$request = $requestService->updateRequest($request);
-		
-		$session->set('request', $request);
-		
-		// If we have a starting position lets start there
-		if(array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
-			$start = $request["current_stage"];
-		}
-		elseif(count($requestType['stages']) >0){
-			$start = $requestType['stages'][0]["slug"];
-		}
-		else{
-			$start = "ceremonies";
-		}
-		
-		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$start]));
-	}
-	
-	
-	/**
 	 * @Route("request/submit")
 	 */
 	public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, RequestService $requestService)
@@ -668,6 +591,7 @@ class DefaultController extends AbstractController
 	 * @Route("/", name="app_default_index")
 	 * @Route("/{slug}", name="app_default_slug")
 	 * @Route("/{slug}/{id}", name="app_default_view")
+	 * 
 	 */
 	public function viewAction(Session $session, $slug = false, $id = false, SjabloonService $sjabloonService, PdcService $pdcService, Request $httpRequest, CommonGroundService $commonGroundService, RequestService $requestService)
 	{
@@ -686,7 +610,7 @@ class DefaultController extends AbstractController
 		$variables['user']  = $session->get('user');
 		
 		// Let handle posible request creation
-		$requestType= $httpRequest->request->get('requestType');
+		$requestType = $httpRequest->request->get('requestType');
 		if($requestType || $requestType=  $httpRequest->query->get('requestType')){
 			
 			$requestTypeUri = $requestType;
@@ -699,7 +623,21 @@ class DefaultController extends AbstractController
 			$request['submitter']=$variables['user']['burgerservicenummer'];
 			$request['status']='incomplete';
 			$request['properties']= [];			
-			$request = $commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');			
+			$request = $commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');	
+			
+			// There is an optional case that a request type is a child of an already exsisting one
+			$requestParent  = $httpRequest->request->get('requestParent');
+			if($requestParent|| $requestParent=  $httpRequest->query->get('requestParent')){	
+				$requestParent = $commonGroundService->getResource($requestParent);
+				$request['parent'] = $requestParent['@id'];
+				
+				// Lets transfer any properties that are both inthe parent and the child request
+				foreach($requestType['properties'] as $property){
+					if(array_key_exists($property['slug'], $requestParent['properties'])){
+						$request['properties'][] = $requestParent['properties'][$property['slug']];
+					}
+				}				
+			}
 			
 			$contact = [];
 			$contact['givenName']= $variables['user']['naam']['voornamen'];
@@ -720,6 +658,8 @@ class DefaultController extends AbstractController
 			$request = $commonGroundService->updateResource($request, 'https://vrc.zaakonline.nl'.$request['@id']);				
 			
 			$session->set('request', $request);
+						
+			$this->addFlash('success', 'Verzoek voor '.$requestType['name'].' opgestart');
 			
 			// If we dont have a user requested slug lets go to the current request stage
 			if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
@@ -738,6 +678,8 @@ class DefaultController extends AbstractController
 			$session->set('request', $request);
 			$session->set('requestType', $requestType);
 			//var_dump($request);
+			
+			$this->addFlash('success', 'Verzoek voor '.$requestType['name'].' ingeladen');
 			
 			// If we dont have a user requested slug lets go to the current request stage
 			if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){

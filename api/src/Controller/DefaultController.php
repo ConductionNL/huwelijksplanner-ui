@@ -29,7 +29,7 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("request/submit")
 	 */
-	public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, RequestService $requestService)
+	public function submitrequestAction(Session $session, CommonGroundService $commonGroundService)
 	{
 		$request = $session->get('request');
 		$request['status'] = 'submitted';
@@ -49,7 +49,7 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("request/cancel")
 	 */
-	public function cancelrequestAction(Session $session, CommonGroundService $commonGroundService, RequestService $requestService)
+	public function cancelrequestAction(Session $session, CommonGroundService $commonGroundServices)
 	{
 		$request = $session->get('request');
 		$request['status'] = 'cancelled';
@@ -84,7 +84,7 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/assent/add/{property}")
 	 */
-	public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService, ContactService $contactService, AssentService $assentService, CommonGroundService $commonGroundService)
+	public function assentAddAction(Session $session, Request $httpRequest, $property, CommonGroundService $commonGroundService)
 	{
 		$requestType = $session->get('requestType');
 		$request = $session->get('request');
@@ -96,18 +96,25 @@ class DefaultController extends AbstractController
 		$assent['description'] = 'U is gevraagd of u wilt instemmen met een huwelijk of partnerschaps';
 		//$assent['requester'] = (string) $requestType['sourceOrganization'];
 		//$assent['request'] = $request['id'];
+		
+		// Hot fix
+		if(!array_key_exists ('@id', $request)){
+			$request['@id'] = $request['_links']['self']['href'];
+		}
+		
 		$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
 		$assent['status'] = 'requested';
 		$assent['requester'] = $user['burgerservicenummer'];
 		
 		//$assent= $assentService->createAssent($assent);
 		$assent = $commonGroundService->createResource($assent, "https://irc.zaakonline.nl/assents");
+		
 		if(!array_key_exists($property ,$request['properties'])){
 			$request['properties'][$property] = [];
 		}
 		$request['properties'][$property][] = 'http://irc.zaakonline.nl'.$assent['@id'];
 		
-		$request = $requestService->updateRequest($request);
+		$request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl".$request['@id']);		
 		
 		$session->set('requestType',false);
 		$session->set('request',false);
@@ -150,13 +157,14 @@ class DefaultController extends AbstractController
 			$this->addFlash('danger', 'U kon helaas niet worden ingelogd');
 			return $this->redirect($this->generateUrl('app_default_index'));
 		}
+				
+		$assent= $commonGroundService->getResource('https://irc.zaakonline.nl/assents/'.$id);	
 		
-		$assent = $assentService->getAssent($id);
 		$request = $commonGroundService->getResource($assent['request']);
 		$session->set('request', $request);
 		
 		// Lets also set the request type
-		$requestType = $requestTypeService->getRequestType($request['request_type']);
+		$requestType = $commonGroundService->getResource($request['request_type']);
 		$requestType = $requestService->checkRequestType($request, $requestType);
 		$session->set('requestType', $requestType);
 		
@@ -284,7 +292,8 @@ class DefaultController extends AbstractController
 		$contact['emails'][]=["name"=>"primary","email"=> $httpRequest->request->get('email')];
 		$contact['telephones']=[];
 		$contact['telephones'][]=["name"=>"primary","telephone"=> $httpRequest->request->get('telephone')];
-		$contact= $contactService->createContact($contact);
+		$contact = $commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
+				
 		
 		/* @todo onderstaande gaat een fout gooien als getuigen worden uitgenodigd voordat het huwelijkstype isgeselecteer (ja dat kan) */
 		$assent = [];
@@ -294,9 +303,8 @@ class DefaultController extends AbstractController
 		$assent['requester'] = $requestType['source_organization'];
 		$assent['request'] = $request['id'];
 		$assent['status'] = 'requested';
-		$assent['requester'] = $user['burgerservicenummer'];
-		
-		$assent= $assentService->createAssent($assent);
+		$assent['requester'] = $user['burgerservicenummer'];		
+		$assent= $commonGroundService->createResource($assent, 'https://irc.zaakonline.nl/assents');
 		
 		// Lets get the curent property
 		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));

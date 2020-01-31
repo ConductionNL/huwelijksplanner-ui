@@ -167,7 +167,9 @@ class DefaultController extends AbstractController
 			$contact['givenName']= $user['naam']['voornamen'];
 			$contact['familyName']= $user['naam']['geslachtsnaam'];
 			
-			$contact= $contactService->createContact($contact);
+			//$contact= $contactService->createContact($contact);
+			
+			$contact= $commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');		
 			
 			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
 			$assent['person'] = $user['burgerservicenummer'];

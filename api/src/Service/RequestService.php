@@ -94,8 +94,30 @@ class RequestService
     }
     
     
-    public function unsetPropertyOnSlug($request, $slug, $value)
+    public function unsetPropertyOnSlug($request, $slug, $value = null)
     {
+    	// Lets see if the property exists
+    	if(array_key_exists ($slug,$request['properties'])){
+    		return false;
+    	}
+    	
+    	// If the propery is an array then we only want to delete the givven value
+    	if(is_array($request['properties'][$slug])){
+    		
+    		$key = array_search($value, $request['properties'][$slug]);
+    		unset ($request['properties'][$slug][$key]);
+    		
+    		// If the array is now empty we want to drop the property
+    		if(count($request['properties'][$slug]) == 0){
+    			unset ($request['properties'][$slug]);    			
+    		}
+    	}
+    	// If else we just drop the property
+    	else{
+    		unset ($request['properties'][$slug]);
+    	}
+    	
+    	return $request;
     	
     }
     

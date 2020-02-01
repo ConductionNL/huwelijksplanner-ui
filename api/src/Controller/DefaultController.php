@@ -350,103 +350,23 @@ class DefaultController extends AbstractController
 		
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 	}
-		
-	/**
-	 * @Route("/{slug}/add/{id}", requirements={"id"=".+"})
-	 */
-	public function addAction(Session $session, $slug, $id, RequestService $requestService)
-	{
-		
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
-		
-		// Lets get the curent property
-		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-		
-		foreach ($arrIt as $sub) {
-			$subArray = $arrIt->getSubIterator();
-			if ($subArray['slug'] === $slug) {
-				$property = iterator_to_array($subArray);
-				break;
-			}
-		}
-		
-		// Lets see if an array already exisits for this property
-		if(!array_key_exists($property["name"], $request['properties'])){
-			$request['properties'][$property["name"]] = [];
-		}
-		
-		
-		$request['properties'][$property["name"]][] = $id;
-		
-		if($request = $requestService->updateRequest($request)){
-			$request["current_stage"] = $property["next"];
-			$request = $requestService->updateRequest($request);
-			$session->set('request', $request);
-			
-			$requestType = $requestService->checkRequestType($request, $requestType);
-			$session->set('requestType', $requestType);
-			
-			
-			$this->addFlash('success', ucfirst($slug).' is ingesteld');
-			
-			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
-				$slug = $property["next"];
-			}
-			elseif(isset($stage) && array_key_exists("slug", $stage)){
-				$slug = $property["slug"];
-			}
-			
-			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
-		}
-		else{
-			$this->addFlash('danger', ucfirst($slug).' kon niet worden ingesteld');
-			return $this->redirect($this->generateUrl('app_default_view',["slug"=>$slug,"id"=>$id]));
-		}
-	}
 	
 	/**
-	 * @Route("/{slug}/unset/{id}", requirements={"id"=".+"})
+	 * @Route("/{slug}/unset/{value}", requirements={"id"=".+"})
 	 */
-	public function unsetAction(Session $session, $slug, $id, RequestService $requestService)
+	public function unsetAction(Session $session, $slug, $value, RequestService $requestService)
 	{
-		$requestType = $session->get('requestType');
-		$request= $session->get('request');
-		$user = $session->get('user');
+		$variables = $applicationService->getVariables();
 		
-		// Lets get the curent property
-		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+		$variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);
 		
-		foreach ($arrIt as $sub) {
-			$subArray = $arrIt->getSubIterator();
-			if ($subArray['slug'] === $slug) {
-				$property = iterator_to_array($subArray);
-				break;
-			}
-		}
-		
-		if(is_array($request['properties'][$property["name"]])){
-			$key = array_search($id, $request['properties']);
-			unset($request['properties'][$property["name"]][$key]);
-		}
-		else{
-			$request['properties'][$property["name"]] = null;
-		}
-		
-		if($request = $requestService->updateRequest($request)){
-			
-			$request["current_stage"] = $property["slug"];
-			$request = $requestService->updateRequest($request);
-			
-			$requestType = $requestService->checkRequestType($request, $requestType);
-			$session->set('request', $request);
-			$session->set('requestType', $requestType);
-			
+		if($request = $requestService->updateRequest($variables['request'])){
+			/*@todo translation*/
 			$this->addFlash('success', ucfirst($slug).' geanuleerd');
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
+			/*@todo translation*/
 			$this->addFlash('danger', ucfirst($slug).' kon niet worden geanuleerd');
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
@@ -489,11 +409,13 @@ class DefaultController extends AbstractController
 		if($request = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){			
 			$session->set('request', $request);
 			
+			/*@todo translation*/
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
+			/*@todo translation*/
 			$this->addFlash('danger', ucfirst($slug).' kon niet worden ingesteld');
 			return $this->redirect($this->generateUrl('app_default_view',["slug"=>$slug,"id"=>$id]));
 		}

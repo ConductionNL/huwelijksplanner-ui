@@ -10,17 +10,15 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-
-use App\Service\PdcService;
 use App\Service\SjabloonService;
 use App\Service\BRPService;
-use App\Service\RequestService;
 use App\Service\RequestTypeService;
 use App\Service\ContactService;
 use App\Service\AssentService;
 
 use App\Service\CommonGroundService;
-use App\Service\HuwelijkService;
+use App\Service\RequestService;
+use App\Service\ApplicationService;
 
 /**
  */
@@ -458,25 +456,13 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/{slug}/set/{id}" , requirements={"id"=".+"})
 	 */
-	public function setAction(Session $session, $slug, $id, RequestService $requestService)
+	public function setAction(Session $session, $slug, $id, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService)
 	{
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
+		$variables = $applicationService->getVariables();
 		
-		// Lets get the curent property
-		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
+		$variables['request'] = $requestService->setProperty($variables['request'],$variables['requestType'],$slug,$id);
 		
-		foreach ($arrIt as $sub) {
-			$subArray = $arrIt->getSubIterator();
-			if ($subArray['slug'] === $slug) {
-				$property = iterator_to_array($subArray);
-				break;
-			}
-		}
-		
-		$request['properties'][$property["name"]] = $id;
-		
+		/*
 		// hardcode overwrite for "gratis trouwen"
 		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/190c3611-010d-4b0e-a31c-60dadf4d1c62"){
 			$request['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
@@ -488,8 +474,11 @@ class DefaultController extends AbstractController
 			$request['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}
 		
-		
-		if($request = $requestService->updateRequest($request)){
+		*/
+		if($request = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){
+			
+			$session->set('request', $request);
+			/*
 			$request["current_stage"] = $property["next"];
 			$request = $requestService->updateRequest($request);
 			$session->set('request', $request);
@@ -507,8 +496,6 @@ class DefaultController extends AbstractController
 					break;
 				}
 			}
-						
-			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
 			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
 				$slug = $property["next"];
@@ -516,6 +503,9 @@ class DefaultController extends AbstractController
 			else{
 				$slug = $property["slug"];
 			}
+			
+			*/
+			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
@@ -603,105 +593,20 @@ class DefaultController extends AbstractController
 	 * @Route("/{slug}/{id}", name="app_default_view")
 	 * 
 	 */
-	public function viewAction(Session $session, $slug = false, $id = false, SjabloonService $sjabloonService, PdcService $pdcService, Request $httpRequest, CommonGroundService $commonGroundService, RequestService $requestService)
+	public function viewAction(Session $session, $slug = false, $id = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
 	{
-		$variables=[];
+		$variables = $applicationService->getVariables();
 		
-		// @todo iets metorganisaties en applicaties
-		
-		// Lets handle a posible login		
-		$bsn = $httpRequest->request->get('bsn');
-		if($bsn || $bsn =  $httpRequest->query->get('bsn')){
-			$user = $commonGroundService->getResource('https://brp.zaakonline.nl/ingeschrevenpersonen/'.$bsn);
-			$session->set('user', $user);
-			
-			//var_dump($user);
-		}
-		$variables['user']  = $session->get('user');
-		
-		// Let handle posible request creation
-		$requestType = $httpRequest->request->get('requestType');
-		if($requestType || $requestType=  $httpRequest->query->get('requestType')){
-			
-			$requestTypeUri = $requestType;
-			$requestType = $commonGroundService->getResource($requestType);
-			$session->set('requestType', $requestType);
-						
-			$request= [];
-			$request['request_type'] = $requestTypeUri;
-			$request['target_organization']=$requestType['source_organization'];
-			$request['submitter']=$variables['user']['burgerservicenummer'];
-			$request['status']='incomplete';
-			$request['properties']= [];			
-			$request = $commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');	
-			
-			// There is an optional case that a request type is a child of an already exsisting one
-			$requestParent  = $httpRequest->request->get('requestParent');
-			if($requestParent|| $requestParent=  $httpRequest->query->get('requestParent')){	
-				$requestParent = $commonGroundService->getResource($requestParent);
-				$request['parent'] = $requestParent['@id'];
-				
-				// Lets transfer any properties that are both inthe parent and the child request
-				foreach($requestType['properties'] as $property){
-					if(array_key_exists($property['slug'], $requestParent['properties'])){
-						$request['properties'][] = $requestParent['properties'][$property['slug']];
-					}
-				}				
-			}
-			
-			$contact = [];
-			$contact['givenName']= $variables['user']['naam']['voornamen'];
-			$contact['familyName']= $variables['user']['naam']['geslachtsnaam'];
-			$contact= $commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
-			
-			$assent = [];
-			$assent['name'] = 'Instemming huwelijk partnerschp';
-			$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
-			$assent['requester'] = $requestType['source_organization'];
-			$assent['person'] = $variables['user']['burgerservicenummer'];
-			$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
-			$assent['status'] = 'granted';			
-			$assent = $commonGroundService->createResource($assent, 'https://irc.zaakonline.nl/assents');			
-			
-			$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['@id'];
-			$request = $commonGroundService->updateResource($request, 'https://vrc.zaakonline.nl'.$request['@id']);				
-			
-			$session->set('request', $request);
-						
-			$this->addFlash('success', 'Verzoek voor '.$requestType['name'].' opgestart');
-			
-			// If we dont have a user requested slug lets go to the current request stage
-			if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
-				$slug = $request["current_stage"];
-			}
-			elseif(!$slug && $requestType){
-				$slug = $requestType['stages'][0]['slug'];
-			}
-		}
-				
-		// Lets handle the loading of a request
-		$request= $httpRequest->request->get('request');
-		if($request || $request =  $httpRequest->query->get('request')){
-			$request = $commonGroundService->getResource($request);
-			$requestType = $commonGroundService->getResource($request['request_type']);
-			$session->set('request', $request);
-			$session->set('requestType', $requestType);
-			//var_dump($request);
-			
-			$this->addFlash('success', 'Verzoek voor '.$requestType['name'].' ingeladen');
-			
-			// If we dont have a user requested slug lets go to the current request stage
-			if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
-				$slug = $request["current_stage"];
-			}
-			elseif(!$slug && $requestType){
-				$slug = $requestType['stages'][0]['slug'];
-			}
-		}		
-		$variables['request'] = $session->get('request');
-		$variables['requestType'] = $session->get('requestType');
-		
+		/*
+		 * 
+    		// If we dont have a user requested slug lets go to the current request stage
+    		if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
+    			$slug = $request["current_stage"];
+    		}
+    		elseif(!$slug && $requestType){
+    			$slug = $requestType['stages'][0]['slug'];
+    		}
+    		*/
 		
 		// Lets handle the loading of a product is we have one
 		if($id){

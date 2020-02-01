@@ -475,7 +475,6 @@ class DefaultController extends AbstractController
 				}
 			}
 			
-			
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
 			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){

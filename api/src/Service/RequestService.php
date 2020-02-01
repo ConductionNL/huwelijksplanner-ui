@@ -94,39 +94,85 @@ class RequestService
     }
     
     
-    public function setProperty($request, $requestType, $property, $value)
+    public function unsetPropertyOnSlug($request, $slug, $value)
     {
-    	// Lets get the curent property
-    	$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['properties']));
+    	
+    }
+    
+    public function setPropertyOnSlug($request, $requestType, $slug, $value)
+    {
+    	// Lets get the curent property    	
     	$typeProperty = false;
     	
-    	// Let get the validation rules for this property
-    	foreach ($arrIt as $sub) {
-    		$subArray = $arrIt->getSubIterator();
-    		if (array_key_exists ('name', $subArray) && $subArray['name'] === $property) {
-    			$typeProperty = iterator_to_array($subArray);
+    	foreach ($requestType['properties'] as $property){
+    		if($property['slug'] == $slug){
+    			$typeProperty= $property;
     			break;
     		}
     	}
-    	
+    	    	
     	// If this porperty doesn't exsist for this reqoust type we have an issue
     	if(!$typeProperty){
     		return false;
     	}
-    	    	
-    	// Let procces the value
-    	switch ($typeProperty['type']) {
-    		case 'array':
-    			// Lets make sure that the value is an array
-    			if(!is_array($request['properties'][$property['name']])){
-    				$request['properties'][$property['name']] = [];
-    			}    			
-    			$request['properties'][$property['name']][] = $value;
-    			break;
-    		default:
-    			$request['properties'][$property['name']] = $value;
+    	
+    	// Let see if we need to do something special
+    	if(array_key_exists ('iri',$typeProperty)){
+	    	switch ($typeProperty['iri']) {
+	    		case 'irc/assent':
+	    			var_dump($value);
+	    			die;
+	    			break;
+	    		case 'pdc/product':
+	    			break;
+	    		case 'vrc/request':
+	    			break;
+	    		case 'orc/order':
+	    			break;
+	    	}
+    	}
+    	
+    	// Let validate the value
+	    if(array_key_exists ('format',$typeProperty)){
+	    	switch ($typeProperty['format']) {
+	    		case 'array':
+	    			break;
+	    		case 'array':
+	    			break;
+	    		case 'array':
+	    			break;
+	    		default:
+	    			$request['properties'][$typeProperty['name']] = $value;
+	    	}
     	}
     	    	
+    	// Let procces the value
+    	if($typeProperty['type'] == "array"){
+    		// Lets make sure that the value is an array
+    		if(!is_array($request['properties'][$typeProperty['name']])){
+    			$request['properties'][$typeProperty['name']] = [];
+    		}
+    		$request['properties'][$typeProperty['name']][] = $value;    		
+    	}
+    	else{
+    		$request['properties'][$typeProperty['name']] = $value;    		
+    	}
+    	
+    	/*@todo this misses busnes logic  */
+    	
+    	// Lets update the stage    	
+    	//$request["current_stage"] = $typeProperty["next"];
+    	
+    	/*
+    	 * 		
+			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
+				$slug = $property["next"];
+			}
+			else{
+				$slug = $property["slug"];
+			}
+    	 */
+    		   	    	
     	return $request;
     }
     

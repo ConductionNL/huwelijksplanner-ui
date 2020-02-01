@@ -454,57 +454,41 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{slug}/set/{id}" , requirements={"id"=".+"})
+	 * @Route("/{slug}/post", name="app_default_post")
+	 * @Route("/{slug}/set/{value}" , requirements={"value"=".+"}, name="app_default_set")
 	 */
-	public function setAction(Session $session, $slug, $id, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService)
+	public function setAction(Session $session, $slug, $value, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
 	{
 		$variables = $applicationService->getVariables();
 		
-		$variables['request'] = $requestService->setProperty($variables['request'],$variables['requestType'],$slug,$id);
+		// We want to be able to handle json body posts
+		if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
+			$data = json_decode($request->getContent(), true);
+			$request->request->replace(is_array($data) ? $data : array());
+		}
 		
-		/*
+		if($request->getMethod() == "POST"){
+			$value = $request->getContent();
+			var_dump();
+		}
+		
+		$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
+		
+		/*@todo dut configureerbaar maken */
 		// hardcode overwrite for "gratis trouwen"
-		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/190c3611-010d-4b0e-a31c-60dadf4d1c62"){
-			$request['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
-			$request['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
+		if(array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/190c3611-010d-4b0e-a31c-60dadf4d1c62"){
+			$variables['request']['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
+			$variables['request']['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}
 		// hardcode overwrite for "eenvoudig trouwen"
-		if(array_key_exists("plechtigheid", $request['properties']) && $request['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/16353702-4614-42ff-92af-7dd11c8eef9f"){
-			$request['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
-			$request['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
+		if(array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/16353702-4614-42ff-92af-7dd11c8eef9f"){
+			$variables['request']['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
+			$variables['request']['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}
 		
-		*/
-		if($request = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){
-			
-			$session->set('request', $request);
-			/*
-			$request["current_stage"] = $property["next"];
-			$request = $requestService->updateRequest($request);
+		if($request = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){			
 			$session->set('request', $request);
 			
-			$requestType = $requestService->checkRequestType($request, $requestType);
-			$session->set('requestType', $requestType);
-			
-			// Lets find the stage that we are add
-			$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-			
-			foreach ($arrIt as $sub) {
-				$subArray = $arrIt->getSubIterator();
-				if ($subArray['slug'] === $slug) {
-					$property = iterator_to_array($subArray);
-					break;
-				}
-			}
-			
-			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
-				$slug = $property["next"];
-			}
-			else{
-				$slug = $property["slug"];
-			}
-			
-			*/
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
 			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
@@ -590,10 +574,10 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/", name="app_default_index")
 	 * @Route("/{slug}", name="app_default_slug")
-	 * @Route("/{slug}/{id}", name="app_default_view")
+	 * @Route("/{slug}/{resource}", requirements={"resource"=".+"}, name="app_default_view")
 	 * 
 	 */
-	public function viewAction(Session $session, $slug = false, $id = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
+	public function viewAction(Session $session, $slug = false, $resource= false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
 	{
 		$variables = $applicationService->getVariables();
 		
@@ -609,9 +593,9 @@ class DefaultController extends AbstractController
     		*/
 		
 		// Lets handle the loading of a product is we have one
-		if($id){
+		if($resource){
 			/*@todo dit zou de commonground service moeten zijn */
-			$variables['product'] = $pdcService->getProduct($id);			
+			$variables['resource'] = $commonGroundService->getResource($resource);			
 		}
 		
 		if(!$slug){
@@ -627,24 +611,24 @@ class DefaultController extends AbstractController
 		switch ($slug) {
 			case null :
 				$slug = 'trouwen';
-				break;
+				break; 
 			case 'ambtenaar':
-				$variables['products']  = $pdcService->getProducts(['groups.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
+				$variables['products']  = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products',['groups.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
 				break;
 			case 'locatie':
-				$variables['products'] = $pdcService->getProducts(['groups.id'=>'170788e7-b238-4c28-8efc-97bdada02c2e']);
+				$variables['products']  = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products',['groups.id'=>'170788e7-b238-4c28-8efc-97bdada02c2e']);
 				break;
 			case 'plechtigheid':
-				$variables['products'] = $pdcService->getProducts(['groups.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
+				$variables['products']  = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products',['groups.id'=>'1cad775c-c2d0-48af-858f-a12029af24b3']);
 				break;
 			case 'extra':
-				$variables['products'] = $pdcService->getProducts(['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
+				$variables['products']  = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products',['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
 				break;
 			case 'requests':
-				$variables['requests'] = $commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+				$variables['requests']  = $commonGroundService->getResourceList('https://vrc.zaakonline.nl/requests',['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
 				break;
 			case 'new-request':
-				$variables['requestTypes'] = $commonGroundService->getResourceList('http://vtc.zaakonline.nl/request_types', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+				$variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
 				break;
 		}
 				

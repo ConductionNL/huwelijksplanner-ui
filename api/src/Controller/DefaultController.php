@@ -496,7 +496,6 @@ class DefaultController extends AbstractController
 	/**
 	 * @Route("/", name="app_default_index")
 	 * @Route("/{slug}", name="app_default_slug")
-	 * @Route("/{slug}/{resource}", requirements={"resource"=".+"}, name="app_default_view")
 	 * 
 	 */
 	public function viewAction(Session $session, $slug = false, $resource= false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
@@ -513,12 +512,6 @@ class DefaultController extends AbstractController
     			$slug = $requestType['stages'][0]['slug'];
     		}
     		*/
-		
-		// Lets handle the loading of a product is we have one
-		if($resource){
-			/*@todo dit zou de commonground service moeten zijn */
-			$variables['resource'] = $commonGroundService->getResource($resource);			
-		}
 		
 		if(!$slug){
 			/*@todo dit zou uit de standaard settings van de applicatie moeten komen*/

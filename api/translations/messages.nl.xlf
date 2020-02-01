@@ -21,6 +21,26 @@
         <source>declined</source>
         <target>afgewezen</target>
       </trans-unit>
+      <trans-unit id="hVVLud1" resname="incomplete">
+        <source>incomplete</source>
+        <target>inkompleet</target>
+      </trans-unit>
+      <trans-unit id="7rv2RX5" resname="complete">
+        <source>complete</source>
+        <target>kompleet</target>
+      </trans-unit>
+      <trans-unit id="WBkP_r_" resname="processed">
+        <source>processed</source>
+        <target>verwerked</target>
+      </trans-unit>
+      <trans-unit id="i0cEXre" resname="cancelled">
+        <source>cancelled</source>
+        <target>geanuleerd</target>
+      </trans-unit>
+      <trans-unit id="UjZ6ZiK" resname="reference">
+        <source>reference</source>
+        <target>kenmerk</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

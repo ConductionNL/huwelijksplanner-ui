@@ -3,3 +3,8 @@ requested: aangevraagd
 granted: ingestemd
 submitted: ingediend
 declined: afgewezen
+incomplete: inkompleet
+complete: kompleet
+processed: verwerked
+cancelled: geanuleerd
+reference: kenmerk

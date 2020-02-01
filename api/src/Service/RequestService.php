@@ -52,10 +52,17 @@ class RequestService
     	$request['application'] = $application;
     	$request['status']='incomplete';
     	$request['properties']= [];
+    	
     	if($user){    		
     		$request['submitter'] = $user['burgerservicenummer'];
     		//$request['submitters'] = [$user['burgerservicenummer']];
     	}
+    	
+    	// juiste startpagina weergeven
+    	if(array_key_exists ("current_stage", $request)){
+    		
+    	}
+    	
     	$request = $this->commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');    	
     	
     	

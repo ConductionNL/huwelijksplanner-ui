@@ -377,7 +377,7 @@ class DefaultController extends AbstractController
 	 * @Route("/{slug}/post", name="app_default_post")
 	 * @Route("/{slug}/set/{value}" , requirements={"value"=".+"}, name="app_default_set")
 	 */
-	public function setAction(Session $session, $slug, $value, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
+	public function setAction(Session $session, $slug, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
 	{
 		$variables = $applicationService->getVariables();
 		

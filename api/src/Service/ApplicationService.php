@@ -47,7 +47,7 @@ class ApplicationService
     	$resource= $this->request->get('resource');
     	if($resource|| $resource = $this->request->query->get('resource')){
     		/*@todo dit zou de commonground service moeten zijn */
-    		$variables['resource'] = $commonGroundService->getResource($resource);
+    		$variables['resource'] = $this->commonGroundService->getResource($resource);
     	}
     	
     	// Lets handle a posible login
@@ -89,8 +89,11 @@ class ApplicationService
     		$requestParent = $this->request->request->get('requestParent');
     		if(!$requestParent){ $requestParent =  $this->request->query->get('requestParent');}
     		
+    		$requestType = $this->commonGroundService->getResource($requestType);
     		$request = $this->requestService->createFromRequestType($requestType, $requestParent);
-    		$requestType = $this->commonGroundService->getResource($request['request_type']);
+    		
+    		// Validate current reqoust type
+    		$requestType = $this->requestService->checkRequestType($request, $requestType);
     		
     		$this->session->set('request', $request);
     		$this->session->set('requestType', $requestType);
@@ -105,6 +108,9 @@ class ApplicationService
     	if($request || $request =  $this->request->query->get('request')){
     		$request = $this->commonGroundService->getResource($request);
     		$requestType = $this->commonGroundService->getResource($request['request_type']);
+    		
+    		// Validate current reqoust type
+    		$requestType = $this->requestService->checkRequestType($request, $requestType);
     		
     		$this->session->set('request', $request);
     		$this->session->set('requestType', $requestType);

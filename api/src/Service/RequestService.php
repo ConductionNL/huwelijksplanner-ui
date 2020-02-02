@@ -47,7 +47,7 @@ class RequestService
     	}
     		    	
     	$request= [];
-    	$request['request_type'] = $requestType;
+    	$request['request_type'] = 'https://vtc.zaakonline.nl'.$requestType['@id'];
     	$request['target_organization'] = $organization;
     	$request['application'] = $application;
     	$request['status']='incomplete';
@@ -59,8 +59,8 @@ class RequestService
     	}
     	
     	// juiste startpagina weergeven
-    	if(array_key_exists ("current_stage", $request)){
-    		
+    	if(!array_key_exists ("current_stage", $request) && array_key_exists (0, $requestType['stages'])){
+    		$request["current_stage"] = $requestType['stages'][0]['slug'];
     	}
     	
     	$request = $this->commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');    	
@@ -101,29 +101,29 @@ class RequestService
     }
     
     
-    public function unsetPropertyOnSlug($request, $slug, $value = null)
+    public function unsetPropertyOnSlug($request, $property, $value = null)
     {
     	// Lets see if the property exists
-    	if(array_key_exists ($slug,$request['properties'])){
+    	if(!array_key_exists ($property, $request['properties'])){
     		return false;
     	}
     	
     	// If the propery is an array then we only want to delete the givven value
-    	if(is_array($request['properties'][$slug])){
+    	if(is_array($request['properties'][$property])){
     		
-    		$key = array_search($value, $request['properties'][$slug]);
-    		unset ($request['properties'][$slug][$key]);
+    		$key = array_search($value, $request['properties'][$property]);
+    		unset ($request['properties'][$property][$key]);
     		
     		// If the array is now empty we want to drop the property
-    		if(count($request['properties'][$slug]) == 0){
-    			unset ($request['properties'][$slug]);    			
+    		if(count($request['properties'][$property]) == 0){
+    			unset ($request['properties'][$property]);    			
     		}
     	}
     	// If else we just drop the property
     	else{
-    		unset ($request['properties'][$slug]);
+    		unset ($request['properties'][$property]);
     	}
-    	
+    	    	
     	return $request;
     	
     }
@@ -148,16 +148,72 @@ class RequestService
     	// Let see if we need to do something special
     	if(array_key_exists ('iri',$typeProperty)){
 	    	switch ($typeProperty['iri']) {
-	    		case 'irc/assent':
-	    			var_dump($value);
-	    			die;
+	    		case 'irc/assent':	    			
+	    			
+	    			// This is a new assent so we also need to create a contact
+	    			if(!array_key_exists ('@id', $value)) {
+	    				
+	    				$contact = [];
+	    				$contact['givenName']= $value['givenName'];
+	    				$contact['familyName']= $value['familyName'];
+	    				$contact['emails']=[];
+	    				$contact['emails'][]=["name"=>"primary","email"=> $value['email']];
+	    				$contact['telephones']=[];
+	    				$contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
+	    				$contact = $this->commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
+	    				
+	    				unset($value['givenName']);
+	    				unset($value['familyName']);
+	    				unset($value['email']);
+	    				unset($value['telephone']);
+	    				
+	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B';
+	    				$value['requester'] = $requestType['source_organization'];
+	    				$value['request'] = $request['id'];
+	    				$value['status'] = 'requested';		
+	    				$value['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
+	    				$value = $this->commonGroundService->createResource($value, 'https://irc.zaakonline.nl/assents');
+	    			}
+	    			else{	    
+	    				//$value = $this->commonGroundService->updateResource($value, 'https://irc.zaakonline.nl/'.$value['@id']);
+	    			}
+	    			$value = 'http://irc.zaakonline.nl'.$value['@id'];
+	    			break;
+	    			/*	
+	    		case 'cc/people':
+	    			// This is a new assent so we also need to create a contact
+	    			if(!array_key_exists ('@id', $value)) {
+	    				$value= $this->commonGroundService->createResource($value, 'https://cc.zaakonline.nl/people');
+	    			}
+	    			else{
+	    				$value= $this->commonGroundService->updateResource($value, 'https://cc.zaakonline.nl/'.$value['@id']);
+	    			}
+	    			$value ='http://cc.zaakonline.nl'.$value['@id'];
 	    			break;
 	    		case 'pdc/product':
+	    			// This is a new assent so we also need to create a contact
+	    			if(!array_key_exists ('@id', $value)) {
+	    				$value= $this->commonGroundService->createResource($value, 'https://pdc.zaakonline.nl/product');
+	    			}
+	    			else{
+	    				$value= $this->commonGroundService->updateResource($value, 'https://pdc.zaakonline.nl/'.$value['@id']);
+	    			}
+	    			$value = $value['@id'];
 	    			break;
 	    		case 'vrc/request':
 	    			break;
 	    		case 'orc/order':
+	    			// This is a new assent so we also need to create a contact
+	    			if(!$value['@id']){
+	    				$value= $this->commonGroundService->createResource($value, 'https://orc.zaakonline.nl/order');
+	    			}
+	    			else{
+	    				$value= $this->commonGroundService->updateResource($value, 'https://orc.zaakonline.nl/'.$value['@id']);
+	    			}
+	    			$value = 'http://orc.zaakonline.nl'.$value['@id'];
 	    			break;
+	    			*/
 	    	}
     	}
     	
@@ -171,14 +227,14 @@ class RequestService
 	    		case 'array':
 	    			break;
 	    		default:
-	    			$request['properties'][$typeProperty['name']] = $value;
+	    		//	$request['properties'][$typeProperty['name']] = $value;
 	    	}
     	}
     	    	
     	// Let procces the value
     	if($typeProperty['type'] == "array"){
     		// Lets make sure that the value is an array
-    		if(!is_array($request['properties'][$typeProperty['name']])){
+    		if(!array_key_exists($typeProperty['name'],$request['properties']) || !is_array($request['properties'][$typeProperty['name']])){
     			$request['properties'][$typeProperty['name']] = [];
     		}
     		$request['properties'][$typeProperty['name']][] = $value;    		
@@ -201,7 +257,7 @@ class RequestService
 				$slug = $property["slug"];
 			}
     	 */
-    		   	    	
+    	    	
     	return $request;
     }
     

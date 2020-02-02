@@ -269,98 +269,21 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/create/assent/{property}", methods={"POST"})
+	 * @Route("/{slug}/unset/{value}", requirements={"value"=".+"})
 	 */
-	public function createAssentAction(Session $session, Request $httpRequest, $property, RequestService $requestService, ContactService $contactService, AssentService $assentService, CommonGroundService $commonGroundService)
-	{
-		
-		$requestType = $session->get('requestType');
-		$request = $session->get('request');
-		$user = $session->get('user');
-		
-		if($request && !in_array("ceremonie", $request["properties"])){
-			$request["properties"]["ceremonie"] = "huwelijk/partnerschap";
-		}
-		
-		// First we need to create an assent
-		$contact = [];
-		$contact['givenName']= $httpRequest->request->get('givenName');
-		$contact['familyName']= $httpRequest->request->get('familyName');
-		$contact['emails']=[];
-		$contact['emails'][]=["name"=>"primary","email"=> $httpRequest->request->get('email')];
-		$contact['telephones']=[];
-		$contact['telephones'][]=["name"=>"primary","telephone"=> $httpRequest->request->get('telephone')];
-		$contact = $commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
-				
-		
-		/* @todo onderstaande gaat een fout gooien als getuigen worden uitgenodigd voordat het huwelijkstype isgeselecteer (ja dat kan) */
-		$assent = [];
-		$assent['name'] = 'Instemming als '.$property.' bij '.$request["properties"]["ceremonie"];
-		$assent['description'] = 'U bent uitgenodigd als '.$property.' voor het '.$request["properties"]["ceremonie"].' van A en B';
-		$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
-		$assent['requester'] = $requestType['source_organization'];
-		$assent['request'] = $request['id'];
-		$assent['status'] = 'requested';
-		$assent['requester'] = $user['burgerservicenummer'];		
-		$assent= $commonGroundService->createResource($assent, 'https://irc.zaakonline.nl/assents');
-		
-		// Lets get the curent property
-		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-		
-		foreach ($arrIt as $sub) {
-			$subArray = $arrIt->getSubIterator();
-			if ($subArray['slug'] === $property) {
-				$stage = iterator_to_array($subArray);
-				break;
-			}
-		}		
-		
-		
-		// Lets see if an array already exisits for this property
-		if(!array_key_exists($stage["name"], $request['properties'])){
-			$request['properties'][$stage["name"]] = [];
-		}
-		
-		$request['properties'][$stage["name"]][] = 'http://irc.zaakonline.nl'.$assent['@id'];
-		
-		if($request = $requestService->updateRequest($request)){
-			$request["current_stage"] = $stage["next"];
-			$request = $requestService->updateRequest($request);
-			$session->set('request', $request);
-			
-			$requestType = $requestService->checkRequestType($request, $requestType);
-			$session->set('requestType', $requestType);
-			
-			
-			$this->addFlash('success', ucfirst($property).' is ingesteld');
-			
-			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
-				//$slug = $stage["next"];
-				
-				$slug = $stage["slug"];
-			}
-			else{
-				$slug = $stage["slug"];
-			}
-			
-		}
-		else{
-			$this->addFlash('danger', ucfirst($property).' kon niet worden ingesteld');
-		}
-		
-		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
-	}
-	
-	/**
-	 * @Route("/{slug}/unset/{value}", requirements={"id"=".+"})
-	 */
-	public function unsetAction(Session $session, $slug, $value, RequestService $requestService)
+	public function unsetAction(Session $session, $slug, $value, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService)
 	{
 		$variables = $applicationService->getVariables();
 		
-		$variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);
+		$variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);		
+				
+		$variables['requestType']= $requestService->checkRequestType($variables['request'], $variables['requestType']);
 		
-		if($request = $requestService->updateRequest($variables['request'])){
+		if($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){
+			
+			$session->set('request', $variables['request']);
+			$session->set('requestType', $variables['requestType']);
+			
 			/*@todo translation*/
 			$this->addFlash('success', ucfirst($slug).' geanuleerd');
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
@@ -387,9 +310,8 @@ class DefaultController extends AbstractController
 			$request->request->replace(is_array($data) ? $data : array());
 		}
 		
-		if($request->getMethod() == "POST"){
-			$value = $request->getContent();
-			var_dump();
+		if($request->get('_route') == "app_default_post"){			
+			parse_str($request->getContent(), $value);
 		}
 		
 		$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
@@ -406,17 +328,34 @@ class DefaultController extends AbstractController
 			$variables['request']['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}
 		
-		if($request = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){			
-			$session->set('request', $request);
+		// Lets see if we need to jump stage
+		
+		// Let see if we the current stage isn't completed by now		
+		$variables['requestType']= $requestService->checkRequestType($variables['request'], $variables['requestType']);
+		$stageName = $slug;
+		
+		foreach($variables['requestType']['stages'] as $stage){
+			if($stage['slug'] == $slug && array_key_exists('completed',$stage) && $stage['completed']){
+				$stageName  = $stage['name'];
+				$slug = $stage['next'];
+				$variables['request']['current_stage'] = $stage['next'];
+			}
+		}
+		
+		if($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){	
+			
+			$session->set('request', $variables['request']);					
+			$session->set('requestType', $variables['requestType']);
+			
 			
 			/*@todo translation*/
-			$this->addFlash('success', ucfirst($slug).' is ingesteld');
+			$this->addFlash('success', ucfirst($stageName).' is ingesteld');
 			
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
 			/*@todo translation*/
-			$this->addFlash('danger', ucfirst($slug).' kon niet worden ingesteld');
+			$this->addFlash('danger', ucfirst($stageName).' kon niet worden ingesteld');
 			return $this->redirect($this->generateUrl('app_default_view',["slug"=>$slug,"id"=>$id]));
 		}
 	}
@@ -511,16 +450,17 @@ class DefaultController extends AbstractController
     			$slug = $requestType['stages'][0]['slug'];
     		}
     		*/
+		//$variables['request']
 		
-		if(!$slug){
+		// If we have a cuurent stage on the request
+		if(!$slug && array_key_exists ('request', $variables)){
+			$slug =  $variables['request']["current_stage"];
+		}
+		elseif(!$slug){
 			/*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
 			$slug="trouwen";
 		}
-		
-		if(array_key_exists('request',$variables) && array_key_exists('requestType',$variables) && $variables['request'] && $variables['requestType']){			
-			$variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
-		}
-		
+				
 		/*@todo olld skool overwite variabel maken */
 		switch ($slug) {
 			case null :

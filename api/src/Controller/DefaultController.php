@@ -318,10 +318,17 @@ class DefaultController extends AbstractController
 
 		// If we have a slug then a specific property is bieng set
 		if($slug){
+            if($slug == "datum"){
+                $date = $value["datum"];
+                $time = $value["tijd"];
+                $dateArray = explode(" ", $date);
+                $value = date('d-m-Y H:i', strtotime("$dateArray[1] $dateArray[2] $dateArray[3] $time "));
+            }
 			$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 		}
 		// if not the we are asuming a "broad" form that wants to update anything in the reqoust, so we merge arrays
 		elseif(is_array($value)){
+
 			$variables['request']['properties'] = array_merge($variables['request']['properties'], $value);
 		}
 		else{

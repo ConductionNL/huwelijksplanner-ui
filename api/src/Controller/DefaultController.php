@@ -297,10 +297,11 @@ class DefaultController extends AbstractController
 	}
 	
 	/**
+	 * @Route("/post", name="app_default_post_request")
 	 * @Route("/{slug}/post", name="app_default_post")
 	 * @Route("/{slug}/set/{value}" , requirements={"value"=".+"}, name="app_default_set")
 	 */
-	public function setAction(Session $session, $slug, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
+	public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
 	{
 		$variables = $applicationService->getVariables();
 		
@@ -310,11 +311,23 @@ class DefaultController extends AbstractController
 			$request->request->replace(is_array($data) ? $data : array());
 		}
 		
-		if($request->get('_route') == "app_default_post"){			
+		if($request->get('_route') == "app_default_post" || $request->get('_route') == "app_default_post_request"){			
 			parse_str($request->getContent(), $value);
 		}
+			
 		
-		$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
+		// If we have a slug then a specific property is bieng set
+		if($slug){			
+			$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
+		}
+		// if not the we are asuming a "broad" form that wants to update anything in the reqoust, so we merge arrays
+		elseif(is_array($value)){
+			$variables['request']['properties'] = array_merge($variables['request']['properties'], $value);
+		}
+		else{
+			/*@todo throw error */
+		}
+		
 		
 		/*@todo dut configureerbaar maken */
 		// hardcode overwrite for "gratis trouwen"

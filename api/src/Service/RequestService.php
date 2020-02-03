@@ -237,7 +237,13 @@ class RequestService
     		if(!array_key_exists($typeProperty['name'],$request['properties']) || !is_array($request['properties'][$typeProperty['name']])){
     			$request['properties'][$typeProperty['name']] = [];
     		}
-    		$request['properties'][$typeProperty['name']][] = $value;    		
+    		// If the post is also an array then lets merge the two together
+    		if(is_array($value)){
+    			$request['properties'][$typeProperty['name']] = array_merge($request['properties'][$typeProperty['name']], $value);    	    			
+    		}
+    		else{    			
+    			$request['properties'][$typeProperty['name']][] = $value;   
+    		} 		
     	}
     	else{
     		$request['properties'][$typeProperty['name']] = $value;    		

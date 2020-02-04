@@ -52,7 +52,7 @@ class DefaultController extends AbstractController
 		$request = $session->get('request');
 		$request['status'] = 'cancelled';
 
-		if($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/request/".$request['id'])){
+		if($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/requests/".$request['id'])){
 			$session->set('request', $request);
 			$this->addFlash('success', 'Uw verzoek is geanuleerd');
 		}

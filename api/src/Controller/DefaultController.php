@@ -31,27 +31,27 @@ class DefaultController extends AbstractController
 	{
 		$request = $session->get('request');
 		$request['status'] = 'submitted';
-		
+
 		if($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/requests/".$request['id'])){
 			$session->set('request', $request);
-			
+
 			$this->addFlash('success', 'Uw verzoek is ingediend');
 		}
 		else{
 			$this->addFlash('danger', 'Uw verzoek kon niet worden ingediend');
 		}
-		
+
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"checklist"]));
 	}
-	
+
 	/**
 	 * @Route("request/cancel")
 	 */
-	public function cancelrequestAction(Session $session, CommonGroundService $commonGroundServices)
+	public function cancelrequestAction(Session $session, CommonGroundService $commonGroundService)
 	{
 		$request = $session->get('request');
 		$request['status'] = 'cancelled';
-		
+
 		if($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/request/".$request['id'])){
 			$session->set('request', $request);
 			$this->addFlash('success', 'Uw verzoek is geanuleerd');
@@ -59,10 +59,10 @@ class DefaultController extends AbstractController
 		else{
 			$this->addFlash('danger', 'Uw verzoek kon niet worden geanuleerd');
 		}
-		
+
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"checklist"]));
 	}
-	
+
 	/**
 	 * @Route("/logout")
 	 */
@@ -73,12 +73,12 @@ class DefaultController extends AbstractController
 		$session->set('user',false);
 		$session->set('employee',false);
 		$session->set('contact',false);
-		
+
 		$this->addFlash('danger', 'U bent uitgelogd');
-		
+
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>"trouwen"]));
 	}
-	
+
 	/**
 	 * @Route("/assent/add/{property}")
 	 */
@@ -87,40 +87,40 @@ class DefaultController extends AbstractController
 		$requestType = $session->get('requestType');
 		$request = $session->get('request');
 		$user = $session->get('user');
-		
+
 		// First we need to make an new assent
 		$assent = [];
 		$assent['name'] = 'Instemming huwelijk of partnerschap';
 		$assent['description'] = 'U is gevraagd of u wilt instemmen met een huwelijk of partnerschaps';
 		//$assent['requester'] = (string) $requestType['sourceOrganization'];
 		//$assent['request'] = $request['id'];
-		
+
 		// Hot fix
 		if(!array_key_exists ('@id', $request)){
 			$request['@id'] = $request['_links']['self']['href'];
 		}
-		
+
 		$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
 		$assent['status'] = 'requested';
 		$assent['requester'] = $user['burgerservicenummer'];
-		
+
 		//$assent= $assentService->createAssent($assent);
 		$assent = $commonGroundService->createResource($assent, "https://irc.zaakonline.nl/assents");
-		
+
 		if(!array_key_exists($property ,$request['properties'])){
 			$request['properties'][$property] = [];
 		}
 		$request['properties'][$property][] = 'http://irc.zaakonline.nl'.$assent['@id'];
-		
-		$request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl".$request['@id']);		
-		
+
+		$request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl".$request['@id']);
+
 		$session->set('requestType',false);
 		$session->set('request',false);
 		$session->set('user',false);
-		
+
 		return $this->redirect($this->generateUrl('app_default_assentlogin',["id"=>$assent["id"]]));
 	}
-	
+
 	/**
 	 * @Route("/assent/{id}")
 	 */
@@ -128,7 +128,7 @@ class DefaultController extends AbstractController
 	{
 		// We might have a returning user
 		$user = $session->get('user');
-		
+
 		// Lets first see if we have a login
 		$bsn = $httpRequest->request->get('bsn');
 		if(!$bsn){
@@ -139,72 +139,72 @@ class DefaultController extends AbstractController
 			//return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath()));
 			return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.$httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath().$this->generateUrl('app_default_assentlogin',["id"=>$id]));
 		}
-		
-		
+
+
 		// if we have a login, lets do a login
 		if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
 			$session->set('user', $persoon);
 			$user = $session->get('user');
-			
-			
+
+
 			$this->addFlash('success', 'Welkom '.$persoon['naam']['voornamen']);
 		}
-		
+
 		// If we do not have a user at this point we need to error
 		if(!$user){
 			$this->addFlash('danger', 'U kon helaas niet worden ingelogd');
 			return $this->redirect($this->generateUrl('app_default_index'));
 		}
-				
-		$assent= $commonGroundService->getResource('https://irc.zaakonline.nl/assents/'.$id);	
-		
+
+		$assent= $commonGroundService->getResource('https://irc.zaakonline.nl/assents/'.$id);
+
 		$request = $commonGroundService->getResource($assent['request']);
 		$session->set('request', $request);
-		
+
 		// Lets also set the request type
 		$requestType = $commonGroundService->getResource($request['request_type']);
 		$requestType = $requestService->checkRequestType($request, $requestType);
 		$session->set('requestType', $requestType);
-		
+
 		// If user is not loged in
 		if(!$assent['contact'] && $user){
-			
+
 			$contact = [];
 			$contact['givenName']= $user['naam']['voornamen'];
 			$contact['familyName']= $user['naam']['geslachtsnaam'];
-			
+
 			//$contact= $contactService->createContact($contact);
-			
-			$contact= $commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');		
-			
+
+			$contact= $commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
+
 			$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
 			$assent['person'] = $user['burgerservicenummer'];
-			
+
 			$assent =  $assentService->updateAssent($assent);
 		}
-		
+
 		// Let render stuff
-		
+
 		$products = [];
 		$variables = ["requestType"=>$requestType,"request"=>$request,"user"=>$user,"products"=>$products,"assent"=>$assent];
-		
+
 		$template = $sjabloonService->getOnSlug('assent');
-		
+
 		// We want to include the html in our own template
 		$html = $template['content'];
-		
+
 		$template = $this->get('twig')->createTemplate($html);
 		$template = $template->render($variables);
-		
+
 		return $response = new Response(
 				$template,
 				Response::HTTP_OK,
 				['content-type' => 'text/html']
 				);
-		
+
 	}
-	
-	
+
+
 	/**
 	 * @Route("/assent/{id}/{status}")
 	 */
@@ -213,20 +213,20 @@ class DefaultController extends AbstractController
 		$request = $session->get('request');
 		$requestType = $session->get('requestType');
 		$user = $session->get('user');
-		
+
 		$assent = $assentService->getAssent($id);
 		$assent['status'] = $status;
-		
+
 		if($assentService->updateAssent($assent)){
 			$this->addFlash('success', 'Uw instemmings status is bijgewerkt naar '.$status);
 		}
 		else{
 			$this->addFlash('danger', 'Uw instemmings status kon niet worden bijgewerkt');
 		}
-		
+
 		return $this->redirect($this->generateUrl('app_default_assentlogin',["id"=>$assent["id"]]));
 	}
-	
+
 	/**
 	 * @Route("/data")
 	 */
@@ -234,12 +234,12 @@ class DefaultController extends AbstractController
 	{
 		$request = $session->get('request');
 		$user = $session->get('user');
-		
+
 		$response = new JsonResponse($request);
 		return $response;
 	}
-	
-	
+
+
 	/**
 	 * @Route("/update/assent/{id}", methods={"POST"})
 	 */
@@ -248,42 +248,42 @@ class DefaultController extends AbstractController
 		$requestType = $session->get('requestType');
 		$request = $session->get('request');
 		$user = $session->get('user');
-		
+
 		$assent  = $assentService->getAssent($id);
 		$contact = $commonGroundService->getResource($assent['contact']);
-		
+
 		if($httpRequest->request->get('givenName')){$contact['givenName']= $httpRequest->request->get('givenName');}
-		if($httpRequest->request->get('familyName')){$contact['familyName']= $httpRequest->request->get('familyName');}		
-		
+		if($httpRequest->request->get('familyName')){$contact['familyName']= $httpRequest->request->get('familyName');}
+
 		$contact['emails'][0]=["name"=>"primary","email"=> $httpRequest->request->get('email')];
 		$contact['telephones'][0]=["name"=>"primary","telephone"=> $httpRequest->request->get('telephone')];
-		
+
 		if($contact = $commonGroundService->updateResource($contact, $assent['contact'])){
 			$this->addFlash('success', $contact['name'].' is bijgewerkt');
 		}
 		else{
 			$this->addFlash('danger', $contact['name'].' kon niet worden bijgewerkt');
 		}
-		
+
 		return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$request["current_stage"]]));
 	}
-	
+
 	/**
 	 * @Route("/{slug}/unset/{value}", requirements={"value"=".+"})
 	 */
 	public function unsetAction(Session $session, $slug, $value, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService)
 	{
 		$variables = $applicationService->getVariables();
-		
-		$variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);		
-				
+
+		$variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);
+
 		$variables['requestType']= $requestService->checkRequestType($variables['request'], $variables['requestType']);
-		
+
 		if($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){
-			
+
 			$session->set('request', $variables['request']);
 			$session->set('requestType', $variables['requestType']);
-			
+
 			/*@todo translation*/
 			$this->addFlash('success', ucfirst($slug).' geanuleerd');
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
@@ -293,9 +293,9 @@ class DefaultController extends AbstractController
 			$this->addFlash('danger', ucfirst($slug).' kon niet worden geanuleerd');
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
-		
+
 	}
-	
+
 	/**
 	 * @Route("/post", name="app_default_post_request")
 	 * @Route("/{slug}/post", name="app_default_post")
@@ -304,20 +304,20 @@ class DefaultController extends AbstractController
 	public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
 	{
 		$variables = $applicationService->getVariables();
-		
+
 		// We want to be able to handle json body posts
 		if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
 			$data = json_decode($request->getContent(), true);
 			$request->request->replace(is_array($data) ? $data : array());
 		}
-		
-		if($request->get('_route') == "app_default_post" || $request->get('_route') == "app_default_post_request"){			
+
+		if($request->get('_route') == "app_default_post" || $request->get('_route') == "app_default_post_request"){
 			parse_str($request->getContent(), $value);
 		}
-			
-		
+
+
 		// If we have a slug then a specific property is bieng set
-		if($slug){			
+		if($slug){
 			$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 		}
 		// if not the we are asuming a "broad" form that wants to update anything in the reqoust, so we merge arrays
@@ -327,8 +327,8 @@ class DefaultController extends AbstractController
 		else{
 			/*@todo throw error */
 		}
-		
-		
+
+
 		/*@todo dut configureerbaar maken */
 		// hardcode overwrite for "gratis trouwen"
 		if(array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/190c3611-010d-4b0e-a31c-60dadf4d1c62"){
@@ -340,30 +340,30 @@ class DefaultController extends AbstractController
 			$variables['request']['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
 			$variables['request']['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}
-		
+
 		// Lets see if we need to jump stage
-		
-		// Let see if we the current stage isn't completed by now		
+
+		// Let see if we the current stage isn't completed by now
 		$variables['requestType']= $requestService->checkRequestType($variables['request'], $variables['requestType']);
 		$stageName = $slug;
-		
+
 		foreach($variables['requestType']['stages'] as $stage){
-			if($stage['slug'] == $slug && array_key_exists('completed',$stage) && $stage['completed']){
+			if($stage['slug'] == $slug && array_key_exists('completed',$stage) && $stage['completed']) {
 				$stageName  = $stage['name'];
 				$slug = $stage['next'];
 				$variables['request']['current_stage'] = $stage['next'];
 			}
 		}
-		
-		if($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){	
-			
-			$session->set('request', $variables['request']);					
+
+		if($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl'.$variables['request']['@id'])){
+
+			$session->set('request', $variables['request']);
 			$session->set('requestType', $variables['requestType']);
-			
-			
+
+
 			/*@todo translation*/
 			$this->addFlash('success', ucfirst($stageName).' is ingesteld');
-			
+
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
@@ -372,7 +372,7 @@ class DefaultController extends AbstractController
 			return $this->redirect($this->generateUrl('app_default_view',["slug"=>$slug,"id"=>$id]));
 		}
 	}
-	
+
 	/**
 	 * @Route("/{slug}/datum")
 	 */
@@ -381,10 +381,10 @@ class DefaultController extends AbstractController
 		$requestType = $session->get('requestType');
 		$request = $session->get('request');
 		$user = $session->get('user');
-		
+
 		// Lets get the curent property
 		$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-		
+
 		foreach ($arrIt as $sub) {
 			$subArray = $arrIt->getSubIterator();
 			if ($subArray['slug'] === $slug) {
@@ -394,31 +394,31 @@ class DefaultController extends AbstractController
 		}
 		/* @todo we should turn this into symfony form */
 		if ($httprequest->isMethod('POST') && $httprequest->request->get('datum')) {
-			
-			
+
+
 			$dateArray = (explode(" ", $httprequest->request->get('datum')));
 			$date = strtotime($dateArray[1].' '.$dateArray[2].' '.$dateArray[3]);
 			$postdate = date('Y-m-d',$date);
 			$displaydate = date('d-m-Y',$date);
-			
-			
+
+
 			$request['properties']['datum'] = $displaydate;
 		}
-		
+
 		$request['properties'][$property["name"]] = $displaydate;
-		
-		
+
+
 		if($request = $requestService->updateRequest($request)){
 			$request["current_stage"] = $property["next"];
 			$request = $requestService->updateRequest($request);
 			$session->set('request', $request);
-			
+
 			$requestType = $requestService->checkRequestType($request, $requestType);
 			$session->set('requestType', $requestType);
-			
+
 			// Lets find the stage that we are add
 			$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['stages']));
-			
+
 			foreach ($arrIt as $sub) {
 				$subArray = $arrIt->getSubIterator();
 				if ($subArray['slug'] === $slug) {
@@ -426,16 +426,16 @@ class DefaultController extends AbstractController
 					break;
 				}
 			}
-			
+
 			$this->addFlash('success', ucfirst($slug).' is ingesteld');
-			
+
 			if(isset($stage) && array_key_exists("completed", $stage) && $stage["completed"]){
 				$slug = $stage["next"];
 			}
 			elseif(isset($stage) && array_key_exists("slug", $stage)){
 				$slug = $stage["slug"];
 			}
-			
+
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));
 		}
 		else{
@@ -443,18 +443,18 @@ class DefaultController extends AbstractController
 			return $this->redirect($this->generateUrl('app_default_slug',["slug"=>$slug]));;
 		}
 	}
-	
+
 	/**
 	 * @Route("/", name="app_default_index")
 	 * @Route("/{slug}", name="app_default_slug")
-	 * 
+	 *
 	 */
 	public function viewAction(Session $session, $slug = false, $resource= false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
 	{
 		$variables = $applicationService->getVariables();
-		
+
 		/*
-		 * 
+		 *
     		// If we dont have a user requested slug lets go to the current request stage
     		if(!$slug && array_key_exists ("current_stage", $request) && $request["current_stage"] != null){
     			$slug = $request["current_stage"];
@@ -464,7 +464,7 @@ class DefaultController extends AbstractController
     		}
     		*/
 		//$variables['request']
-		
+
 		// If we have a cuurent stage on the request
 		if(!$slug && array_key_exists ('request', $variables)){
 			$slug =  $variables['request']["current_stage"];
@@ -473,12 +473,12 @@ class DefaultController extends AbstractController
 			/*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
 			$slug="trouwen";
 		}
-				
+
 		/*@todo olld skool overwite variabel maken */
 		switch ($slug) {
 			case null :
 				$slug = 'trouwen';
-				break; 
+				break;
 			case 'ambtenaar':
 				$variables['products']  = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products',['groups.id'=>'7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
 				break;
@@ -498,14 +498,14 @@ class DefaultController extends AbstractController
 				$variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
 				break;
 		}
-				
+
 		if($template = $sjabloonService->getOnSlug($slug)){
 			// We want to include the html in our own template
 			$html = $template['content'];
-			
+
 			$template = $this->get('twig')->createTemplate($html);
 			$template = $template->render($variables);
-			
+
 			return $response = new Response(
 					$template,
 					Response::HTTP_OK,

@@ -322,7 +322,7 @@ class DefaultController extends AbstractController
                 $date = $value["datum"];
                 $time = $value["tijd"];
                 $dateArray = explode(" ", $date);
-                $value = date('d-m-Y H:i', strtotime("$dateArray[1] $dateArray[2] $dateArray[3] $time "));
+                $value = date('d-m-Y H:i', strtotime("$dateArray[1] $dateArray[2] $dateArray[3] $time GMT+0100"));
             }
 			$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 		}

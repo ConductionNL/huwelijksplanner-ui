@@ -13,7 +13,6 @@ class CommonGroundService
 {
     private $params;
     private $cache;
-    private $client;
     private $session;
 
     public function __construct(ParameterBagInterface $params, SessionInterface $session, CacheInterface $cache)
@@ -21,6 +20,7 @@ class CommonGroundService
         $this->params = $params;
         $this->session = $session;
         $this->cash = $cache;
+        $this->session= $session;
 
         // We might want to overwrite the guzle config, so we declare it as a separate array that we can then later adjust, merge or otherwise influence
         $this->guzzleConfig = [
@@ -159,7 +159,7 @@ class CommonGroundService
         if($response->getStatusCode() != 201){
         	var_dump(json_encode($resource));
         	var_dump(json_encode($url));
-        	var_dump(json_encode($response->getBody()));
+        	var_dump($response->getBody());
         	die;
         }
         

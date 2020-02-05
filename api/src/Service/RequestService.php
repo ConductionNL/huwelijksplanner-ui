@@ -7,148 +7,266 @@ namespace App\Service;
 use GuzzleHttp\Client;
 use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
+use App\Service\CommonGroundService;
 
 class RequestService
 {
     private $params;
     private $cache;
     private $client;
+    private $session;
+    private $commonGroundService;
 
-    public function __construct(ParameterBagInterface $params, CacheInterface $cache)
+    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService)
     {
         $this->params = $params;
         $this->cash = $cache;
+        $this->session= $session;
+        $this->commonGroundService = $commonGroundService;
 
-        $this->client = new Client([
-            // Base URI is used with relative requests
-            'base_uri' => 'http://vrc.zaakonline.nl',
-            // You can set any number of default request options.
-            'timeout'  => 4000.0,
-            'body'     => 'raw data',
-        ]);
     }
-
-    public function getRequests($query)
+    
+    /*
+     * Creates a new reqousted basted on a reqoust type
+     */
+    public function createFromRequestType($requestType, $requestParent = null ,$user = null, $organization= null, $application= null)
     {
-        $response = $this->client->request('GET', '/requests', [
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-        ]
-            );
-
-        $response = json_decode($response->getBody(), true);
-
-        return $response['_embedded']['item'];
+    	// If a user has not been provided let try to get one from the session
+    	if(!$user){
+    		$user = $this->session->get('user');
+    	}
+    	// If a user has not been provided let try to get one from the session
+    	if(!$organization){
+    		$organization = $this->session->get('organization');
+    	}
+    	// If a user has not been provided let try to get one from the session
+    	if(!$application){
+    		$application= $this->session->get('application');
+    	}
+    		    	
+    	$request= [];
+    	$request['request_type'] = 'https://vtc.zaakonline.nl'.$requestType['@id'];
+    	$request['target_organization'] = $organization;
+    	$request['application'] = $application;
+    	$request['status']='incomplete';
+    	$request['properties']= [];
+    	
+    	if($user){    		
+    		$request['submitter'] = $user['burgerservicenummer'];
+    		//$request['submitters'] = [$user['burgerservicenummer']];
+    	}
+    	
+    	// juiste startpagina weergeven
+    	if(!array_key_exists ("current_stage", $request) && array_key_exists (0, $requestType['stages'])){
+    		$request["current_stage"] = $requestType['stages'][0]['slug'];
+    	}
+    	
+    	$request = $this->commonGroundService->createResource($request, 'https://vrc.zaakonline.nl/requests');    	
+    	
+    	
+    	// There is an optional case that a request type is a child of an already exsisting one
+    	if($requestParent){
+    		$requestParent = $this->commonGroundService->getResource($requestParent);
+    		$request['parent'] = $requestParent['@id'];
+    		
+    		// Lets transfer any properties that are both inthe parent and the child request
+    		foreach($requestType['properties'] as $property){
+    			if(array_key_exists($property['slug'], $requestParent['properties'])){
+    				$request['properties'][] = $requestParent['properties'][$property['slug']];
+    			}
+    		}
+    	}
+    	    	
+    	$contact = [];
+    	$contact['givenName']= $user['naam']['voornamen'];
+    	$contact['familyName']= $user['naam']['geslachtsnaam'];
+    	$contact= $this->commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
+    	
+    	$assent = [];
+    	$assent['name'] = 'Instemming huwelijk partnerschp';
+    	$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
+    	$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
+    	$assent['requester'] = $organization;
+    	$assent['person'] = $user['burgerservicenummer'];
+    	$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
+    	$assent['status'] = 'granted';
+    	$assent = $this->commonGroundService->createResource($assent, 'https://irc.zaakonline.nl/assents');
+    	
+    	$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['@id'];
+    	$request = $this->commonGroundService->updateResource($request, 'https://vrc.zaakonline.nl'.$request['@id']);
+    	
+    	return $request;    	
     }
-
-    public function getRequestOnSubmitter($indiener)
+    
+    
+    public function unsetPropertyOnSlug($request, $property, $value = null)
     {
-        $response = $this->client->request('GET', '/requests?submitter='.$indiener, [
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-            'query' => [
-                'submitter' => $indiener,
-            ],
-        ]
-        );
-
-        $response = json_decode($response->getBody(), true);
-
-        if ($response['totalItems'] > 0) {
-            return $response['_embedded']['item'];
-        }
-
-        // Lets default to false here
-        return false;
+    	// Lets see if the property exists
+    	if(!array_key_exists ($property, $request['properties'])){
+    		return false;
+    	}
+    	
+    	// If the propery is an array then we only want to delete the givven value
+    	if(is_array($request['properties'][$property])){
+    		
+    		$key = array_search($value, $request['properties'][$property]);
+    		unset ($request['properties'][$property][$key]);
+    		
+    		// If the array is now empty we want to drop the property
+    		if(count($request['properties'][$property]) == 0){
+    			unset ($request['properties'][$property]);    			
+    		}
+    	}
+    	// If else we just drop the property
+    	else{
+    		unset ($request['properties'][$property]);
+    	}
+    	    	
+    	return $request;
+    	
     }
-
-    public function getRequestOnType($indiener, $verzoek = 'http://vtc.zaakonline.nl/')
+    
+    public function setPropertyOnSlug($request, $requestType, $slug, $value)
     {
-        $response = $this->client->request('GET', '/requests', [
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-            'query' => [
-                'submitter'    => $indiener,
-                'request_type' => $verzoek,
-            ],
-        ]
-        );
-
-        $response = json_decode($response->getBody(), true);
-
-        return $response;
+    	// Lets get the curent property    	
+    	$typeProperty = false;
+    	
+    	foreach ($requestType['properties'] as $property){
+    		if($property['slug'] == $slug){
+    			$typeProperty= $property;
+    			break;
+    		}
+    	}
+    	    	
+    	// If this porperty doesn't exsist for this reqoust type we have an issue
+    	if(!$typeProperty){
+    		return false;
+    	}
+    	
+    	// Let see if we need to do something special
+    	if(array_key_exists ('iri',$typeProperty)){
+	    	switch ($typeProperty['iri']) {
+	    		case 'irc/assent':	    			
+	    			
+	    			// This is a new assent so we also need to create a contact
+	    			if(!array_key_exists ('@id', $value)) {
+	    				
+	    				$contact = [];
+	    				$contact['givenName']= $value['givenName'];
+	    				$contact['familyName']= $value['familyName'];
+	    				$contact['emails']=[];
+	    				$contact['emails'][]=["name"=>"primary","email"=> $value['email']];
+	    				$contact['telephones']=[];
+	    				$contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
+	    				$contact = $this->commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
+	    				
+	    				unset($value['givenName']);
+	    				unset($value['familyName']);
+	    				unset($value['email']);
+	    				unset($value['telephone']);
+	    				
+	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B';
+	    				$value['requester'] = $requestType['source_organization'];
+	    				$value['request'] = $request['id'];
+	    				$value['status'] = 'requested';		
+	    				$value['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
+	    				$value = $this->commonGroundService->createResource($value, 'https://irc.zaakonline.nl/assents');
+	    			}
+	    			else{	    
+	    				//$value = $this->commonGroundService->updateResource($value, 'https://irc.zaakonline.nl/'.$value['@id']);
+	    			}
+	    			$value = 'http://irc.zaakonline.nl'.$value['@id'];
+	    			break;
+	    			/*	
+	    		case 'cc/people':
+	    			// This is a new assent so we also need to create a contact
+	    			if(!array_key_exists ('@id', $value)) {
+	    				$value= $this->commonGroundService->createResource($value, 'https://cc.zaakonline.nl/people');
+	    			}
+	    			else{
+	    				$value= $this->commonGroundService->updateResource($value, 'https://cc.zaakonline.nl/'.$value['@id']);
+	    			}
+	    			$value ='http://cc.zaakonline.nl'.$value['@id'];
+	    			break;
+	    		case 'pdc/product':
+	    			// This is a new assent so we also need to create a contact
+	    			if(!array_key_exists ('@id', $value)) {
+	    				$value= $this->commonGroundService->createResource($value, 'https://pdc.zaakonline.nl/product');
+	    			}
+	    			else{
+	    				$value= $this->commonGroundService->updateResource($value, 'https://pdc.zaakonline.nl/'.$value['@id']);
+	    			}
+	    			$value = $value['@id'];
+	    			break;
+	    		case 'vrc/request':
+	    			break;
+	    		case 'orc/order':
+	    			// This is a new assent so we also need to create a contact
+	    			if(!$value['@id']){
+	    				$value= $this->commonGroundService->createResource($value, 'https://orc.zaakonline.nl/order');
+	    			}
+	    			else{
+	    				$value= $this->commonGroundService->updateResource($value, 'https://orc.zaakonline.nl/'.$value['@id']);
+	    			}
+	    			$value = 'http://orc.zaakonline.nl'.$value['@id'];
+	    			break;
+	    			*/
+	    	}
+    	}
+    	
+    	// Let validate the value
+	    if(array_key_exists ('format',$typeProperty)){
+	    	switch ($typeProperty['format']) {
+	    		case 'array':
+	    			break;
+	    		case 'array':
+	    			break;
+	    		case 'array':
+	    			break;
+	    		default:
+	    		//	$request['properties'][$typeProperty['name']] = $value;
+	    	}
+    	}
+    	    	
+    	// Let procces the value
+    	if($typeProperty['type'] == "array"){
+    		// Lets make sure that the value is an array
+    		if(!array_key_exists($typeProperty['name'],$request['properties']) || !is_array($request['properties'][$typeProperty['name']])){
+    			$request['properties'][$typeProperty['name']] = [];
+    		}
+    		// If the post is also an array then lets merge the two together
+    		if(is_array($value)){
+    			$request['properties'][$typeProperty['name']] = array_merge($request['properties'][$typeProperty['name']], $value);    	    			
+    		}
+    		else{    			
+    			$request['properties'][$typeProperty['name']][] = $value;   
+    		} 		
+    	}
+    	else{
+    		$request['properties'][$typeProperty['name']] = $value;    		
+    	}
+    	
+    	/*@todo this misses busnes logic  */
+    	
+    	// Lets update the stage    	
+    	//$request["current_stage"] = $typeProperty["next"];
+    	
+    	/*
+    	 * 		
+			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
+				$slug = $property["next"];
+			}
+			else{
+				$slug = $property["slug"];
+			}
+    	 */
+    	    	
+    	return $request;
     }
-
-    public function getRequestOnId($id, $force = false)
-    {
-        $item = $this->cash->getItem('request_'.$id);
-        if ($item->isHit() && !$force) {
-            return $item->get();
-        }
-
-        $response = $this->client->request('GET', '/requests/'.$id, [
-            'headers' => [
-                'Accept' => 'application/json',
-            ],
-        ]
-        );
-
-        $response = json_decode($response->getBody(), true);
-
-        $item->set($response);
-        $item->expiresAt(new \DateTime('tomorrow'));
-        $this->cash->save($item);
-
-        return $response;
-    }
-
-    public function getRequestOnUri($uri)
-    {
-        $response = $this->client->request('GET', $uri, [
-            'headers' => [
-                'Accept' => 'application/json',
-            ],
-        ]
-        );
-
-        $response = json_decode($response->getBody(), true);
-
-        return $response;
-    }
-
-    public function createRequest($request)
-    {
-        $response = $this->client->request('POST', '/requests', [
-            'json'    => $request,
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-        ]
-        );
-
-        $response = json_decode($response->getBody(), true);
-
-        return $response;
-    }
-
-    public function updateRequest($request)
-    {
-        $response = $this->client->request('PUT', '/requests/'.$request['id'], [
-            'json'    => $request,
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-        ]
-        );
-
-        $response = json_decode($response->getBody(), true);
-
-        return $response;
-    }
-
+    
     public function checkRequestType($request, $requestType)
     {
         foreach ($requestType['stages'] as $key=>$stage) {

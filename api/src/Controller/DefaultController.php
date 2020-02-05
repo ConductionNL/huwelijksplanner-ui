@@ -511,7 +511,7 @@ class DefaultController extends AbstractController
 				$variables['products']  = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products',['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
 				break;
 			case 'requests':
-				$variables['requests']  = $commonGroundService->getResourceList('https://vrc.zaakonline.nl/requests',['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+				$variables['requests']  = $commonGroundService->getResourceList('https://vrc.zaakonline.nl/requests',['submitter' => $variables['user']['burgerservicenummer'], 'order[date_created]' => 'desc']) ["hydra:member"];
 				break;
 			case 'new-request':
 				$variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];

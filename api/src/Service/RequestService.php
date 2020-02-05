@@ -154,12 +154,16 @@ class RequestService
 	    			if(!array_key_exists ('@id', $value)) {
 	    				
 	    				$contact = [];
-	    				$contact['givenName']= $value['givenName'];
-	    				$contact['familyName']= $value['familyName'];
-	    				$contact['emails']=[];
-	    				$contact['emails'][]=["name"=>"primary","email"=> $value['email']];
-	    				$contact['telephones']=[];
-	    				$contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
+	    				if(array_key_exists('givenName',$value)){ $contact['givenName']= $value['givenName'];}
+	    				if(array_key_exists('familyName',$value)){ $contact['familyName']= $value['familyName'];}
+	    				if(array_key_exists('email',$value)){
+		    				$contact['emails']=[];
+		    				$contact['emails'][]=["name"=>"primary","email"=> $value['email']];
+	    				}
+	    				if(array_key_exists('telephone',$value)){
+		    				$contact['telephones']=[];
+		    				$contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
+	    				}
 	    				$contact = $this->commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
 	    				
 	    				unset($value['givenName']);

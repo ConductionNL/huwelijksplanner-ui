@@ -345,10 +345,20 @@ class DefaultController extends AbstractController
 			$variables['request']['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}
 		// hardcode overwrite for "eenvoudig trouwen"
-		if(array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/16353702-4614-42ff-92af-7dd11c8eef9f"){
+		elseif(array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/16353702-4614-42ff-92af-7dd11c8eef9f"){
 			$variables['request']['properties']['locatie']="https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
 			$variables['request']['properties']['ambtenaar']="https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
 		}
+		else{
+		    if(key_exists('locatie', $variables['request']['properties'])) {
+                unset($variables['request']['properties']['locatie']);
+                $this->addFlash('success', 'U kunt nu een locatie kiezen');
+            }
+		    if(key_exists('ambtenaar', $variables['request']['properties'])) {
+                unset($variables['request']['properties']['ambtenaar']);
+                $this->addFlash('success', 'U kunt nu een ambtenaar kiezen');
+            }
+        }
 
 		// Lets see if we need to jump stage
 

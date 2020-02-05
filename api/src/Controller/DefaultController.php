@@ -469,7 +469,7 @@ class DefaultController extends AbstractController
 	public function viewAction(Session $session, $slug = false, $resource= false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
 	{
 		$variables = $applicationService->getVariables();
-
+        $variable['slug'] = $slug;
 		/*
 		 *
     		// If we dont have a user requested slug lets go to the current request stage
@@ -510,6 +510,8 @@ class DefaultController extends AbstractController
 				break;
 			case 'requests':
 				$variables['requests']  = $commonGroundService->getResourceList('https://vrc.zaakonline.nl/requests',['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+				if(count($variables['requests']) == 0)
+				    return $this->redirect($this->generateUrl('app_default_slug',['requestType'=>'http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
 				break;
 			case 'new-request':
 				$variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];

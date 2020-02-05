@@ -53,6 +53,7 @@ class DefaultController extends AbstractController
 		$request['status'] = 'cancelled';
 
 		if($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/requests/".$request['id'])){
+
 			$session->set('request', $request);
 			$this->addFlash('success', 'Uw verzoek is geanuleerd');
 		}
@@ -304,6 +305,7 @@ class DefaultController extends AbstractController
 	public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
 	{
 		$variables = $applicationService->getVariables();
+		$variables['slug'] =$slug;
 
 		// We want to be able to handle json body posts
 		if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
@@ -324,6 +326,7 @@ class DefaultController extends AbstractController
                 $dateArray = explode(" ", $date);
                 $value = date('d-m-Y H:i', strtotime("$dateArray[1] $dateArray[2] $dateArray[3] $time GMT+0100"));
             }
+
 			$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 		}
 		// if not the we are asuming a "broad" form that wants to update anything in the reqoust, so we merge arrays
@@ -365,7 +368,7 @@ class DefaultController extends AbstractController
 		$stageName = $slug;
 
 		foreach($variables['requestType']['stages'] as $stage){
-			if($stage['slug'] == $slug && array_key_exists('completed',$stage) && $stage['completed']){
+			if($stage['slug'] == $slug && array_key_exists('completed',$stage) && $stage['completed']) {
 				$stageName  = $stage['name'];
 				$slug = $stage['next'];
 				$variables['request']['current_stage'] = $stage['next'];
@@ -386,7 +389,7 @@ class DefaultController extends AbstractController
 		else{
 			/*@todo translation*/
 			$this->addFlash('danger', ucfirst($stageName).' kon niet worden ingesteld');
-			return $this->redirect($this->generateUrl('app_default_view',["slug"=>$slug,"id"=>$id]));
+			return $this->redirect($this->generateUrl('app_default_view',["slug"=>$slug]));
 		}
 	}
 
@@ -509,7 +512,7 @@ class DefaultController extends AbstractController
 				$variables['products']  = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products',['groups.id'=>'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
 				break;
 			case 'requests':
-				$variables['requests']  = $commonGroundService->getResourceList('https://vrc.zaakonline.nl/requests',['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+				$variables['requests']  = $commonGroundService->getResourceList('https://vrc.zaakonline.nl/requests',['submitter' => $variables['user']['burgerservicenummer'], 'order[date_created]' => 'desc']) ["hydra:member"];
 				if(count($variables['requests']) == 0)
 				    return $this->redirect($this->generateUrl('app_default_slug',['requestType'=>'http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
 				break;

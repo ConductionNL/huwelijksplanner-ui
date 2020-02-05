@@ -53,6 +53,7 @@ class DefaultController extends AbstractController
 		$request['status'] = 'cancelled';
 
 		if($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/requests/".$request['id'])){
+
 			$session->set('request', $request);
 			$this->addFlash('success', 'Uw verzoek is geanuleerd');
 		}
@@ -324,6 +325,7 @@ class DefaultController extends AbstractController
                 $dateArray = explode(" ", $date);
                 $value = date('d-m-Y H:i', strtotime("$dateArray[1] $dateArray[2] $dateArray[3] $time GMT+0100"));
             }
+
 			$variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 		}
 		// if not the we are asuming a "broad" form that wants to update anything in the reqoust, so we merge arrays
@@ -355,7 +357,7 @@ class DefaultController extends AbstractController
 		$stageName = $slug;
 
 		foreach($variables['requestType']['stages'] as $stage){
-			if($stage['slug'] == $slug && array_key_exists('completed',$stage) && $stage['completed']){
+			if($stage['slug'] == $slug && array_key_exists('completed',$stage) && $stage['completed']) {
 				$stageName  = $stage['name'];
 				$slug = $stage['next'];
 				$variables['request']['current_stage'] = $stage['next'];

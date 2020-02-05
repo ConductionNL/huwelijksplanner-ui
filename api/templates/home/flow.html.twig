@@ -7,11 +7,11 @@
         <!-- .container -->
     	<div class="container">
             <!-- .row -->
-            <div class="row">
+            <div style="margin-left: -80px" class="row">
             	{% if requestType.stages is defined and requestType.stages is not empty %}
-            	<div style="margin-left: -55px;" class="col-md-12 text-center flow">
+            	<div style="margin-left: -50px" class="col-md-12 text-center flow">
                     <ul>
-                        {% for stage in requestType.stages  %}
+                        {% for stage in requestType.stages %}
                         <li style="margin-top: -15px; margin-right: 15px;" class="animation {% if stage.completed  is defined and stage.completed is not empty %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="{{ loop.index*200 }}">
                         	<a href="{{ stage.slug }}">
                         		<i class="{{ stage.icon }} fa-3x "></i>
@@ -30,18 +30,18 @@
                             </a>
     					</li>
     					{% endfor %}
-                    </ul>          
-                </div><!-- .col end -->  
-                {% elseif (user is not defined or (user is defined and user is empty)) %} 
-            	<div class="col-md-12 text-center">     
+                    </ul>
+                </div><!-- .col end -->
+                {% elseif (user is not defined or (user is defined and user is empty)) %}
+            	<div class="col-md-12 text-center">
                     	<a href="https://digispoof.zaakonline.nl?responceUrl={{ absolute_url(path('app_default_slug',{'slug':'requests'})) }}" class="btn btn-login btn-lg"><span class="fas fa-sign-in-alt"></span> Log hier in om te beginnen</a>
-                </div><!-- .col end -->  
+                </div><!-- .col end -->
                 {% else %}
-            	<div class="col-md-12 text-center">     
+            	<div class="col-md-12 text-center">
                     	<a href="{{ path('app_default_slug',{'slug':'requests'}) }}" class="btn btn-login btn-lg"><span class="fas fa-sign-in-alt"></span> Mijn verzoeken</a>
-                </div><!-- .col end -->  
-                {% endif %}                   
-            </div><!-- .row end -->                  
-        </div><!-- .container end -->                
-    </div><!-- .bg-blue end -->   
+                </div><!-- .col end -->
+                {% endif %}
+            </div><!-- .row end -->
+        </div><!-- .container end -->
+    </div><!-- .bg-blue end -->
 {% endblock %}

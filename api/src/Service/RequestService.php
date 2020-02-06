@@ -136,7 +136,6 @@ class RequestService
     	foreach ($requestType['properties'] as $property){
     		if($property['slug'] == $slug){
     			$typeProperty= $property;
-    			var_dump($typeProperty['name']);
     			break;
     		}
     	}

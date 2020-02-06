@@ -53,6 +53,19 @@ class RequestService
     	$request['status']='incomplete';
     	$request['properties']= [];
 
+    	$requestTypeObject = $this->commonGroundService->getResource($request['request_type']);
+    	if($requestTypeObject->unique == true)
+        {
+            $existingRequests = $this->commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['requestType'=>$request['request_type'], 'status'=>'incomplete']);
+            $existingRequests = array_merge($existingRequests, $this->commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['requestType'=>$request['request_type'], 'status'=>'submitted']);
+            $existingRequests = array_merge($existingRequests, $this->commonGroundService->getResourceList('http://vrc.zaakonline.nl/requests', ['requestType'=>$request['request_type'], 'status'=>'processed']);
+            if(count($existingRequests) > 0)
+            {
+                //TODO: Throw error
+                return null;
+            }
+        }
+
     	if($user){
     		$request['submitter'] = $user['burgerservicenummer'];
     		//$request['submitters'] = [$user['burgerservicenummer']];

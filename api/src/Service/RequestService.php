@@ -48,7 +48,7 @@ class RequestService
 
     	$request= [];
     	$request['request_type'] = 'https://vtc.zaakonline.nl'.$requestType['@id'];
-    	$request['target_organization'] = $organization;
+    	$request['target_organization'] = 'https://wrc.zaakonline.nl'.$organization['@id'];
     	$request['application'] = $application;
     	$request['status']='incomplete';
     	$request['properties']= [];
@@ -60,7 +60,7 @@ class RequestService
             if(count($existingRequests) > 0)
             {
                 //TODO: Throw error
-                return null;
+               return null;
             }
         }
     	if($user){
@@ -98,7 +98,7 @@ class RequestService
     	$assent['name'] = 'Instemming huwelijk partnerschp';
     	$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
     	$assent['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
-    	$assent['requester'] = $organization;
+    	$assent['requester'] = 'https://wrc.zaakonline.nl'.$organization['@id'];
     	$assent['person'] = $user['burgerservicenummer'];
     	$assent['request'] = 'http://vrc.zaakonline.nl'.$request['@id'];
     	$assent['status'] = 'granted';

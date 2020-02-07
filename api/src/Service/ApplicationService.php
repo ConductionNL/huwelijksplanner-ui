@@ -61,22 +61,29 @@ class ApplicationService
     	// @todo iets met organisaties en applicaties
     	$organization= $this->request->get('organization');
     	if($organization|| $organization= $this->request->query->get('organization')){
+    		$organization= $this->commonGroundService->getResource($organization);
     		$this->session->set('organization', $organization);
     	}
-    	else{
+    	// lets default
+    	elseif(!$this->session->get('organization') ){
     		/*@todo param bag interface */
-    		$this->session->set('organization', '000000');
+    		$organization= $this->commonGroundService->getResource('http://wrc.zaakonline.nl/organizations/68b64145-0740-46df-a65a-9d3259c2fec8');
+    	    $this->session->set('organization', $organization);    	
+    		//$this->session->set('organization', 0000);    	
     	}
     	$variables['organization']  = $this->session->get('organization');
 
     	// application
     	$application= $this->request->get('application');
     	if($application|| $application= $this->request->query->get('application')){
+    		$application= $this->commonGroundService->getResource($application);
     		$this->session->set('application', $application);
     	}
-    	else{
+    	// lets default
+    	elseif(!$this->session->get('application')){
     		/*@todo param bag interface */
-    		$this->session->set('application', '0000000');
+    		$application= $this->commonGroundService->getResource('http://wrc.zaakonline.nl/applications/536bfb73-63a5-4719-b535-d835607b88b2');
+    		$this->session->set('application', $application);
     	}
     	$variables['application']  = $this->session->get('application');
 

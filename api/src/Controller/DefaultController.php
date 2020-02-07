@@ -532,8 +532,14 @@ class DefaultController extends AbstractController
                     return $this->redirect($this->generateUrl('app_default_slug', ['requestType' => 'http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
                 break;
             case 'new-request':
-                $variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+                $variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types')["hydra:member"];
                 break;
+            case 'switch-organisation':
+            	$variables['organisations'] = $commonGroundService->getResourceList('http://wrc.zaakonline.nl/organizations')["hydra:member"];
+            	break;
+            case 'switch-application':
+            	$variables['applications'] = $commonGroundService->getResourceList('http://wrc.zaakonline.nl/applications')["hydra:member"];
+            	break;
         }
 
         if ($template = $sjabloonService->getOnSlug($slug)) {

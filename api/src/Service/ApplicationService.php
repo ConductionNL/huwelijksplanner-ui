@@ -67,9 +67,9 @@ class ApplicationService
     	// lets default
     	elseif(!$this->session->get('organization') ){
     		/*@todo param bag interface */
-    		//$organization= $this->commonGroundService->getResource('http://wrc.zaakonline.nl/organizations/8366b635-2c76-4007-a782-048f8797e766');
-    		///$this->session->set('organization', $organization);    	
-    		$this->session->set('organization', 0000);    	
+    		$organization= $this->commonGroundService->getResource('http://wrc.zaakonline.nl/organizations/68b64145-0740-46df-a65a-9d3259c2fec8');
+    	    $this->session->set('organization', $organization);    	
+    		//$this->session->set('organization', 0000);    	
     	}
     	$variables['organization']  = $this->session->get('organization');
 

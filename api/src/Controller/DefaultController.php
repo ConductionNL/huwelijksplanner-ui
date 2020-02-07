@@ -350,11 +350,11 @@ class DefaultController extends AbstractController
             $variables['request']['properties']['locatie'] = "https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
             $variables['request']['properties']['ambtenaar'] = "https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
         } else {
-            if (key_exists('locatie', $variables['request']['properties'])) {
+            if (key_exists('locatie', $variables['request']['properties']) && $slug == 'plechtigheid') {
                 unset($variables['request']['properties']['locatie']);
                 $this->addFlash('success', 'U kunt nu een locatie kiezen');
             }
-            if (key_exists('ambtenaar', $variables['request']['properties'])) {
+            if (key_exists('ambtenaar', $variables['request']['properties']) && $slug == 'plechtigheid') {
                 unset($variables['request']['properties']['ambtenaar']);
                 $this->addFlash('success', 'U kunt nu een ambtenaar kiezen');
             }

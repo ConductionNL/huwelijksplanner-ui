@@ -60,7 +60,7 @@ class RequestService
             if(count($existingRequests) > 0)
             {
                 //TODO: Throw error
-                return null;
+               return null;
             }
         }
     	if($user){

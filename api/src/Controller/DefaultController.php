@@ -329,7 +329,6 @@ class DefaultController extends AbstractController
                 $dateArray = explode(" ", $date);
                 $value = date('d-m-Y H:i', strtotime("$dateArray[1] $dateArray[2] $dateArray[3] $time GMT+0100"));
             }
-            var_dump($variables);
             $variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 
         } // if not the we are asuming a "broad" form that wants to update anything in the reqoust, so we merge arrays
@@ -384,10 +383,6 @@ class DefaultController extends AbstractController
             /*@todo translation*/
             $this->addFlash('success', ucfirst($stageName) . ' is ingesteld');
 
-//            if($slug = "partner") {
-                var_dump($request->query->get('forceAssent'));
-//                die;
-//            }
             // nog iets van uitleg
             if ($request->query->get('forceAssent')) {
 

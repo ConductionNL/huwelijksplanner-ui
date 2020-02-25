@@ -293,11 +293,11 @@ class DefaultController extends AbstractController
             $session->set('requestType', $variables['requestType']);
 
             /*@todo translation*/
-            $this->addFlash('success', ucfirst($slug) . ' geanuleerd');
+            $this->addFlash('success', ucfirst($slug) . ' geannuleerd');
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         } else {
             /*@todo translation*/
-            $this->addFlash('danger', ucfirst($slug) . ' kon niet worden geanuleerd');
+            $this->addFlash('danger', ucfirst($slug) . ' kon niet worden geannuleerd');
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         }
 
@@ -491,7 +491,7 @@ class DefaultController extends AbstractController
     public function viewAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
         $variables = $applicationService->getVariables();
-        $variable['slug'] = $slug;
+        $variables['slug'] = $slug;
         /*
          *
             // If we dont have a user requested slug lets go to the current request stage

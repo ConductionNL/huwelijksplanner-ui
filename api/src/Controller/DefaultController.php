@@ -324,7 +324,6 @@ class DefaultController extends AbstractController
             parse_str($request->getContent(), $value);
         }
 
-
         // If we have a slug then a specific property is bieng set
         if ($slug) {
             // dit mag wat abstracter
@@ -343,7 +342,6 @@ class DefaultController extends AbstractController
         } else {
             /*@todo throw error */
         }
-
 
         /*@todo dut configureerbaar maken */
         // hardcode overwrite for "gratis trouwen"
@@ -491,7 +489,7 @@ class DefaultController extends AbstractController
      *
      */
     public function viewAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
-    {    	
+    {
         $variables = $applicationService->getVariables();
         $variable['slug'] = $slug;
         /*

@@ -113,6 +113,8 @@ class RequestService
 
     public function unsetPropertyOnSlug($request, $property, $value = null)
     {
+        var_dump($property);
+        var_dump($request['properties']);
     	// Lets see if the property exists
     	if(!array_key_exists ($property, $request['properties'])){
     		return false;
@@ -293,6 +295,7 @@ class RequestService
 
     public function checkRequestType($request, $requestType)
     {
+        echo "<pre>";
         foreach ($requestType['stages'] as $key=>$stage) {
 
             // Overwrites for omzetten
@@ -355,16 +358,18 @@ class RequestService
                 } else {
                     $requestType['stages'][$key]['completed'] = false;
                 }
-
-                //var_dump($key);
+                var_dump($requestType['stages'][$key]);
+//                var_dump($requestType['stages'][$key]['completed']);
                 //var_dump($property["type"]);
                 //var_dump($property["min_items"]);
                 //var_dump($request["properties"]);
                 //var_dump($requestType["stages"][$key]);
             }
+            else{
+                $requestType['stages'][$key]['completed'] = false;
+            }
         }
         //var_dump($requestType["stages"]);
-        //die;
 
         return $requestType;
     }

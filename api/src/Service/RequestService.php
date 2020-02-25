@@ -186,9 +186,14 @@ class RequestService
 	    				if($value == null)
 	    				    $value = [];
 	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
-	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B';
-	    				$value['requester'] = $requestType['source_organization'];
-	    				$value['request'] = 'https://vrc.zaakonline.nl/requests/'.$request['id'];
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B'; //@TODO: hier mogen A en B nog wel namen worden :P
+                        if($slug=="getuige" && array_key_exists('partner', $value)){
+                            $value['requester'] = $value['partner'];
+                        }
+                        else{
+                            $value['requester'] = $requestType['source_organization'];
+                        }
+                        $value['request'] = 'https://vrc.zaakonline.nl/requests/'.$request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))
 	    				    $value['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];

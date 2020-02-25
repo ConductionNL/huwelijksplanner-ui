@@ -2,13 +2,18 @@
 // src/Controller/LuckyController.php
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\Loader\ArrayLoader;
 
 use App\Service\SjabloonService;
 use App\Service\BRPService;
@@ -329,7 +334,6 @@ class DefaultController extends AbstractController
                 $dateArray = explode(" ", $date);
                 $value = date('d-m-Y H:i', strtotime("$dateArray[1] $dateArray[2] $dateArray[3] $time GMT+0100"));
             }
-            var_dump($variables);
             $variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 
         } // if not the we are asuming a "broad" form that wants to update anything in the reqoust, so we merge arrays
@@ -351,11 +355,11 @@ class DefaultController extends AbstractController
             $variables['request']['properties']['locatie'] = "https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
             $variables['request']['properties']['ambtenaar'] = "https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
         } else {
-            if (key_exists('locatie', $variables['request']['properties'])) {
+            if (key_exists('locatie', $variables['request']['properties']) && $slug == 'plechtigheid') {
                 unset($variables['request']['properties']['locatie']);
                 $this->addFlash('success', 'U kunt nu een locatie kiezen');
             }
-            if (key_exists('ambtenaar', $variables['request']['properties'])) {
+            if (key_exists('ambtenaar', $variables['request']['properties']) && $slug == 'plechtigheid') {
                 unset($variables['request']['properties']['ambtenaar']);
                 $this->addFlash('success', 'U kunt nu een ambtenaar kiezen');
             }
@@ -384,10 +388,6 @@ class DefaultController extends AbstractController
             /*@todo translation*/
             $this->addFlash('success', ucfirst($stageName) . ' is ingesteld');
 
-//            if($slug = "partner") {
-                var_dump($request->query->get('forceAssent'));
-//                die;
-//            }
             // nog iets van uitleg
             if ($request->query->get('forceAssent')) {
 
@@ -492,6 +492,13 @@ class DefaultController extends AbstractController
      */
     public function viewAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
+    	
+    	var_dump($httpRequest->getLocale());
+    	
+    	
+    	$locale = 'nl'; // Set the language
+    	$httpRequest->setLocale($locale);
+    	
         $variables = $applicationService->getVariables();
         $variable['slug'] = $slug;
         /*
@@ -537,8 +544,14 @@ class DefaultController extends AbstractController
                     return $this->redirect($this->generateUrl('app_default_slug', ['requestType' => 'http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
                 break;
             case 'new-request':
-                $variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types', ['submitter' => $variables['user']['burgerservicenummer']])["hydra:member"];
+                $variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types')["hydra:member"];
                 break;
+            case 'switch-organisation':
+            	$variables['organisations'] = $commonGroundService->getResourceList('http://wrc.zaakonline.nl/organizations')["hydra:member"];
+            	break;
+            case 'switch-application':
+            	$variables['applications'] = $commonGroundService->getResourceList('http://wrc.zaakonline.nl/applications')["hydra:member"];
+            	break;
         }
 
         if ($template = $sjabloonService->getOnSlug($slug)) {

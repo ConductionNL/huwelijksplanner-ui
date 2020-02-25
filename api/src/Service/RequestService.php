@@ -358,7 +358,7 @@ class RequestService
                 } else {
                     $requestType['stages'][$key]['completed'] = false;
                 }
-                var_dump($requestType['stages'][$key]);
+//                var_dump($requestType['stages'][$key]);
 //                var_dump($requestType['stages'][$key]['completed']);
                 //var_dump($property["type"]);
                 //var_dump($property["min_items"]);

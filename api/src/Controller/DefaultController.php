@@ -2,13 +2,18 @@
 // src/Controller/LuckyController.php
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\Loader\ArrayLoader;
 
 use App\Service\SjabloonService;
 use App\Service\BRPService;
@@ -288,11 +293,11 @@ class DefaultController extends AbstractController
             $session->set('requestType', $variables['requestType']);
 
             /*@todo translation*/
-            $this->addFlash('success', ucfirst($slug) . ' geanuleerd');
+            $this->addFlash('success', ucfirst($slug) . ' geannuleerd');
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         } else {
             /*@todo translation*/
-            $this->addFlash('danger', ucfirst($slug) . ' kon niet worden geanuleerd');
+            $this->addFlash('danger', ucfirst($slug) . ' kon niet worden geannuleerd');
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         }
 
@@ -305,7 +310,7 @@ class DefaultController extends AbstractController
      */
     public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
     {
-//        echo '<pre>';
+
         $variables = $applicationService->getVariables();
         $variables['slug'] = $slug;
 
@@ -318,7 +323,6 @@ class DefaultController extends AbstractController
         if ($request->get('_route') == "app_default_post" || $request->get('_route') == "app_default_post_request") {
             parse_str($request->getContent(), $value);
         }
-
 
         // If we have a slug then a specific property is bieng set
         if ($slug) {
@@ -338,7 +342,6 @@ class DefaultController extends AbstractController
         } else {
             /*@todo throw error */
         }
-
 
         /*@todo dut configureerbaar maken */
         // hardcode overwrite for "gratis trouwen"
@@ -488,7 +491,7 @@ class DefaultController extends AbstractController
     public function viewAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
         $variables = $applicationService->getVariables();
-        $variable['slug'] = $slug;
+        $variables['slug'] = $slug;
         /*
          *
             // If we dont have a user requested slug lets go to the current request stage

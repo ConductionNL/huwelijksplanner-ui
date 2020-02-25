@@ -113,9 +113,13 @@ class RequestService
 
     public function unsetPropertyOnSlug($request, $property, $value = null)
     {
+        if($property == "getuige"){
+            $property = "getuigen";
+        }
+
     	// Lets see if the property exists
     	if(!array_key_exists ($property, $request['properties'])){
-    		return false;
+    		return $request;
     	}
 
     	// If the propery is an array then we only want to delete the givven value
@@ -323,7 +327,7 @@ class RequestService
             }
 
             // Lets see is we have a value for this stage in our request and has a value
-            if (array_key_exists($stage['name'], $request['properties']) && $request['properties'][$stage['name']] != null) {
+            if (key_exists('properties', $request) && array_key_exists($stage['name'], $request['properties']) && $request['properties'][$stage['name']] != null) {
 
                 // Let get the validation rules from the request type
                 $arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['properties']));

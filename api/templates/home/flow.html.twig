@@ -12,9 +12,9 @@
             	<div style="margin-left: -50px" class="col-md-12 text-center flow">
                     <ul>
                         {% for stage in requestType.stages %}
-                        <li style="margin-top: -15px; margin-right: 15px;" class="animation {% if stage.completed  is defined and stage.completed is not empty %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="{{ loop.index*200 }}">
+                        <li style="margin-top: -15px; margin-right: 15px;" class="animation {% if stage.completed  is defined and stage.completed is not empty and stage.completed == true %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="{{ loop.index*200 }}">
                         	<a href="{{ stage.slug }}">
-                        		<i class="{{ stage.icon }} fa-3x "></i>
+                        		<i {% if stage.slug == slug %} style="border: 4px solid white; background: #2A5587; color: white" {% endif %} class="{{ stage.icon }} fa-3x "></i>
                             <br/>
                                 {% if stage.name == 'type' %}
                                 <p style="color: white;">CEREMONIE</p>

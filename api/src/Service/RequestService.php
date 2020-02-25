@@ -113,9 +113,12 @@ class RequestService
 
     public function unsetPropertyOnSlug($request, $property, $value = null)
     {
+        if($property == "getuige"){
+            $property = "getuigen";
+        }
     	// Lets see if the property exists
     	if(!array_key_exists ($property, $request['properties'])){
-    		return false;
+    		return $request;
     	}
 
     	// If the propery is an array then we only want to delete the givven value
@@ -186,9 +189,14 @@ class RequestService
 	    				if($value == null)
 	    				    $value = [];
 	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
-	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B';
-	    				$value['requester'] = $requestType['source_organization'];
-	    				$value['request'] = 'https://vrc.zaakonline.nl/requests/'.$request['id'];
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B'; //@TODO: hier mogen A en B nog wel namen worden :P
+                        if($slug=="getuige" && array_key_exists('partner', $value)){
+                            $value['requester'] = $value['partner'];
+                        }
+                        else{
+                            $value['requester'] = $requestType['source_organization'];
+                        }
+                        $value['request'] = 'https://vrc.zaakonline.nl/requests/'.$request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))
 	    				    $value['contact'] = 'http://cc.zaakonline.nl'.$contact['@id'];
@@ -288,6 +296,7 @@ class RequestService
 
     public function checkRequestType($request, $requestType)
     {
+        //echo "<pre>";
         foreach ($requestType['stages'] as $key=>$stage) {
 
             // Overwrites for omzetten
@@ -323,7 +332,7 @@ class RequestService
             }
 
             // Lets see is we have a value for this stage in our request and has a value
-            if (array_key_exists($stage['name'], $request['properties']) && $request['properties'][$stage['name']] != null) {
+            if (key_exists('properties', $request) && array_key_exists($stage['name'], $request['properties']) && $request['properties'][$stage['name']] != null) {
 
                 // Let get the validation rules from the request type
                 $arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['properties']));
@@ -350,16 +359,18 @@ class RequestService
                 } else {
                     $requestType['stages'][$key]['completed'] = false;
                 }
-
-                //var_dump($key);
+   //             var_dump($requestType['stages'][$key]);
+//                var_dump($requestType['stages'][$key]['completed']);
                 //var_dump($property["type"]);
                 //var_dump($property["min_items"]);
                 //var_dump($request["properties"]);
                 //var_dump($requestType["stages"][$key]);
             }
+            else{
+                $requestType['stages'][$key]['completed'] = false;
+            }
         }
         //var_dump($requestType["stages"]);
-        //die;
 
         return $requestType;
     }

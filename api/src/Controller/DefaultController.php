@@ -310,7 +310,7 @@ class DefaultController extends AbstractController
      */
     public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
     {
-//        echo '<pre>';
+
         $variables = $applicationService->getVariables();
         $variables['slug'] = $slug;
 

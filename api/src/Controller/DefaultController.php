@@ -491,14 +491,7 @@ class DefaultController extends AbstractController
      *
      */
     public function viewAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
-    {
-    	
-    	var_dump($httpRequest->getLocale());
-    	
-    	
-    	$locale = 'nl'; // Set the language
-    	$httpRequest->setLocale($locale);
-    	
+    {    	
         $variables = $applicationService->getVariables();
         $variable['slug'] = $slug;
         /*

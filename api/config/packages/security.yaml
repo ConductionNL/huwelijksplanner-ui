@@ -16,19 +16,11 @@ security:
         docs:
             anonymous: true
             pattern:  ^/$
-            methods: [GET]
         # The mollie webhook does not have our API key
         webhook:
             anonymous: true
             pattern: ^/payments/mollie_webhook
             methods: [POST]
-        main:
-            provider: chain_provider
-            guard:
-                authenticators:
-                    - App\Security\CommongroundApplicationAuthenticator
-                    - App\Security\CommongroundUserAuthenticator  
-                entry_point: App\Security\CommongroundApplicationAuthenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

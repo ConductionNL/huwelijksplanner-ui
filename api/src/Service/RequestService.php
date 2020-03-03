@@ -296,7 +296,7 @@ class RequestService
 
     public function checkRequestType($request, $requestType)
     {
-        echo "<pre>";
+        //echo "<pre>";
         foreach ($requestType['stages'] as $key=>$stage) {
 
             // Overwrites for omzetten
@@ -360,6 +360,7 @@ class RequestService
                     $requestType['stages'][$key]['completed'] = false;
                 }
 //                var_dump($requestType['stages'][$key]);
+   //             var_dump($requestType['stages'][$key]);
 //                var_dump($requestType['stages'][$key]['completed']);
                 //var_dump($property["type"]);
                 //var_dump($property["min_items"]);

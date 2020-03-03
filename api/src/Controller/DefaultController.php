@@ -310,7 +310,7 @@ class DefaultController extends AbstractController
      */
     public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
     {
-//        echo '<pre>';
+
         $variables = $applicationService->getVariables();
         $variables['slug'] = $slug;
 
@@ -323,7 +323,6 @@ class DefaultController extends AbstractController
         if ($request->get('_route') == "app_default_post" || $request->get('_route') == "app_default_post_request") {
             parse_str($request->getContent(), $value);
         }
-
 
         // If we have a slug then a specific property is bieng set
         if ($slug) {
@@ -343,7 +342,6 @@ class DefaultController extends AbstractController
         } else {
             /*@todo throw error */
         }
-
 
         /*@todo dut configureerbaar maken */
         // hardcode overwrite for "gratis trouwen"

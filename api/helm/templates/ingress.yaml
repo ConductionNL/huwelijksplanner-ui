@@ -41,10 +41,11 @@ spec:
               serviceName: {{ include "name" . }}
               servicePort: 80
     {{- else }}      
-    - host: {{ .Values.settings.env }}.{{ .Values.settings.domain }}
+    - host: {{ $.Values.settings.name }}.{{ $.Values.settings.env }}.{{ . }}
       http:
         paths:
           - backend:
               serviceName: {{ include "name" . }}
               servicePort: 80
      {{- end }}
+  {{- end }}

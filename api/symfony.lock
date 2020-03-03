@@ -106,6 +106,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "doctrine/rst-parser": {
+        "version": "0.1.0"
+    },
     "easyrdf/easyrdf": {
         "version": "0.9.1"
     },
@@ -142,6 +145,9 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "knplabs/knp-markdown-bundle": {
+        "version": "1.8.1"
+    },
     "lcobucci/jwt": {
         "version": "3.3.1"
     },
@@ -159,6 +165,9 @@
         "files": [
             "config/packages/lexik_jwt_authentication.yaml"
         ]
+    },
+    "michelf/php-markdown": {
+        "version": "1.9.0"
     },
     "moneyphp/money": {
         "version": "v1.3.0"
@@ -310,6 +319,9 @@
     },
     "symfony/dotenv": {
         "version": "v4.3.1"
+    },
+    "symfony/error-handler": {
+        "version": "v4.4.1"
     },
     "symfony/event-dispatcher": {
         "version": "v4.3.1"
@@ -482,20 +494,6 @@
     },
     "symfony/stopwatch": {
         "version": "v4.3.1"
-    },
-    "symfony/swiftmailer-bundle": {
-        "version": "2.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "2.5",
-            "ref": "ae4d22af30bbd484506bc1817c5a3ef72c855b93"
-        },
-        "files": [
-            "config/packages/dev/swiftmailer.yaml",
-            "config/packages/swiftmailer.yaml",
-            "config/packages/test/swiftmailer.yaml"
-        ]
     },
     "symfony/translation": {
         "version": "3.3",

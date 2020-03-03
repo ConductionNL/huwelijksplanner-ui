@@ -479,7 +479,7 @@ class DefaultController extends AbstractController
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         } else {
             $this->addFlash('danger', ucfirst($slug) . ' kon niet worden ingesteld');
-            return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));;
+            return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         }
     }
 

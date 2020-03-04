@@ -37,7 +37,7 @@ class DefaultController extends AbstractController
         $request = $session->get('request');
         $request['status'] = 'submitted';
 
-        if ($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/requests/" . $request['id'])) {
+        if ($request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
             $session->set('request', $request);
 
             $this->addFlash('success', 'Uw verzoek is ingediend');
@@ -56,7 +56,7 @@ class DefaultController extends AbstractController
         $request = $session->get('request');
         $request['status'] = 'cancelled';
 
-        if ($request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl/requests/" . $request['id'])) {
+        if ($request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
 
             $session->set('request', $request);
             $this->addFlash('success', 'Uw verzoek is geanuleerd');
@@ -104,19 +104,19 @@ class DefaultController extends AbstractController
             $request['@id'] = $request['_links']['self']['href'];
         }
 
-        $assent['request'] = 'http://vrc.zaakonline.nl' . $request['@id'];
+        $assent['request'] = 'https://vrc.huwelijksplanner.online' . $request['@id'];
         $assent['status'] = 'requested';
         $assent['requester'] = $user['burgerservicenummer'];
 
         //$assent= $assentService->createAssent($assent);
-        $assent = $commonGroundService->createResource($assent, "https://irc.zaakonline.nl/assents");
+        $assent = $commonGroundService->createResource($assent, "https://irc.huwelijksplanner.online/assents");
 
         if (!array_key_exists($property, $request['properties'])) {
             $request['properties'][$property] = [];
         }
         $request['properties'][$property][] = 'http://irc.zaakonline.nl' . $assent['@id'];
 
-        $request = $commonGroundService->updateResource($request, "https://vrc.zaakonline.nl" . $request['@id']);
+        $request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online" . $request['@id']);
 
         $session->set('requestType', false);
         $session->set('request', false);
@@ -162,7 +162,7 @@ class DefaultController extends AbstractController
         if (!$bsn && !$user) {
             // No login suplied so redirect to digispoof
             //return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath()));
-            return $this->redirect('http://digispoof.zaakonline.nl?responceUrl=' . $httpRequest->getScheme() . '://' . $httpRequest->getHttpHost() . $httpRequest->getBasePath() . $this->generateUrl('app_default_assentlogin', ["id" => $id]));
+            return $this->redirect('http://digispoof.huwelijksplanner.online?responceUrl=' . $httpRequest->getScheme() . '://' . $httpRequest->getHttpHost() . $httpRequest->getBasePath() . $this->generateUrl('app_default_assentlogin', ["id" => $id]));
         }
 
 
@@ -181,7 +181,7 @@ class DefaultController extends AbstractController
             return $this->redirect($this->generateUrl('app_default_index'));
         }
 
-        $assent = $commonGroundService->getResource('https://irc.zaakonline.nl/assents/' . $id);
+        $assent = $commonGroundService->getResource('https://irc.huwelijksplanner.online/assents/' . $id);
 
         $request = $commonGroundService->getResource($assent['request']);
         $session->set('request', $request);
@@ -200,7 +200,7 @@ class DefaultController extends AbstractController
 
             //$contact= $contactService->createContact($contact);
 
-            $contact = $commonGroundService->createResource($contact, 'https://cc.zaakonline.nl/people');
+            $contact = $commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
 
             $assent['contact'] = 'http://cc.zaakonline.nl' . $contact['@id'];
             $assent['person'] = $user['burgerservicenummer'];
@@ -287,7 +287,7 @@ class DefaultController extends AbstractController
 
         $variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
 
-        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl' . $variables['request']['@id'])) {
+        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.huwelijksplanner.online' . $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
@@ -345,13 +345,13 @@ class DefaultController extends AbstractController
 
         /*@todo dut configureerbaar maken */
         // hardcode overwrite for "gratis trouwen"
-        if (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/190c3611-010d-4b0e-a31c-60dadf4d1c62") {
-            $variables['request']['properties']['locatie'] = "https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
-            $variables['request']['properties']['ambtenaar'] = "https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
+        if (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/products/190c3611-010d-4b0e-a31c-60dadf4d1c62") {
+            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
+            $variables['request']['properties']['ambtenaar'] = "https://pdc.v/products/55af09c8-361b-418a-af87-df8f8827984b";
         } // hardcode overwrite for "eenvoudig trouwen"
-        elseif (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.zaakonline.nl/products/16353702-4614-42ff-92af-7dd11c8eef9f") {
-            $variables['request']['properties']['locatie'] = "https://pdc.zaakonline.nl/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
-            $variables['request']['properties']['ambtenaar'] = "https://pdc.zaakonline.nl/products/55af09c8-361b-418a-af87-df8f8827984b";
+        elseif (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/products/16353702-4614-42ff-92af-7dd11c8eef9f") {
+            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
+            $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/products/55af09c8-361b-418a-af87-df8f8827984b";
         } else {
             if (key_exists('locatie', $variables['request']['properties']) && $slug == 'plechtigheid') {
                 unset($variables['request']['properties']['locatie']);
@@ -377,7 +377,7 @@ class DefaultController extends AbstractController
             }
         }
 
-        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.zaakonline.nl' . $variables['request']['@id'])) {
+        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.huwelijksplanner.online' . $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
@@ -401,9 +401,9 @@ class DefaultController extends AbstractController
                     $assent = $variables['request']['properties'][$localSlug];
                 }
 
-                $returnUrl = $this->generateUrl('app_default_assentlogin', ["id" => str_replace('http://irc.zaakonline.nl/assents/', '', $assent)]);
+                $returnUrl = $this->generateUrl('app_default_assentlogin', ["id" => str_replace('http://irc.v/assents/', '', $assent)]);
 
-                return $this->redirect('https://digispoof.zaakonline.nl?responceUrl='. $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . $returnUrl);
+                return $this->redirect('https://digispoof.huwelijksplanner.online?responceUrl='. $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . $returnUrl);
             }
 
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
@@ -518,30 +518,30 @@ class DefaultController extends AbstractController
                 $slug = 'trouwen';
                 break;
             case 'ambtenaar':
-                $variables['products'] = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products', ['groups.id' => '7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
+                $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
                 break;
             case 'locatie':
-                $variables['products'] = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products', ['groups.id' => '170788e7-b238-4c28-8efc-97bdada02c2e']);
+                $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '170788e7-b238-4c28-8efc-97bdada02c2e']);
                 break;
             case 'plechtigheid':
-                $variables['products'] = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products', ['groups.id' => '1cad775c-c2d0-48af-858f-a12029af24b3']);
+                $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '1cad775c-c2d0-48af-858f-a12029af24b3']);
                 break;
             case 'extra':
-                $variables['products'] = $commonGroundService->getResourceList('https://pdc.zaakonline.nl/products', ['groups.id' => 'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
+                $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => 'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
                 break;
             case 'requests':
-                $variables['requests'] = $commonGroundService->getResourceList('https://vrc.zaakonline.nl/requests', ['submitter' => $variables['user']['burgerservicenummer'], 'order[date_created]' => 'desc']) ["hydra:member"];
+                $variables['requests'] = $commonGroundService->getResourceList('https://vrc.huwelijksplanner.online/requests', ['submitter' => $variables['user']['burgerservicenummer'], 'order[date_created]' => 'desc']) ["hydra:member"];
                 if (count($variables['requests']) == 0)
-                    return $this->redirect($this->generateUrl('app_default_slug', ['requestType' => 'http://vtc.zaakonline.nl/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
+                    return $this->redirect($this->generateUrl('app_default_slug', ['requestType' => 'http://vtc.huwelijksplanner.online/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
                 break;
             case 'new-request':
-                $variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.zaakonline.nl/request_types')["hydra:member"];
+                $variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.huwelijksplanner.online/request_types')["hydra:member"];
                 break;
             case 'switch-organisation':
-            	$variables['organisations'] = $commonGroundService->getResourceList('http://wrc.zaakonline.nl/organizations')["hydra:member"];
+            	$variables['organisations'] = $commonGroundService->getResourceList('http://wrc.huwelijksplanner.online/organizations')["hydra:member"];
             	break;
             case 'switch-application':
-            	$variables['applications'] = $commonGroundService->getResourceList('http://wrc.zaakonline.nl/applications')["hydra:member"];
+            	$variables['applications'] = $commonGroundService->getResourceList('http://wrc.huwelijksplanner.online/applications')["hydra:member"];
             	break;
         }
 

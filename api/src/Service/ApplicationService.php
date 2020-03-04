@@ -68,8 +68,8 @@ class ApplicationService
     	elseif(!$this->session->get('organization') ){
     		/*@todo param bag interface */
     		$organization= $this->commonGroundService->getResource('http://wrc.huwelijksplanner.online/organizations/68b64145-0740-46df-a65a-9d3259c2fec8');
-    	    $this->session->set('organization', $organization);    	
-    		//$this->session->set('organization', 0000);    	
+    	    $this->session->set('organization', $organization);
+    		//$this->session->set('organization', 0000);
     	}
     	$variables['organization']  = $this->session->get('organization');
 
@@ -100,6 +100,7 @@ class ApplicationService
     		$request = $this->requestService->createFromRequestType($requestType, $requestParent);
 
     		// Validate current reqoust type
+
     		$requestType = $this->requestService->checkRequestType($request, $requestType);
 
             $this->session->set('requestType', $requestType);

@@ -10,13 +10,10 @@ settings:
   version: V.0.1
   description: '&#039;Dit is de huwelijksplanner app&#039;'
   repro: 'https://github.com/ConductionNL/huwelijksplanner-ui'
-  domain: 'huwelijksplanner.online'
+  domain: huwelijksplanner.online
   domains:
-    - conduction.nl
-    - zaakonline.nl
     - huwelijksplanner.online
-    - common-ground.dev
-  domainsJson: ["conduction.nl","zaakonline.nl","huwelijksplanner.online","common-ground.dev"]
+  domainsJson: ["huwelijksplanner.online"]
   organisationName: Conduction
   email: info@conduction.nl
   country: Netherlands

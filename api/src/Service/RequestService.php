@@ -133,6 +133,7 @@ class RequestService
     			unset ($request['properties'][$property]);
     		}
     	}
+
     	// If else we just drop the property
     	else{
     		unset ($request['properties'][$property]);

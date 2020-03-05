@@ -337,7 +337,8 @@ class DefaultController extends AbstractController
 
         } // if not the we are asuming a "broad" form that wants to update anything in the reqoust, so we merge arrays
         elseif (is_array($value)) {
-
+//            var_dump($value);
+//            die;
             $variables['request']['properties'] = array_merge($variables['request']['properties'], $value);
         } else {
             /*@todo throw error */
@@ -513,6 +514,7 @@ class DefaultController extends AbstractController
         }
         $variables['slug'] = $slug;
         //var_dump($variables['request']);
+
         /*@todo olld skool overwite variabel maken */
         switch ($slug) {
             case null :
@@ -545,7 +547,6 @@ class DefaultController extends AbstractController
             	$variables['applications'] = $commonGroundService->getResourceList('http://wrc.huwelijksplanner.online/applications')["hydra:member"];
             	break;
         }
-
         if ($template = $sjabloonService->getOnSlug($slug)) {
             // We want to include the html in our own template
             $html = $template['content'];

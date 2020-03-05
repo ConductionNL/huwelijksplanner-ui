@@ -15,13 +15,15 @@ class AssentService
     private $brpService;
     private $contactService;
     private $client;
+    private $commonGroundService;
 
-    public function __construct(ParameterBagInterface $params, BRPService $brpService, ContactService $contactService, CacheInterface $cache)
+    public function __construct(ParameterBagInterface $params, BRPService $brpService, ContactService $contactService, CacheInterface $cache, CommonGroundService $commonGroundService)
     {
         $this->params = $params;
         $this->cash = $cache;
         $this->brpService = $brpService;
         $this->contactService = $contactService;
+        $this->commonGroundService = $commonGroundService;
 
         $this->client = new Client([
             // Base URI is used with relative requests
@@ -38,15 +40,15 @@ class AssentService
         if ($item->isHit() && !$force) {
             return $item->get();
         }
+        $response = $this->commonGroundService->getResource('https://irc.huwelijksplanner.online/assents/'.$id);
+//        $response = $this->client->request('GET', '/assents/'.$id, [
+//            'headers' => [
+//                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+//            ],
+//        ]
+//            );
 
-        $response = $this->client->request('GET', '/assents/'.$id, [
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-        ]
-            );
 
-        $response = json_decode($response->getBody(), true);
 
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));
@@ -59,13 +61,13 @@ class AssentService
     {
         // If a / has been supplied then we need to remove that first
         $uri = ltrim($uri, '/');
-
-        $response = $this->client->request('GET', $uri, [
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-        ]
-            );
+        $response = $this->commonGroundService->getResource($uri);
+//        $response = $this->client->request('GET', $uri, [
+//                'headers' => [
+//                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+//                ],
+//            ]
+//        );
 
         $response = json_decode($response->getBody(), true);
 
@@ -81,13 +83,14 @@ class AssentService
 
     public function createAssent($assent)
     {
-        $response = $this->client->request('POST', '/assents', [
-            'json'    => $assent,
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-        ]
-        );
+        $response = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
+//        $response = $this->client->request('POST', '/assents', [
+//            'json'    => $assent,
+//            'headers' => [
+//                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+//            ],
+//        ]
+//        );
 
         $response = json_decode($response->getBody(), true);
 
@@ -96,13 +99,14 @@ class AssentService
 
     public function updateAssent($assent)
     {
-        $response = $this->client->request('PUT', '/assents/'.$assent['id'], [
-            'json'    => $assent,
-            'headers' => [
-                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-            ],
-        ]
-        );
+        $response = $this->commonGroundService->updateResource($assent, $assent['@id']);
+//        $response = $this->client->request('PUT', '/assents/'.$assent['id'], [
+//            'json'    => $assent,
+//            'headers' => [
+//                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+//            ],
+//        ]
+//        );
 
         $response = json_decode($response->getBody(), true);
 

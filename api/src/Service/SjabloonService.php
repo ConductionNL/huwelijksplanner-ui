@@ -15,13 +15,15 @@ class SjabloonService
     private $cache;
     private $client;
     private $session;
+    private $commonGroundService;
 
-    public function __construct(ParameterBagInterface $params, SessionInterface $session, CacheInterface $cache)
+    public function __construct(ParameterBagInterface $params, SessionInterface $session, CacheInterface $cache, CommonGroundService $commonGroundService)
     {
         $this->params = $params;
         $this->session = $session;
         $this->cash = $cache;
-        
+        $this->commonGroundService = $commonGroundService;
+
         // To work with NLX we need a couple of default headers
         $this->headers = [
         		'Accept'        => 'application/ld+json',
@@ -49,8 +51,8 @@ class SjabloonService
         }
 
         $response = $this->client->request('GET', $slug);
-
-        $response = json_decode($response->getBody()->getContents(), true);
+        $response = $this->commonGroundService->getResource('https://wrc.huwelijksplanner.online/applications/536bfb73-63a5-4719-b535-d835607b88b2/'.$slug);
+        //$response = json_decode($response->getBody()->getContents(), true);
         $response = $response['template'];
 
         $item->set($response);

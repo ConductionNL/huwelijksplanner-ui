@@ -37,7 +37,7 @@ class DefaultController extends AbstractController
         $request = $session->get('request');
         $request['status'] = 'submitted';
 
-        if ($request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
+        if ($request = $commonGroundService->updateResource($request, $request['id'])) {
             $session->set('request', $request);
 
             $this->addFlash('success', 'Uw verzoek is ingediend');
@@ -377,7 +377,7 @@ class DefaultController extends AbstractController
             }
         }
 
-        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.huwelijksplanner.online' . $variables['request']['@id'])) {
+        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
@@ -511,7 +511,7 @@ class DefaultController extends AbstractController
             /*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
             $slug = "trouwen";
         }
-
+        var_dump($variables['request']);
         /*@todo olld skool overwite variabel maken */
         switch ($slug) {
             case null :

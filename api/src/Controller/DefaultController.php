@@ -511,14 +511,14 @@ class DefaultController extends AbstractController
             /*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
             $slug = "trouwen";
         }
-        var_dump($variables['request']);
+        //var_dump($variables['request']);
         /*@todo olld skool overwite variabel maken */
         switch ($slug) {
             case null :
                 $slug = 'trouwen';
                 break;
             case 'ambtenaar':
-                $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
+            	$variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
                 break;
             case 'locatie':
                 $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '170788e7-b238-4c28-8efc-97bdada02c2e']);
@@ -548,7 +548,7 @@ class DefaultController extends AbstractController
         if ($template = $sjabloonService->getOnSlug($slug)) {
             // We want to include the html in our own template
             $html = $template['content'];
-
+            
             $template = $this->get('twig')->createTemplate($html);
             $template = $template->render($variables);
 

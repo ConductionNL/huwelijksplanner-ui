@@ -45,24 +45,25 @@ class RequestService
     	if(!$application){
     		$application= $this->session->get('application');
     	}
+        $request= [];
+        $request['request_type'] = $requestType['@id'];
+        $request['organization'] = $organization['@id'];
+        $request['application'] = $application;
+        //$request['organization'] = $organization;
+        $request['status']='incomplete';
+        $request['properties']= [];
 
-    	$request= [];
-    	$request['request_type'] = 'https://vtc.huwelijksplanner.online'.$requestType['@id'];
-    	$request['target_organization'] = 'https://wrc.huwelijksplanner.online'.$organization['@id'];
-    	$request['application'] = $application;
-    	$request['status']='incomplete';
-    	$request['properties']= [];
-
-    	$requestTypeObject = $this->commonGroundService->getResource($request['request_type']);
-    	if($requestTypeObject['unique'] == true)
-        {
-            $existingRequests = $this->commonGroundService->getResourceList('http://vrc.huwelijksplanner.online/requests', ['request_type'=>$request['request_type'], 'status[]'=>['incomplete','processed','submitted'], 'submitter'=>$this->session->get('bsn')]);
-            if(count($existingRequests) > 0)
-            {
-                //TODO: Throw error
-               return null;
-            }
-        }
+        $requestTypeObject = $this->commonGroundService->getResource($request['request_type']);
+//    	if($requestTypeObject['unique'] == true)
+//        {
+//            $existingRequests = $this->commonGroundService->getResourceList('http://vrc.huwelijksplanner.online/requests', ['request_type'=>$request['request_type'], 'status[]'=>['incomplete','processed','submitted'], 'submitter'=>$this->session->get('bsn')]);
+//            if(count($existingRequests) > 0)
+//            {
+//                //TODO: Throw error
+//               throw new
+//               die;
+//            }
+//        }
     	if($user){
     		$request['submitter'] = $user['burgerservicenummer'];
     		//$request['submitters'] = [$user['burgerservicenummer']];
@@ -97,15 +98,15 @@ class RequestService
     	$assent = [];
     	$assent['name'] = 'Instemming huwelijk partnerschp';
     	$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-    	$assent['contact'] = 'http://cc.huwelijksplanner.online'.$contact['@id'];
-    	$assent['requester'] = 'https://wrc.huwelijksplanner.online'.$organization['@id'];
+    	$assent['contact'] = $contact['@id'];
+    	$assent['requester'] = $organization['@id'];
     	$assent['person'] = $user['burgerservicenummer'];
-    	$assent['request'] = 'http://vrc.huwelijksplanner.online'.$request['@id'];
+    	$assent['request'] = $request['@id'];
     	$assent['status'] = 'granted';
     	$assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
 
-    	$request['properties']['partners'][] = 'http://irc.zaakonline.nl'.$assent['@id'];
-    	$request = $this->commonGroundService->updateResource($request, 'https://vrc.huwelijksplanner.online'.$request['@id']);
+    	$request['properties']['partners'][] = $assent['@id'];
+    	$request = $this->commonGroundService->updateResource($request, $request['@id']);
 
     	return $request;
     }
@@ -196,25 +197,25 @@ class RequestService
                         else{
                             $value['requester'] = $requestType['source_organization'];
                         }
-                        $value['request'] = 'https://vrc.huwelijksplanner.online/requests/'.$request['id'];
+                        $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))
-	    				    $value['contact'] = 'http://cc.huwelijksplanner.online'.$contact['@id'];
+	    				    $value['contact'] = $contact['@id'];
 	    				$value = $this->commonGroundService->createResource($value, 'https://irc.huwelijksplanner.online/assents');
 	    			}
 	    			else{
-	    				//$value = $this->commonGroundService->updateResource($value, 'https://irc.huwelijksplanner.online/'.$value['@id']);
+	    				//$value = $this->commonGroundService->updateResource($value, $value['@id']);
 	    			}
-	    			$value = 'http://irc.huwelijksplanner.online'.$value['@id'];
+	    			$value = $value['@id'];
 	    			break;
 	    			/*
 	    		case 'cc/people':
 	    			// This is a new assent so we also need to create a contact
 	    			if(!array_key_exists ('@id', $value)) {
-	    				$value= $this->commonGroundService->createResource($value, 'https://cc.huwelijksplanner.online/people');
+	    				$value= $this->commonGroundService->createResource($value, );
 	    			}
 	    			else{
-	    				$value= $this->commonGroundService->updateResource($value, 'https://cc.huwelijksplanner.online/'.$value['@id']);
+	    				$value= $this->commonGroundService->updateResource($value, $value['@id']);
 	    			}
 	    			$value ='http://cc.huwelijksplanner.online'.$value['@id'];
 	    			break;
@@ -224,7 +225,7 @@ class RequestService
 	    				$value= $this->commonGroundService->createResource($value, 'https://pdc.huwelijksplanner.online/product');
 	    			}
 	    			else{
-	    				$value= $this->commonGroundService->updateResource($value, 'https://pdc.huwelijksplanner.online/'.$value['@id']);
+	    				$value= $this->commonGroundService->updateResource($value, $value['@id']);
 	    			}
 	    			$value = $value['@id'];
 	    			break;
@@ -236,7 +237,7 @@ class RequestService
 	    				$value= $this->commonGroundService->createResource($value, 'https://orc.huwelijksplanner.online/order');
 	    			}
 	    			else{
-	    				$value= $this->commonGroundService->updateResource($value, 'https://orc.huwelijksplanner.online/'.$value['@id']);
+	    				$value= $this->commonGroundService->updateResource($value, $value['@id']);
 	    			}
 	    			$value = 'http://orc.huwelijksplanner.online'.$value['@id'];
 	    			break;

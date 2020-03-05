@@ -104,23 +104,23 @@ $ helm dependency update ./api/helm
 ```
 If you want to create a new instance
 ```CLI
-$ helm install --name hpui-dev ./api/helm  --kubeconfig="api/helm/kubeconfig.yaml" --namespace=dev  --set settings.env=dev,settings.debug=1
-$ helm install --name hpui-stag ./api/helm --kubeconfig="api/helm/kubeconfig.yaml" --namespace=stag --set settings.env=stag,settings.debug=0
-$ helm install --name hpui-prod ./api/helm --kubeconfig="api/helm/kubeconfig.yaml" --namespace=prod --set settings.env=prod,settings.debug=0
+$ helm install --name hpui-dev ./api/helm  --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml" --namespace=dev  --set settings.env=dev,settings.debug=1
+$ helm install --name hpui-stag ./api/helm --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml" --namespace=stag --set settings.env=stag,settings.debug=0
+$ helm install --name hpui-prod ./api/helm --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml" --namespace=prod --set settings.env=prod,settings.debug=0
 ```
 
 Or update if you want to update an existing one
 ```CLI
-$ helm upgrade hpui-dev ./api/helm  --kubeconfig="api/helm/kubeconfig.yaml" --namespace=dev  --set settings.env=dev,settings.debug=1
-$ helm upgrade hpui-stag ./api/helm --kubeconfig="api/helm/kubeconfig.yaml" --namespace=stag --set settings.env=stag,settings.debug=0
-$ helm upgrade hpui-prod ./api/helm --kubeconfig="api/helm/kubeconfig.yaml" --namespace=prod --set settings.env=prod,settings.debug=0
+$ helm upgrade hpui-dev ./api/helm  --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml" --namespace=dev  --set settings.env=dev,settings.debug=1
+$ helm upgrade hpui-stag ./api/helm --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml" --namespace=stag --set settings.env=stag,settings.debug=0
+$ helm upgrade hpui-prod ./api/helm --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml" --namespace=prod --set settings.env=prod,settings.debug=0
 ```
 
 Or del if you want to delete an existing  one
 ```CLI
-$ helm del hpui-dev  --purge --kubeconfig="api/helm/kubeconfig.yaml"
-$ helm del hpui-stag --purge --kubeconfig="api/helm/kubeconfig.yaml"
-$ helm del hpui-prod --purge --kubeconfig="api/helm/kubeconfig.yaml"
+$ helm del hpui-dev  --purge --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml"
+$ helm del hpui-stag --purge --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml"
+$ helm del hpui-prod --purge --kubeconfig="api/helm/huwelijksplanner-kubeconfig.yaml"
 ```
 
 Note that you can replace common ground with the namespace that you want to use (normally the name of your component).

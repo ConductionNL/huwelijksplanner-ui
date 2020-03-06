@@ -480,7 +480,7 @@ class DefaultController extends AbstractController
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         } else {
             $this->addFlash('danger', ucfirst($slug) . ' kon niet worden ingesteld');
-            return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));;
+            return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         }
     }
 
@@ -492,7 +492,7 @@ class DefaultController extends AbstractController
     public function viewAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
         $variables = $applicationService->getVariables();
-        $variables['slug'] = $slug;
+
         /*
          *
             // If we dont have a user requested slug lets go to the current request stage
@@ -512,6 +512,7 @@ class DefaultController extends AbstractController
             /*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
             $slug = "trouwen";
         }
+        $variables['slug'] = $slug;
         //var_dump($variables['request']);
 
         /*@todo olld skool overwite variabel maken */

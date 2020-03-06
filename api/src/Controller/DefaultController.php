@@ -263,9 +263,18 @@ class DefaultController extends AbstractController
         if ($httpRequest->request->get('familyName')) {
             $contact['familyName'] = $httpRequest->request->get('familyName');
         }
-
-        $contact['emails'][0] = ["name" => "primary", "email" => $httpRequest->request->get('email')];
-        $contact['telephones'][0] = ["name" => "primary", "telephone" => $httpRequest->request->get('telephone')];
+        if($httpRequest->request->get('email') != null){
+            $contact['emails'][0] = ["name" => "primary", "email" => $httpRequest->request->get('email')];
+        }
+        else{
+            unset($contact['emails']);
+        }
+        if($httpRequest->request->get('telephone') != null){
+            $contact['telephones'][0] = ["name" => "primary", "telephone" => $httpRequest->request->get('telephone')];
+        }
+        else{
+            unset($contact['telephones']);
+        }
 
         if ($contact = $commonGroundService->updateResource($contact, $assent['contact'])) {
             $this->addFlash('success', $contact['name'] . ' is bijgewerkt');
@@ -287,10 +296,13 @@ class DefaultController extends AbstractController
 
         $variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
 
-        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], 'https://vrc.huwelijksplanner.online' . $variables['request']['@id'])) {
+        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
+            if($slug == 'getuigen'){
+                $slug = 'getuige';
+            }
 
             /*@todo translation*/
             $this->addFlash('success', ucfirst($slug) . ' geannuleerd');

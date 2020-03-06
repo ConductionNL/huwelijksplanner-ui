@@ -555,11 +555,11 @@
         <!-- the alert box -->
         {% if app.session.flashbag.peekAll|length > 0 %}
             {% for type, messages in app.session.flashbag.all %}
-
+                {% set datadelay = ( counter | default(0) ) + 3000 %}
 
                     <!-- .row -->
                     <div class="row animation save-confirmation" data-animation="animation-bounce-out"
-                         data-delay="3000">
+                         data-delay="{{ datadelay }}">
                         <div class="post-heading-center animation" data-animation="animation-fade-in-down">
                             
                         </div>

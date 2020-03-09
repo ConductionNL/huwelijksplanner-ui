@@ -179,7 +179,11 @@ class RequestService
 		    				$contact['telephones']=[];
 		    				$contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
 	    				}
-	    				//var_dump($contact);
+                        if($contact['telephones'][0]['telephone'] == null)
+                        {
+                            unset($contact['telephones']);
+                        }
+
 	    				if(!empty($contact))
 	    				    $contact = $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
 

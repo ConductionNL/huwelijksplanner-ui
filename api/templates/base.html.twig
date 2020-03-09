@@ -554,20 +554,20 @@
 
         <!-- the alert box -->
         {% if app.session.flashbag.peekAll|length > 0 %}
+            {% set datadelay = 0 %}
             {% for type, messages in app.session.flashbag.all %}
-                {% set datadelay = ( counter | default(0) ) + 3000 %}
-
+                {% for message in messages %}
+                    {% set datadelay = ( counter | default(0) ) + 3000 %}
                     <!-- .row -->
-                    <div class="row animation save-confirmation" data-animation="animation-bounce-out"
-                         data-delay="{{ datadelay }}">
+                    <div class="row animation save-confirmation" data-animation="animation-bounce-out" data-delay="{{ datadelay }}">
                         <div class="post-heading-center animation" data-animation="animation-fade-in-down">
-                            
+                            <h2>{{ message|trans({}, domain|default('messages')) }}</h2>
                         </div>
                         <div class="col-md-12 text-center">
-                            <i class="fas fa-check fa-6x animation" data-animation="animation-fade-in-down"></i>
+                            <i class="fas fa-check fa-6x animation" data-animation="animation-fade-in-down" ></i>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
-
+                {% endfor %}
             {% endfor %}
         {% endif %}
         <!-- end of the alert box -->

@@ -25,11 +25,11 @@ class MessageService
 
     }
 
-    public function createMessage($contact, $assent){
+    public function createMessage($contact, $assent, $template){
         $message = [];
         $message['sender'] = '';
         $message['receiver'] = $contact['@id'];
-        $message['content'] = '';
+        $message['content'] = $template;
         $message['data']['assent'] = $assent;
         $message['data']['contact'] = $contact;
         $message['status'] = 'queued';

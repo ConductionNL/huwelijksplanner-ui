@@ -210,8 +210,8 @@ class RequestService
 	    				if(!empty($contact))
 	    				    $value['contact'] = $contact['@id'];
 	    				$value = $this->commonGroundService->createResource($value, 'https://irc.huwelijksplanner.online/assents');
-
-	    				$this->messageService->createMessage($contact, $value);
+                        $template = '';
+	    				$this->messageService->createMessage($contact, $value, $template);
 	    			}
 	    			else{
 	    				//$value = $this->commonGroundService->updateResource($value, $value['@id']);

@@ -5,6 +5,7 @@
 namespace App\Service;
 
 use GuzzleHttp\Client;
+use http\Message;
 use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -18,13 +19,15 @@ class RequestService
     private $client;
     private $session;
     private $commonGroundService;
+    private $messageService;
 
-    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService)
+    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService, MessageService $messageService)
     {
         $this->params = $params;
         $this->cash = $cache;
         $this->session= $session;
         $this->commonGroundService = $commonGroundService;
+        $this->messageService = $messageService;
 
     }
 
@@ -207,6 +210,8 @@ class RequestService
 	    				if(!empty($contact))
 	    				    $value['contact'] = $contact['@id'];
 	    				$value = $this->commonGroundService->createResource($value, 'https://irc.huwelijksplanner.online/assents');
+
+	    				$this->messageService->createMessage($contact, $value);
 	    			}
 	    			else{
 	    				//$value = $this->commonGroundService->updateResource($value, $value['@id']);

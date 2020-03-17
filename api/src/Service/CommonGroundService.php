@@ -60,6 +60,7 @@ class CommonGroundService
 	 */
 	public function getResourceList($url, $query = [], $force = false, $async = false)
 	{
+		
 		if (!$url) {
 			return false;
 		}

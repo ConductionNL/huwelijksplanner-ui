@@ -187,7 +187,7 @@ class DefaultController extends AbstractController
         $session->set('request', $request);
 
         // Lets also set the request type
-        $requestType = $commonGroundService->getResource($request['request_type']);
+        $requestType = $commonGroundService->getResource($request['requestType']);
         $requestType = $requestService->checkRequestType($request, $requestType);
         $session->set('requestType', $requestType);
 

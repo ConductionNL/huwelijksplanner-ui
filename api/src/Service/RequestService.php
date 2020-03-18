@@ -56,7 +56,7 @@ class RequestService
         $request['status']='incomplete';
         $request['properties']= [];
 
-        $requestTypeObject = $this->commonGroundService->getResource($request['request_type']);
+        $requestTypeObject = $this->commonGroundService->getResource($request['requestType']);
 //    	if($requestTypeObject['unique'] == true)
 //        {
 //            $existingRequests = $this->commonGroundService->getResourceList('http://vrc.huwelijksplanner.online/requests', ['request_type'=>$request['request_type'], 'status[]'=>['incomplete','processed','submitted'], 'submitter'=>$this->session->get('bsn')]);
@@ -361,11 +361,11 @@ class RequestService
                     $requestType['stages'][$key]['completed'] = true;
                 }
                 // als het een array is zonder minimum waarden
-                elseif (!array_key_exists('minItems', $property)) {
+                elseif (!array_key_exists('min_items', $property)) {
                     $requestType['stages'][$key]['completed'] = true;
                 }
                 // als de array een minimum waarde heeft en die waarde wordt gehaald
-                elseif (array_key_exists('minItems', $property) && $property['minItems'] && count($request['properties'][$stage['name']]) >= (int) $property['minItems']) {
+                elseif (array_key_exists('min_items', $property) && $property['min_items'] && count($request['properties'][$stage['name']]) >= (int) $property['min_items']) {
                     $requestType['stages'][$key]['completed'] = true;
                 } else {
                     $requestType['stages'][$key]['completed'] = false;

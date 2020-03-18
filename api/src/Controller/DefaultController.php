@@ -358,13 +358,13 @@ class DefaultController extends AbstractController
 
         /*@todo dut configureerbaar maken */
         // hardcode overwrite for "gratis trouwen"
-        if (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/products/190c3611-010d-4b0e-a31c-60dadf4d1c62") {
-            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
-            $variables['request']['properties']['ambtenaar'] = "https://pdc.v/products/55af09c8-361b-418a-af87-df8f8827984b";
+        if (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee") {
+            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
+            $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
         } // hardcode overwrite for "eenvoudig trouwen"
-        elseif (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/products/16353702-4614-42ff-92af-7dd11c8eef9f") {
-            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
-            $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/products/55af09c8-361b-418a-af87-df8f8827984b";
+        elseif (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/offers/2b9ba0a9-376d-45e2-aa83-809ef07fa104") {
+            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
+            $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
         } else {
             if (key_exists('locatie', $variables['request']['properties']) && $slug == 'plechtigheid') {
                 unset($variables['request']['properties']['locatie']);

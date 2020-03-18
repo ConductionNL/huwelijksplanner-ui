@@ -218,6 +218,63 @@ class RequestService
 	    			}
 	    			$value = $value['@id'];
 	    			break;
+                case 'pdc/offer':
+
+
+                    if(!key_exists('order', $request['properties'])){
+                        $contact = [];  //dit moeten we ergens gaan opslaan, anders blijven we contacten maken voor dezelfde persoon
+                        if($value != null && array_key_exists('givenName',$value)){ $contact['givenName']= $value['givenName'];}
+                        if($value != null && array_key_exists('familyName',$value)){ $contact['familyName']= $value['familyName'];}
+                        if($value != null && array_key_exists('email',$value)){
+                            $contact['emails']=[];
+                            $contact['emails'][]=["name"=>"primary","email"=> $value['email']];
+                        }
+                        if($value != null && array_key_exists('telephone',$value)){
+                            $contact['telephones']=[];
+                            $contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
+                        }
+                        if($contact['telephones'][0]['telephone'] == null)
+                        {
+                            unset($contact['telephones']);
+                        }
+
+                        if(!empty($contact))
+                            $contact = $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
+
+                        $order = [];
+                        $order['name'] = "Huwelijksplanner order";
+                        $order['targetOrganization'] = '002220647';
+                        $order['customer'] = $contact;
+                        $order['stage'] = 'cart'; // Deze zou leeg moeten mogen zijn
+                        $order['items'] = [];
+
+                        $order['remark'] = $request->request->get('remarks');
+                        $order['customer'] = $contact['@id'];
+
+                        if (!in_array('description',$order) || !$order['description']) {
+                            $order['description'] = "Huwelijksplanner Order";
+                        }
+
+                        $order = $this->commonGroundService->createResource($order, );
+
+                        $request['properties']['order'] = $order;
+                    }
+                    $offer = $value;
+                    $order = $request['properties']['order'];
+                    $orderItem = [];
+                    $orderItem['offer'] = $offer['@id'];
+                    $orderItem['name'] = $offer['name'];
+                    $orderItem['description'] = $offer['description'];
+                    $orderItem['quantity'] = 1;
+                    $orderItem['price'] = number_format($offer['price'] / 100, 2, '.', ' '); // hier gaat iets mis dat dit nodig is
+                    $orderItem['priceCurrency'] = $offer['priceCurrency'];
+                    //$orderItem['taxPercentage'] = $offer['taxes'][0]['percentage']; // Taxes in orders en invoices moet worden bijgewerkt
+                    $orderItem['taxPercentage'] = 0; /*@todo dit moet dus nog worden gefixed */
+                    $orderItem['order'] = $order['@id'];
+
+                    $orderItem = $this->commonGroundService->createResource($orderItem, 'https://orc.huwelijksplanner.online/order_items');
+                    $request['properties']['order']['items'] .= $orderItem;
+                    break;
 	    			/*
 	    		case 'cc/people':
 	    			// This is a new assent so we also need to create a contact

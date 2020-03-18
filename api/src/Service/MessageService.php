@@ -34,7 +34,6 @@ class MessageService
         $message['data']['assent'] = $assent;
         $message['data']['contact'] = $contact;
         $message['status'] = 'queued';
-        $message['service'] = '';
 //        var_dump($message);
 //        die;
 

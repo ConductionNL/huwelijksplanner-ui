@@ -315,15 +315,15 @@ class DefaultController extends AbstractController
 
     }
 
-    
+
     /**
      * @Route("/request/new/{slug}")
      */
     public function newRequest(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
     {
-    	
+
     }
-    
+
     /**
      * @Route("/post", name="app_default_post_request")
      * @Route("/{slug}/post", name="app_default_post")
@@ -472,7 +472,7 @@ class DefaultController extends AbstractController
 
 
         if ($request = $requestService->updateRequest($request)) {
-            $request["current_stage"] = $property["next"];
+            $request["currentStage"] = $property["next"];
             $request = $requestService->updateRequest($request);
             $session->set('request', $request);
 
@@ -528,7 +528,7 @@ class DefaultController extends AbstractController
 
         // If we have a cuurent stage on the request
         if (!$slug && array_key_exists('request', $variables)) {
-            $slug = $variables['request']["current_stage"];
+            $slug = $variables['request']["currentStage"];
         } elseif (!$slug) {
             /*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
             $slug = "trouwen";

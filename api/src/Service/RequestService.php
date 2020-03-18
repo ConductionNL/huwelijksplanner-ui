@@ -73,8 +73,8 @@ class RequestService
     	}
 
     	// juiste startpagina weergeven
-    	if(!array_key_exists ("current_stage", $request) && array_key_exists (0, $requestType['stages'])){
-    		$request["current_stage"] = $requestType['stages'][0]['slug'];
+    	if(!array_key_exists ("currentStage", $request) && array_key_exists (0, $requestType['stages'])){
+    		$request["currentStage"] = $requestType['stages'][0]['slug'];
     	}
 
     	$request = $this->commonGroundService->createResource($request, 'https://vrc.huwelijksplanner.online/requests');
@@ -203,7 +203,7 @@ class RequestService
                             $value['requester'] = $value['partner'];
                         }
                         else{
-                            $value['requester'] = $requestType['source_organization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
+                            $value['requester'] = $requestType['sourceOrganization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
                         }
                         $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';
@@ -361,11 +361,11 @@ class RequestService
                     $requestType['stages'][$key]['completed'] = true;
                 }
                 // als het een array is zonder minimum waarden
-                elseif (!array_key_exists('min_items', $property)) {
+                elseif (!array_key_exists('minItems', $property)) {
                     $requestType['stages'][$key]['completed'] = true;
                 }
                 // als de array een minimum waarde heeft en die waarde wordt gehaald
-                elseif (array_key_exists('min_items', $property) && $property['min_items'] && count($request['properties'][$stage['name']]) >= (int) $property['min_items']) {
+                elseif (array_key_exists('minItems', $property) && $property['minItems'] && count($request['properties'][$stage['name']]) >= (int) $property['minItems']) {
                     $requestType['stages'][$key]['completed'] = true;
                 } else {
                     $requestType['stages'][$key]['completed'] = false;

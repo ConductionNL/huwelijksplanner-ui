@@ -203,7 +203,7 @@ class RequestService
                             $value['requester'] = $value['partner'];
                         }
                         else{
-                            $value['requester'] = $requestType['sourceOrganization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
+                            $value['requester'] = $requestType['source_organization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
                         }
                         $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';

@@ -198,19 +198,19 @@ class RequestService
 	    				if($value == null)
 	    				    $value = [];
 	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
-	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B'; //@TODO: hier mogen A en B nog wel namen worden :P
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B'; //@TODO: hier mogen A en B nog wel namen worden. De zin is voor een partner trouwens best krom
                         if($slug=="getuige" && array_key_exists('partner', $value)){
                             $value['requester'] = $value['partner'];
                         }
                         else{
-                            $value['requester'] = $requestType['source_organization'];
+                            $value['requester'] = $requestType['source_organization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
                         }
                         $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))
 	    				    $value['contact'] = $contact['@id'];
 	    				$value = $this->commonGroundService->createResource($value, 'https://irc.huwelijksplanner.online/assents');
-                        $template = '';
+                        $template = 'https://wrc.huwelijksplanner.online/templates/e04defee-0bb3-4e5c-b21d-d6deb76bd1bc';
 	    				$this->messageService->createMessage($contact, $value, $template);
 	    			}
 	    			else{

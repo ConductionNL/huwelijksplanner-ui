@@ -5,6 +5,7 @@
 namespace App\Service;
 
 use GuzzleHttp\Client;
+use http\Message;
 use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -18,13 +19,15 @@ class RequestService
     private $client;
     private $session;
     private $commonGroundService;
+    private $messageService;
 
-    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService)
+    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService, MessageService $messageService)
     {
         $this->params = $params;
         $this->cash = $cache;
         $this->session= $session;
         $this->commonGroundService = $commonGroundService;
+        $this->messageService = $messageService;
 
     }
 
@@ -195,18 +198,20 @@ class RequestService
 	    				if($value == null)
 	    				    $value = [];
 	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
-	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B'; //@TODO: hier mogen A en B nog wel namen worden :P
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B'; //@TODO: hier mogen A en B nog wel namen worden. De zin is voor een partner trouwens best krom
                         if($slug=="getuige" && array_key_exists('partner', $value)){
                             $value['requester'] = $value['partner'];
                         }
                         else{
-                            $value['requester'] = $requestType['source_organization'];
+                            $value['requester'] = $requestType['source_organization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
                         }
                         $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))
 	    				    $value['contact'] = $contact['@id'];
 	    				$value = $this->commonGroundService->createResource($value, 'https://irc.huwelijksplanner.online/assents');
+                        $template = 'https://wrc.huwelijksplanner.online/templates/e04defee-0bb3-4e5c-b21d-d6deb76bd1bc';
+	    				$this->messageService->createMessage($contact, $value, $template);
 	    			}
 	    			else{
 	    				//$value = $this->commonGroundService->updateResource($value, $value['@id']);

@@ -49,7 +49,7 @@ class RequestService
     		$application= $this->session->get('application');
     	}
         $request= [];
-        $request['request_type'] = $requestType['@id'];
+        $request['requestType'] = $requestType['@id'];
         $request['organization'] = $organization['@id'];
         $request['application'] = $application;
         //$request['organization'] = $organization;

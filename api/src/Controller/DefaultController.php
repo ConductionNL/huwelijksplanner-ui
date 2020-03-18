@@ -315,6 +315,15 @@ class DefaultController extends AbstractController
 
     }
 
+    
+    /**
+     * @Route("/request/new/{slug}")
+     */
+    public function newRequest(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
+    {
+    	
+    }
+    
     /**
      * @Route("/post", name="app_default_post_request")
      * @Route("/{slug}/post", name="app_default_post")

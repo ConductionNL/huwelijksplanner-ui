@@ -55,13 +55,13 @@ class CommonGroundService
         $this->client = new Client($this->guzzleConfig);
     }
 
-    private function atIdConverter(array $object, array $parsedUrl){
+    private function convertAtId(array $object, array $parsedUrl){
         if(key_exists('@id', $object)){
             $object['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$object['@id'];
         }
         foreach($object as $key=>$subObject){
             if(is_array($subObject)){
-                $object[$key] = $this->atIdConverter($subObject, $parsedUrl);
+                $object[$key] = $this->convertAtId($subObject, $parsedUrl);
             }
         }
         return $object;
@@ -142,7 +142,7 @@ class CommonGroundService
         $response = json_decode($response->getBody(), true);
 
         /* @todo this should look to al @id keus not just the main root */
-        $response = $this->atIdConverter($response, $parsedUrl);
+        $response = $this->convertAtId($response, $parsedUrl);
 
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));
@@ -213,7 +213,7 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        $response = $this->atIdConverter($response, $parsedUrl);
+        $response = $this->convertAtId($response, $parsedUrl);
 
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));
@@ -291,7 +291,7 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        $response = $this->atIdConverter($response, $parsedUrl);
+        $response = $this->convertAtId($response, $parsedUrl);
 
         // Lets cash this item for speed purposes
         $item = $this->cash->getItem('commonground_'.md5($url));
@@ -356,7 +356,7 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        $response = $this->atIdConverter($response, $parsedUrl);
+        $response = $this->convertAtId($response, $parsedUrl);
 //        if(array_key_exists('@id', $response) && $response['@id']){
 //            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
 //        }

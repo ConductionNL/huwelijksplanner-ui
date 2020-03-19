@@ -147,7 +147,6 @@ class RequestService
     	    $order = $this->commonGroundService->getResource($request['properties']['order']);
     	    foreach($order['items'] as $item){
     	        if($item['offer'] = $deletedValue){
-    	            var_dump($item);
     	            $this->commonGroundService->deleteResource($item['@id']);
                 }
             }

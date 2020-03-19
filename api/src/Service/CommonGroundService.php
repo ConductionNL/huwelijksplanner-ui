@@ -142,13 +142,7 @@ class CommonGroundService
         $response = json_decode($response->getBody(), true);
 
         /* @todo this should look to al @id keus not just the main root */
-        if(array_key_exists('hydra:member', $response) && $response['hydra:member']){
-            foreach($response['hydra:member'] as $key => $embedded){
-                if(array_key_exists('@id', $embedded) && $embedded['@id']){
-                    $response['hydra:member'][$key]['@id'] =  $parsedUrl["scheme"]."://".$parsedUrl["host"].$embedded['@id'];
-                }
-            }
-        }
+        $response = $this->atIdConverter($response, $parsedUrl);
 
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));
@@ -297,9 +291,7 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        if(array_key_exists('@id', $response) && $response['@id']){
-            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
-        }
+        $response = $this->atIdConverter($response, $parsedUrl);
 
         // Lets cash this item for speed purposes
         $item = $this->cash->getItem('commonground_'.md5($url));

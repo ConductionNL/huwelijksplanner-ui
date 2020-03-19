@@ -59,9 +59,9 @@ class CommonGroundService
         if(key_exists('@id', $object)){
             $object['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$object['@id'];
         }
-        foreach($object as $subObject){
+        foreach($object as $key=>$subObject){
             if(is_array($subObject)){
-                $subObject = $this->atIdConverter($subObject, $parsedUrl);
+                $object[$key] = $this->atIdConverter($subObject, $parsedUrl);
             }
         }
         return $object;

@@ -218,6 +218,7 @@ class RequestService
 	    			}
 	    			$value = $value['@id'];
 	    			break;
+                case 'pdc/product'; //to be deleted once this is correct
                 case 'pdc/offer':
 
 

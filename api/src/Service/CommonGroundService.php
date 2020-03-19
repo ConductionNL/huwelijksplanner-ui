@@ -369,10 +369,8 @@ class CommonGroundService
 
         return $response;
     }
-    public function deleteResource($resource, $url, $force = false, $async = false){
-        if (!$url && array_key_exists('@id', $resource)) {
-            $url = $resource['@id'];
-        }
+    public function deleteResource($url, $force = false, $async = false){
+
 
         // Split enviroments, if the env is not dev the we need add the env to the url name
         $parsedUrl = parse_url($url);

@@ -147,7 +147,8 @@ class RequestService
     	    $order = $this->commonGroundService->getResource($request['properties']['order']);
     	    foreach($order['items'] as $item){
     	        if($item['offer'] = $deletedValue){
-    	            $this->commonGroundService->deleteResource($item['@id'], 'https://orc.huwelijksplanner.onlnie/orderItems');
+    	            var_dump($item);
+    	            $this->commonGroundService->deleteResource($item['@id']);
                 }
             }
         }

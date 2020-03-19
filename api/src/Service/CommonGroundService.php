@@ -219,14 +219,7 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        if(array_key_exists('@id', $response) && $response['@id']){
-            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
-        }
-        foreach($response as $key=>$property){
-            if(is_array($property) && key_exists('@id',$property)){
-                $response[$key]['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
-            }
-        }
+        $response = $this->atIdConverter($response, $parsedUrl);
 
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));

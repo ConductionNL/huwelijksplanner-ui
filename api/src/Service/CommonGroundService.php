@@ -369,6 +369,58 @@ class CommonGroundService
 
         return $response;
     }
+    public function deleteResource($resource, $url, $force = false, $async = false){
+        if (!$url && array_key_exists('@id', $resource)) {
+            $url = $resource['@id'];
+        }
+
+        // Split enviroments, if the env is not dev the we need add the env to the url name
+        $parsedUrl = parse_url($url);
+
+        // We only do this on non-production enviroments
+        if($this->params->get('app_env') != "prod"){
+
+            // Lets make sure we dont have doubles
+            $url = str_replace($this->params->get('app_env').'.','',$url);
+
+            // e.g https://wrc.larping.eu/ becomes https://wrc.dev.larping.eu/
+            $host = explode('.', $parsedUrl['host']);
+            $subdomain = $host[0];
+            $url = str_replace($subdomain.'.',$subdomain.'.'.$this->params->get('app_env').'.',$url);
+        }
+
+        $headers = $this->headers;
+        $headers['X-NLX-Request-Subject-Identifier'] = $url;
+
+        $item = $this->cash->getItem('commonground_'.md5($url));
+        if ($item->isHit() && !$force) {
+            //return $item->get();
+        }
+
+        if(!$async){
+            $response = $this->client->request('DELETE', $url, [
+                    'headers' => $headers,
+                ]
+            );
+        }
+        else {
+
+            $response = $this->client->requestAsync('DELETE', $url, [
+                    'headers' => $headers,
+                ]
+            );
+        }
+
+        if($response->getStatusCode() != 204 && $response->getStatusCode() != 200){
+            var_dump('DELETE returned:'.$response->getStatusCode());
+            var_dump($headers);
+            var_dump(json_encode($url));
+            var_dump($response->getBody());
+            die;
+        }
+
+        return null;
+    }
 
     /*
      * Get a single resource from a common ground componant

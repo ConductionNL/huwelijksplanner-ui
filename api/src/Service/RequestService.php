@@ -129,6 +129,7 @@ class RequestService
     	if(is_array($request['properties'][$property])){
 
     		$key = array_search($value, $request['properties'][$property]);
+    		$deletedValue = $request['properties'][$property][$key];
     		unset ($request['properties'][$property][$key]);
 
     		// If the array is now empty we want to drop the property
@@ -139,8 +140,17 @@ class RequestService
 
     	// If else we just drop the property
     	else{
+    	    $deletedValue = $request['properties'][$property];
     		unset ($request['properties'][$property]);
     	}
+    	if(key_exists('order',$request['properties'])){
+    	    $order = $this->commonGroundService->getResource($request['properties']['order']);
+    	    foreach($order['items'] as $item){
+    	        if($item['offer'] = $deletedValue){
+    	            $this->commonGroundService->deleteResource($item['@id'], 'https://orc.huwelijksplanner.onlnie/orderItems');
+                }
+            }
+        }
 
     	return $request;
 
@@ -226,24 +236,6 @@ class RequestService
                     // die;
 
                     if(!key_exists('order', $request['properties'])){
-                        // $contact = [];  //dit moeten we ergens gaan opslaan, anders blijven we contacten maken voor dezelfde persoon
-                        // if($value != null && array_key_exists('givenName',$value)){ $contact['givenName']= $value['givenName'];}
-                        // if($value != null && array_key_exists('familyName',$value)){ $contact['familyName']= $value['familyName'];}
-                        // if($value != null && array_key_exists('email',$value)){
-                        //     $contact['emails']=[];
-                        //     $contact['emails'][]=["name"=>"primary","email"=> $value['email']];
-                        // }
-                        // if($value != null && array_key_exists('telephone',$value)){
-                        //     $contact['telephones']=[];
-                        //     $contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
-                        // }
-                        // if($contact['telephones'][0]['telephone'] == null)
-                        // {
-                        //     unset($contact['telephones']);
-                        // }
-
-                        // if(!empty($contact))
-                        //     $contact = $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
                         $order = [];
                         $order['name'] = "Huwelijksplanner order";
                         $order['targetOrganization'] = '002220647';

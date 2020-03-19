@@ -55,6 +55,18 @@ class CommonGroundService
         $this->client = new Client($this->guzzleConfig);
     }
 
+    private function atIdConverter(array $object, array $parsedUrl){
+        if(key_exists('@id', $object)){
+            $object['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$object['@id'];
+        }
+        foreach($object as $subObject){
+            if(is_array($subObject)){
+                $subObject = $this->atIdConverter($subObject, $parsedUrl);
+            }
+        }
+        return $object;
+    }
+
     /*
      * Get a single resource from a common ground componant
      */
@@ -210,6 +222,11 @@ class CommonGroundService
         if(array_key_exists('@id', $response) && $response['@id']){
             $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
         }
+        foreach($response as $key=>$property){
+            if(is_array($property) && key_exists('@id',$property)){
+                $response[$key]['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
+            }
+        }
 
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));
@@ -354,9 +371,10 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        if(array_key_exists('@id', $response) && $response['@id']){
-            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
-        }
+        $response = $this->atIdConverter($response, $parsedUrl);
+//        if(array_key_exists('@id', $response) && $response['@id']){
+//            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
+//        }
 
         // Lets cash this item for speed purposes
         $item = $this->cash->getItem('commonground_'.md5($url.'/'.$response['id']));

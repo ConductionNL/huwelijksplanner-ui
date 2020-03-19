@@ -187,7 +187,7 @@ class DefaultController extends AbstractController
         $session->set('request', $request);
 
         // Lets also set the request type
-        $requestType = $commonGroundService->getResource($request['request_type']);
+        $requestType = $commonGroundService->getResource($request['requestType']);
         $requestType = $requestService->checkRequestType($request, $requestType);
         $session->set('requestType', $requestType);
 
@@ -312,6 +312,15 @@ class DefaultController extends AbstractController
             $this->addFlash('danger', ucfirst($slug) . ' kon niet worden geannuleerd');
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         }
+
+    }
+
+
+    /**
+     * @Route("/request/new/{slug}")
+     */
+    public function newRequest(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
+    {
 
     }
 
@@ -463,7 +472,7 @@ class DefaultController extends AbstractController
 
 
         if ($request = $requestService->updateRequest($request)) {
-            $request["current_stage"] = $property["next"];
+            $request["currentStage"] = $property["next"];
             $request = $requestService->updateRequest($request);
             $session->set('request', $request);
 
@@ -519,7 +528,7 @@ class DefaultController extends AbstractController
 
         // If we have a cuurent stage on the request
         if (!$slug && array_key_exists('request', $variables)) {
-            $slug = $variables['request']["current_stage"];
+            $slug = $variables['request']["currentStage"];
         } elseif (!$slug) {
             /*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
             $slug = "trouwen";

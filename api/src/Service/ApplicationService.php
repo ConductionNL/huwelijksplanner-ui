@@ -120,7 +120,7 @@ class ApplicationService
     	$request= $this->request->request->get('request');
     	if($request || $request =  $this->request->query->get('request')){
     		$request = $this->commonGroundService->getResource($request);
-    		$requestType = $this->commonGroundService->getResource($request['request_type']);
+    		$requestType = $this->commonGroundService->getResource($request['requestType']);
 
     		// Validate current reqoust type
     		$requestType = $this->requestService->checkRequestType($request, $requestType);

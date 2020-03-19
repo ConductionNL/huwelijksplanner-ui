@@ -49,14 +49,14 @@ class RequestService
     		$application= $this->session->get('application');
     	}
         $request= [];
-        $request['request_type'] = $requestType['@id'];
+        $request['requestType'] = $requestType['@id'];
         $request['organization'] = $organization['@id'];
         $request['application'] = $application;
         //$request['organization'] = $organization;
         $request['status']='incomplete';
         $request['properties']= [];
 
-        $requestTypeObject = $this->commonGroundService->getResource($request['request_type']);
+        $requestTypeObject = $this->commonGroundService->getResource($request['requestType']);
 //    	if($requestTypeObject['unique'] == true)
 //        {
 //            $existingRequests = $this->commonGroundService->getResourceList('http://vrc.huwelijksplanner.online/requests', ['request_type'=>$request['request_type'], 'status[]'=>['incomplete','processed','submitted'], 'submitter'=>$this->session->get('bsn')]);
@@ -73,8 +73,8 @@ class RequestService
     	}
 
     	// juiste startpagina weergeven
-    	if(!array_key_exists ("current_stage", $request) && array_key_exists (0, $requestType['stages'])){
-    		$request["current_stage"] = $requestType['stages'][0]['slug'];
+    	if(!array_key_exists ("currentStage", $request) && array_key_exists (0, $requestType['stages'])){
+    		$request["currentStage"] = $requestType['stages'][0]['slug'];
     	}
 
     	$request = $this->commonGroundService->createResource($request, 'https://vrc.huwelijksplanner.online/requests');

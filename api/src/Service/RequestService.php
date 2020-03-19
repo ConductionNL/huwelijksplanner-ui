@@ -220,48 +220,58 @@ class RequestService
 	    			break;
                 case 'pdc/product'; //to be deleted once this is correct
                 case 'pdc/offer':
+                    // var_dump($value);
+                    // var_dump($request);
 
+                    // die;
 
                     if(!key_exists('order', $request['properties'])){
-                        $contact = [];  //dit moeten we ergens gaan opslaan, anders blijven we contacten maken voor dezelfde persoon
-                        if($value != null && array_key_exists('givenName',$value)){ $contact['givenName']= $value['givenName'];}
-                        if($value != null && array_key_exists('familyName',$value)){ $contact['familyName']= $value['familyName'];}
-                        if($value != null && array_key_exists('email',$value)){
-                            $contact['emails']=[];
-                            $contact['emails'][]=["name"=>"primary","email"=> $value['email']];
-                        }
-                        if($value != null && array_key_exists('telephone',$value)){
-                            $contact['telephones']=[];
-                            $contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
-                        }
-                        if($contact['telephones'][0]['telephone'] == null)
-                        {
-                            unset($contact['telephones']);
-                        }
+                        // $contact = [];  //dit moeten we ergens gaan opslaan, anders blijven we contacten maken voor dezelfde persoon
+                        // if($value != null && array_key_exists('givenName',$value)){ $contact['givenName']= $value['givenName'];}
+                        // if($value != null && array_key_exists('familyName',$value)){ $contact['familyName']= $value['familyName'];}
+                        // if($value != null && array_key_exists('email',$value)){
+                        //     $contact['emails']=[];
+                        //     $contact['emails'][]=["name"=>"primary","email"=> $value['email']];
+                        // }
+                        // if($value != null && array_key_exists('telephone',$value)){
+                        //     $contact['telephones']=[];
+                        //     $contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
+                        // }
+                        // if($contact['telephones'][0]['telephone'] == null)
+                        // {
+                        //     unset($contact['telephones']);
+                        // }
 
-                        if(!empty($contact))
-                            $contact = $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
-
+                        // if(!empty($contact))
+                        //     $contact = $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
                         $order = [];
                         $order['name'] = "Huwelijksplanner order";
                         $order['targetOrganization'] = '002220647';
-                        $order['customer'] = $contact;
+                        $order['customer'] = $this->commonGroundService->getResource($request['properties']['partners'][0])['contact'];
+                        // $order['customer'] = $contact;
                         $order['stage'] = 'cart'; // Deze zou leeg moeten mogen zijn
-                        $order['items'] = [];
-
-                        $order['remark'] = $request->request->get('remarks');
-                        $order['customer'] = $contact['@id'];
+                        // $order['items'] = [];
+                        // $order['customer'] = $contact['@id'];
 
                         if (!in_array('description',$order) || !$order['description']) {
                             $order['description'] = "Huwelijksplanner Order";
                         }
 
-                        $order = $this->commonGroundService->createResource($order, );
+                        $order = $this->commonGroundService->createResource($order, "https://orc.huwelijksplanner.online/orders");
 
-                        $request['properties']['order'] = $order;
+                        $request['properties']['order'] = $order['@id'];
+                        // var_dump($order);
                     }
-                    $offer = $value;
-                    $order = $request['properties']['order'];
+                    $offer = $this->commonGroundService->getResource($value);
+                    // var_dump($offer);
+                    // die;
+                    if(!isset($order)){
+                        $orderId = $order = $request['properties']['order'];
+
+                    }
+                    else{
+                        $orderId = $order['@id'];
+                    }
                     $orderItem = [];
                     $orderItem['offer'] = $offer['@id'];
                     $orderItem['name'] = $offer['name'];
@@ -271,10 +281,13 @@ class RequestService
                     $orderItem['priceCurrency'] = $offer['priceCurrency'];
                     //$orderItem['taxPercentage'] = $offer['taxes'][0]['percentage']; // Taxes in orders en invoices moet worden bijgewerkt
                     $orderItem['taxPercentage'] = 0; /*@todo dit moet dus nog worden gefixed */
-                    $orderItem['order'] = $order['@id'];
+                    $orderItem['order'] = $orderId;
 
                     $orderItem = $this->commonGroundService->createResource($orderItem, 'https://orc.huwelijksplanner.online/order_items');
-                    $request['properties']['order']['items'] .= $orderItem;
+                    // $request['properties']['order']['items'] .= $orderItem;
+
+                    // var_dump($orderItem);
+                    // die;
                     break;
 	    			/*
 	    		case 'cc/people':

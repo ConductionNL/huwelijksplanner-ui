@@ -37,7 +37,7 @@ class DefaultController extends AbstractController
     {
         $request = $session->get('request');
         $request['status'] = 'submitted';
-
+        unset($request['submitters']);
         if ($request = $commonGroundService->updateResource($request, $request['id'])) {
             $session->set('request', $request);
             $contact = $request['submitters'][0]['person'];
@@ -58,7 +58,7 @@ class DefaultController extends AbstractController
     {
         $request = $session->get('request');
         $request['status'] = 'cancelled';
-
+        unset($request['submitters']);
         if ($request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
 
             $session->set('request', $request);
@@ -118,7 +118,7 @@ class DefaultController extends AbstractController
             $request['properties'][$property] = [];
         }
         $request['properties'][$property][] = 'http://irc.zaakonline.nl' . $assent['@id'];
-
+        unset($request['submitters']);
         $request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online" . $request['@id']);
 
         $session->set('requestType', false);
@@ -278,7 +278,6 @@ class DefaultController extends AbstractController
         else{
             unset($contact['telephones']);
         }
-
         if ($contact = $commonGroundService->updateResource($contact, $assent['contact'])) {
             $this->addFlash('success', $contact['name'] . ' is bijgewerkt');
         } else {
@@ -298,7 +297,7 @@ class DefaultController extends AbstractController
         $variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);
 
         $variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
-
+        unset($variables['request']['submitters']);
         if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
@@ -401,7 +400,7 @@ class DefaultController extends AbstractController
                 $variables['request']['current_stage'] = $stage['next'];
             }
         }
-
+        unset($variables['request']['submitters']);
         if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);

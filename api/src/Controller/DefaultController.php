@@ -41,7 +41,7 @@ class DefaultController extends AbstractController
         if ($request = $commonGroundService->updateResource($request, $request['@id'])) {
             $session->set('request', $request);
             $contact = $commonGroundService->getResource($request['submitters'][0]['person']);
-            $messageService->createMessage($contact, ['request'=>$request],'https://wrc.huwelijksplanner.online/templates/66e43592-22a2-49c2-8c3e-10d9a00d5487');
+            $messageService->createMessage($contact, ['request'=>$request, 'requestType'=>$commonGroundService->getResource($request['requestType'])],'https://wrc.huwelijksplanner.online/templates/66e43592-22a2-49c2-8c3e-10d9a00d5487');
 
             $this->addFlash('success', 'Uw verzoek is ingediend');
         } else {

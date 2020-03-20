@@ -67,10 +67,7 @@ class RequestService
 //               die;
 //            }
 //        }
-    	if($user){
-    		$request['submitter'] = $user['burgerservicenummer'];
-    		$request['submitters'] = [['brp'=>$user['@id']]];
-    	}
+
 
     	// juiste startpagina weergeven
     	if(!array_key_exists ("currentStage", $request) && array_key_exists (0, $requestType['stages'])){
@@ -78,7 +75,10 @@ class RequestService
     	}
 
     	$request = $this->commonGroundService->createResource($request, 'https://vrc.huwelijksplanner.online/requests');
-
+        if($user){
+            $request['submitter'] = $user['burgerservicenummer'];
+            $request['submitters'] = [['brp'=>$user['@id']]];
+        }
 
     	// There is an optional case that a request type is a child of an already exsisting one
     	if($requestParent){
@@ -111,6 +111,7 @@ class RequestService
         $assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
 
         $request['properties']['partners'][] = $assent['@id'];
+        $request['submitters']['assent'] = $assent['@id'];
 
     	$request = $this->commonGroundService->updateResource($request, $request['@id']);
 

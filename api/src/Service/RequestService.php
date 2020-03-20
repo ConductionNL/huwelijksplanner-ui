@@ -271,7 +271,11 @@ class RequestService
                     $orderItem = [];
                     $orderItem['offer'] = $offer['@id'];
                     $orderItem['name'] = $offer['name'];
-                    $orderItem['description'] = $offer['description'];
+                    if(strlen($offer['description'])<255){
+                        $orderItem['description'] = $offer['description'];
+                    }else{
+                        $orderItem['description'] = ''; //@TODO dit moet weer weg
+                    }
                     $orderItem['quantity'] = 1;
                     $orderItem['price'] = number_format($offer['price'] / 100, 2, '.', ' '); // hier gaat iets mis dat dit nodig is
                     $orderItem['priceCurrency'] = $offer['priceCurrency'];

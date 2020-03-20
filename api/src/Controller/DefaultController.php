@@ -507,7 +507,7 @@ class DefaultController extends AbstractController
         }
     }
     /**
-     * @route("/betalen/betaal" name="app_default_payment")
+     * @route("/betalen/betaal", name="app_default_payment")
      */
     public function paymentAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {

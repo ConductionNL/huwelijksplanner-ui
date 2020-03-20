@@ -111,7 +111,7 @@ class RequestService
         $assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
 
         $request['properties']['partners'][] = $assent['@id'];
-        $request['submitters']['assent'] = $assent['@id'];
+        $request['submitters'][0]['assent'] = $assent['@id'];
 
     	$request = $this->commonGroundService->updateResource($request, $request['@id']);
 

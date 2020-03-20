@@ -507,7 +507,7 @@ class DefaultController extends AbstractController
         }
     }
     /**
-     * @route("/betalen/betaal", name="app_default_payment")
+     * @Route("/betalen/betaal", name="app_default_payment")
      */
     public function paymentAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
@@ -525,6 +525,9 @@ class DefaultController extends AbstractController
         }
         if(!isset($invoice)){
             $invoice = $commonGroundService->createResource($order, 'https://bc.huwelijksplanner.online/order');
+            $variables['request']['properties']['invoice'] = $invoice;
+            unset($variables['request']['submitters']);
+            $variables['request'] = $commonGroundService->updateResource($variables['request'],'https://vrc.huwelijksplanner.online/requests');
         }
         return $this->redirect($invoice['paymentUrl']);
 

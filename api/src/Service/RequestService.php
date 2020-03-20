@@ -244,7 +244,7 @@ class RequestService
                         $order['name'] = "Huwelijksplanner order";
                         $order['targetOrganization'] = '002220647';
                         $order['customer'] = $request['submitters'][0]['person'];
-                        // $order['customer'] = $contact;
+                        $order['remark'] = $request['@id'];
                         $order['stage'] = 'cart'; // Deze zou leeg moeten mogen zijn
                         // $order['items'] = [];
                         // $order['customer'] = $contact['@id'];

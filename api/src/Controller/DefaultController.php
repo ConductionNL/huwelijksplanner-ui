@@ -525,7 +525,7 @@ class DefaultController extends AbstractController
         }
         if(!isset($invoice)){
             $invoice = $commonGroundService->createResource($order, 'https://bc.huwelijksplanner.online/order');
-            $variables['request']['properties']['invoice'] = $invoice;
+            $variables['request']['properties']['invoice'] = $invoice['@id'];
             unset($variables['request']['submitters']);
             $variables['request'] = $commonGroundService->updateResource($variables['request'],$variables['request']['@id']);
         }

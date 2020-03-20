@@ -2,6 +2,7 @@
 // src/Controller/LuckyController.php
 namespace App\Controller;
 
+use App\Service\MessageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,13 +33,15 @@ class DefaultController extends AbstractController
     /**
      * @Route("request/submit")
      */
-    public function submitrequestAction(Session $session, CommonGroundService $commonGroundService)
+    public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, MessageService $messageService)
     {
         $request = $session->get('request');
         $request['status'] = 'submitted';
 
         if ($request = $commonGroundService->updateResource($request, $request['id'])) {
             $session->set('request', $request);
+            $contact = $request['submitters'][0]['person'];
+            $messageService->createMessage($contact, ['request'=>$request],'https://wrc.huwelijksplanner.online/templates/66e43592-22a2-49c2-8c3e-10d9a00d5487');
 
             $this->addFlash('success', 'Uw verzoek is ingediend');
         } else {
@@ -504,7 +507,29 @@ class DefaultController extends AbstractController
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         }
     }
+    /**
+     * @route("/betalen/betaal" name="app_default_payment")
+     */
+    public function paymentAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
+    {
+        $variables = $applicationService->getVariables();
+        if(!key_exists('order',$variables['request']['properties'])){
+            throw $this->createNotFoundException('There is no order defined');
+        }
+        $order = $commonGroundService->getResource($variables['request']['properties']['order']);
+        if(key_exists('invoice', $variables['request']['properties']) && $variables['request']['properties']['invoice'] != null){
+            $invoice = $commonGroundService->getResource($variables['request']['properties']['invoice']);
+            if($invoice['dateCreated'] < $order['dateModified']){
+                $commonGroundService->deleteResource($invoice['@id']);
+                unset($invoice);
+            }
+        }
+        if(!isset($invoice)){
+            $invoice = $commonGroundService->createResource($order, 'https://bc.huwelijksplanner.online/order');
+        }
+        return $this->redirect($invoice['paymentUrl']);
 
+    }
     /**
      * @Route("/", name="app_default_index")
      * @Route("/{slug}", name="app_default_slug")
@@ -584,4 +609,6 @@ class DefaultController extends AbstractController
             throw $this->createNotFoundException('This page could not be found');
         }
     }
+
+
 }

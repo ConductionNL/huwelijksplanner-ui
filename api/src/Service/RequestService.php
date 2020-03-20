@@ -69,7 +69,7 @@ class RequestService
 //        }
     	if($user){
     		$request['submitter'] = $user['burgerservicenummer'];
-    		//$request['submitters'] = [$user['burgerservicenummer']];
+    		$request['submitters'] = [['brp'=>$user['@id']]];
     	}
 
     	// juiste startpagina weergeven
@@ -98,17 +98,20 @@ class RequestService
     	$contact['familyName']= $user['naam']['geslachtsnaam'];
     	$contact= $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
 
-    	$assent = [];
-    	$assent['name'] = 'Instemming huwelijk partnerschp';
-    	$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-    	$assent['contact'] = $contact['@id'];
-    	$assent['requester'] = $organization['@id'];
-    	$assent['person'] = $user['burgerservicenummer'];
-    	$assent['request'] = $request['@id'];
-    	$assent['status'] = 'granted';
-    	$assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
+    	$request["submitters"][0]['person'] = $contact['@id'];
 
-    	$request['properties']['partners'][] = $assent['@id'];
+        $assent = [];
+        $assent['name'] = 'Instemming huwelijk partnerschp';
+        $assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
+        $assent['contact'] = $contact['@id'];
+        $assent['requester'] = $organization['@id'];
+        $assent['person'] = $user['burgerservicenummer'];
+        $assent['request'] = $request['@id'];
+        $assent['status'] = 'granted';
+        $assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
+
+        $request['properties']['partners'][] = $assent['@id'];
+
     	$request = $this->commonGroundService->updateResource($request, $request['@id']);
 
     	return $request;
@@ -221,7 +224,7 @@ class RequestService
 	    				    $value['contact'] = $contact['@id'];
 	    				$value = $this->commonGroundService->createResource($value, 'https://irc.huwelijksplanner.online/assents');
                         $template = 'https://wrc.huwelijksplanner.online/templates/e04defee-0bb3-4e5c-b21d-d6deb76bd1bc';
-	    				$this->messageService->createMessage($contact, $value, $template);
+	    				$this->messageService->createMessage($contact, ['assent'=>$value], $template);
 	    			}
 	    			else{
 	    				//$value = $this->commonGroundService->updateResource($value, $value['@id']);
@@ -239,7 +242,7 @@ class RequestService
                         $order = [];
                         $order['name'] = "Huwelijksplanner order";
                         $order['targetOrganization'] = '002220647';
-                        $order['customer'] = $this->commonGroundService->getResource($request['properties']['partners'][0])['contact'];
+                        $order['customer'] = $request['submitters'][0]['person'];
                         // $order['customer'] = $contact;
                         $order['stage'] = 'cart'; // Deze zou leeg moeten mogen zijn
                         // $order['items'] = [];

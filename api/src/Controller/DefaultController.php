@@ -38,7 +38,7 @@ class DefaultController extends AbstractController
         $request = $session->get('request');
         $request['status'] = 'submitted';
         unset($request['submitters']);
-        if ($request = $commonGroundService->updateResource($request, $request['id'])) {
+        if ($request = $commonGroundService->updateResource($request, $request['@id'])) {
             $session->set('request', $request);
             $contact = $request['submitters'][0]['person'];
             $messageService->createMessage($contact, ['request'=>$request],'https://wrc.huwelijksplanner.online/templates/66e43592-22a2-49c2-8c3e-10d9a00d5487');

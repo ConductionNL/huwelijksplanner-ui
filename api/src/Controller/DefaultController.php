@@ -527,7 +527,7 @@ class DefaultController extends AbstractController
             $invoice = $commonGroundService->createResource($order, 'https://bc.huwelijksplanner.online/order');
             $variables['request']['properties']['invoice'] = $invoice;
             unset($variables['request']['submitters']);
-            $variables['request'] = $commonGroundService->updateResource($variables['request'],'https://vrc.huwelijksplanner.online/requests');
+            $variables['request'] = $commonGroundService->updateResource($variables['request'],'https://vrc.huwelijksplanner.online'.$variables['request']['@id']);
         }
         return $this->redirect($invoice['paymentUrl']);
 

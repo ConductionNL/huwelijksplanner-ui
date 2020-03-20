@@ -284,7 +284,7 @@ class DefaultController extends AbstractController
             $this->addFlash('danger', $contact['name'] . ' kon niet worden bijgewerkt');
         }
 
-        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $request["current_stage"]]));
+        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $request["currentStage"]]));
     }
 
     /**

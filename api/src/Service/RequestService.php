@@ -277,7 +277,7 @@ class RequestService
                         $orderItem['description'] = ''; //@TODO dit moet weer weg
                     }
                     $orderItem['quantity'] = 1;
-                    $orderItem['price'] = number_format($offer['price'] / 100, 2, '.', ' '); // hier gaat iets mis dat dit nodig is
+                    $orderItem['price'] = $offer['price'];
                     $orderItem['priceCurrency'] = $offer['priceCurrency'];
                     //$orderItem['taxPercentage'] = $offer['taxes'][0]['percentage']; // Taxes in orders en invoices moet worden bijgewerkt
                     $orderItem['taxPercentage'] = 0; /*@todo dit moet dus nog worden gefixed */

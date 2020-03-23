@@ -2,6 +2,8 @@
 // src/Controller/LuckyController.php
 namespace App\Controller;
 
+use App\Service\MessageService;
+use JsonSchema\Exception\ResourceNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,13 +34,15 @@ class DefaultController extends AbstractController
     /**
      * @Route("request/submit")
      */
-    public function submitrequestAction(Session $session, CommonGroundService $commonGroundService)
+    public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, MessageService $messageService)
     {
         $request = $session->get('request');
         $request['status'] = 'submitted';
-
-        if ($request = $commonGroundService->updateResource($request, $request['id'])) {
+        unset($request['submitters']);
+        if ($request = $commonGroundService->updateResource($request, $request['@id'])) {
             $session->set('request', $request);
+            $contact = $commonGroundService->getResource($request['submitters'][0]['person']);
+            $messageService->createMessage($contact, ['request'=>$request, 'requestType'=>$commonGroundService->getResource($request['requestType'])],'https://wrc.huwelijksplanner.online/templates/66e43592-22a2-49c2-8c3e-10d9a00d5487');
 
             $this->addFlash('success', 'Uw verzoek is ingediend');
         } else {
@@ -55,7 +59,7 @@ class DefaultController extends AbstractController
     {
         $request = $session->get('request');
         $request['status'] = 'cancelled';
-
+        unset($request['submitters']);
         if ($request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
 
             $session->set('request', $request);
@@ -115,7 +119,7 @@ class DefaultController extends AbstractController
             $request['properties'][$property] = [];
         }
         $request['properties'][$property][] = 'http://irc.zaakonline.nl' . $assent['@id'];
-
+        unset($request['submitters']);
         $request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online" . $request['@id']);
 
         $session->set('requestType', false);
@@ -275,14 +279,13 @@ class DefaultController extends AbstractController
         else{
             unset($contact['telephones']);
         }
-
         if ($contact = $commonGroundService->updateResource($contact, $assent['contact'])) {
             $this->addFlash('success', $contact['name'] . ' is bijgewerkt');
         } else {
             $this->addFlash('danger', $contact['name'] . ' kon niet worden bijgewerkt');
         }
 
-        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $request["current_stage"]]));
+        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $request["currentStage"]]));
     }
 
     /**
@@ -295,7 +298,7 @@ class DefaultController extends AbstractController
         $variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);
 
         $variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
-
+        unset($variables['request']['submitters']);
         if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
@@ -367,13 +370,13 @@ class DefaultController extends AbstractController
 
         /*@todo dut configureerbaar maken */
         // hardcode overwrite for "gratis trouwen"
-        if (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/products/190c3611-010d-4b0e-a31c-60dadf4d1c62") {
-            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
-            $variables['request']['properties']['ambtenaar'] = "https://pdc.v/products/55af09c8-361b-418a-af87-df8f8827984b";
+        if (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee") {
+            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
+            $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
         } // hardcode overwrite for "eenvoudig trouwen"
-        elseif (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/products/16353702-4614-42ff-92af-7dd11c8eef9f") {
-            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/products/7a3489d5-2d2c-454b-91c9-caff4fed897f";
-            $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/products/55af09c8-361b-418a-af87-df8f8827984b";
+        elseif (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/offers/2b9ba0a9-376d-45e2-aa83-809ef07fa104") {
+            $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
+            $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
         } else {
             if (key_exists('locatie', $variables['request']['properties']) && $slug == 'plechtigheid') {
                 unset($variables['request']['properties']['locatie']);
@@ -398,7 +401,7 @@ class DefaultController extends AbstractController
                 $variables['request']['current_stage'] = $stage['next'];
             }
         }
-
+        unset($variables['request']['submitters']);
         if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
@@ -504,6 +507,48 @@ class DefaultController extends AbstractController
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         }
     }
+    /**
+     * @Route("/betalen/betaal", name="app_default_payment")
+     */
+    public function paymentAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
+    {
+        $variables = $applicationService->getVariables();
+        if(!key_exists('order',$variables['request']['properties'])){
+            throw $this->createNotFoundException('There is no order defined');
+        }
+        $order = $commonGroundService->getResource($variables['request']['properties']['order']);
+        if(key_exists('invoice', $variables['request']['properties']) && $variables['request']['properties']['invoice'] != null){
+            $invoice = $commonGroundService->getResource($variables['request']['properties']['invoice']);
+            if($invoice['dateCreated'] < $order['dateModified']){
+                $commonGroundService->deleteResource($invoice['@id']);
+                unset($invoice);
+            }
+        }
+        if(!isset($invoice)){
+            $invoice = $commonGroundService->createResource($order, 'https://bc.huwelijksplanner.online/order');
+            $variables['request']['properties']['invoice'] = $invoice['@id'];
+            unset($variables['request']['submitters']);
+            $variables['request'] = $commonGroundService->updateResource($variables['request'],$variables['request']['@id']);
+        }
+        return $this->redirect($invoice['paymentUrl']);
+
+    }
+    /**
+     * @Route("/betalen/betaald/{id}")
+     */
+    public function payedAction(Session $session, $id = false, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
+    {
+        if(!$id){
+            throw new ResourceNotFoundException("There was no invoice defined");
+        }
+        $invoice = $commonGroundService->getResource('https://bc.huwelijksplanner.online/invoices/'.$id);
+        if($invoice['paid']){
+            $this->addFlash('success','Uw order is betaald!');
+        }else{
+            $this->addFlash('danger', 'De betaling is mislukt');
+        }
+        return $this->redirect($this->generateUrl('app_default_index').'?request='.$invoice['remark']);
+    }
 
     /**
      * @Route("/", name="app_default_index")
@@ -584,4 +629,6 @@ class DefaultController extends AbstractController
             throw $this->createNotFoundException('This page could not be found');
         }
     }
+
+
 }

@@ -55,6 +55,18 @@ class CommonGroundService
         $this->client = new Client($this->guzzleConfig);
     }
 
+    private function convertAtId(array $object, array $parsedUrl){
+        if(key_exists('@id', $object)){
+            $object['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$object['@id'];
+        }
+        foreach($object as $key=>$subObject){
+            if(is_array($subObject)){
+                $object[$key] = $this->convertAtId($subObject, $parsedUrl);
+            }
+        }
+        return $object;
+    }
+
     /*
      * Get a single resource from a common ground componant
      */
@@ -130,13 +142,7 @@ class CommonGroundService
         $response = json_decode($response->getBody(), true);
 
         /* @todo this should look to al @id keus not just the main root */
-        if(array_key_exists('hydra:member', $response) && $response['hydra:member']){
-            foreach($response['hydra:member'] as $key => $embedded){
-                if(array_key_exists('@id', $embedded) && $embedded['@id']){
-                    $response['hydra:member'][$key]['@id'] =  $parsedUrl["scheme"]."://".$parsedUrl["host"].$embedded['@id'];
-                }
-            }
-        }
+        $response = $this->convertAtId($response, $parsedUrl);
 
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));
@@ -207,9 +213,7 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        if(array_key_exists('@id', $response) && $response['@id']){
-            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
-        }
+        $response = $this->convertAtId($response, $parsedUrl);
 
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));
@@ -287,9 +291,7 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        if(array_key_exists('@id', $response) && $response['@id']){
-            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
-        }
+        $response = $this->convertAtId($response, $parsedUrl);
 
         // Lets cash this item for speed purposes
         $item = $this->cash->getItem('commonground_'.md5($url));
@@ -354,9 +356,10 @@ class CommonGroundService
 
         $response = json_decode($response->getBody(), true);
 
-        if(array_key_exists('@id', $response) && $response['@id']){
-            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
-        }
+        $response = $this->convertAtId($response, $parsedUrl);
+//        if(array_key_exists('@id', $response) && $response['@id']){
+//            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
+//        }
 
         // Lets cash this item for speed purposes
         $item = $this->cash->getItem('commonground_'.md5($url.'/'.$response['id']));
@@ -365,6 +368,56 @@ class CommonGroundService
         $this->cash->save($item);
 
         return $response;
+    }
+    public function deleteResource($url, $force = false, $async = false){
+
+
+        // Split enviroments, if the env is not dev the we need add the env to the url name
+        $parsedUrl = parse_url($url);
+
+        // We only do this on non-production enviroments
+        if($this->params->get('app_env') != "prod"){
+
+            // Lets make sure we dont have doubles
+            $url = str_replace($this->params->get('app_env').'.','',$url);
+
+            // e.g https://wrc.larping.eu/ becomes https://wrc.dev.larping.eu/
+            $host = explode('.', $parsedUrl['host']);
+            $subdomain = $host[0];
+            $url = str_replace($subdomain.'.',$subdomain.'.'.$this->params->get('app_env').'.',$url);
+        }
+
+        $headers = $this->headers;
+        $headers['X-NLX-Request-Subject-Identifier'] = $url;
+
+        $item = $this->cash->getItem('commonground_'.md5($url));
+        if ($item->isHit() && !$force) {
+            //return $item->get();
+        }
+
+        if(!$async){
+            $response = $this->client->request('DELETE', $url, [
+                    'headers' => $headers,
+                ]
+            );
+        }
+        else {
+
+            $response = $this->client->requestAsync('DELETE', $url, [
+                    'headers' => $headers,
+                ]
+            );
+        }
+
+        if($response->getStatusCode() != 204 && $response->getStatusCode() != 200){
+            var_dump('DELETE returned:'.$response->getStatusCode());
+            var_dump($headers);
+            var_dump(json_encode($url));
+            var_dump($response->getBody());
+            die;
+        }
+
+        return null;
     }
 
     /*

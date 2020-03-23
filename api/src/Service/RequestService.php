@@ -67,10 +67,7 @@ class RequestService
 //               die;
 //            }
 //        }
-    	if($user){
-    		$request['submitter'] = $user['burgerservicenummer'];
-    		//$request['submitters'] = [$user['burgerservicenummer']];
-    	}
+
 
     	// juiste startpagina weergeven
     	if(!array_key_exists ("currentStage", $request) && array_key_exists (0, $requestType['stages'])){
@@ -78,7 +75,10 @@ class RequestService
     	}
 
     	$request = $this->commonGroundService->createResource($request, 'https://vrc.huwelijksplanner.online/requests');
-
+        if($user){
+            $request['submitter'] = $user['burgerservicenummer'];
+            $request['submitters'] = [['brp'=>$user['@id']]];
+        }
 
     	// There is an optional case that a request type is a child of an already exsisting one
     	if($requestParent){
@@ -98,17 +98,21 @@ class RequestService
     	$contact['familyName']= $user['naam']['geslachtsnaam'];
     	$contact= $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
 
-    	$assent = [];
-    	$assent['name'] = 'Instemming huwelijk partnerschp';
-    	$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-    	$assent['contact'] = $contact['@id'];
-    	$assent['requester'] = $organization['@id'];
-    	$assent['person'] = $user['burgerservicenummer'];
-    	$assent['request'] = $request['@id'];
-    	$assent['status'] = 'granted';
-    	$assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
+    	$request["submitters"][0]['person'] = $contact['@id'];
 
-    	$request['properties']['partners'][] = $assent['@id'];
+        $assent = [];
+        $assent['name'] = 'Instemming huwelijk partnerschp';
+        $assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
+        $assent['contact'] = $contact['@id'];
+        $assent['requester'] = $organization['@id'];
+        $assent['person'] = $user['burgerservicenummer'];
+        $assent['request'] = $request['@id'];
+        $assent['status'] = 'granted';
+        $assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
+
+        $request['properties']['partners'][] = $assent['@id'];
+        $request['submitters'][0]['assent'] = $assent['@id'];
+
     	$request = $this->commonGroundService->updateResource($request, $request['@id']);
 
     	return $request;
@@ -129,6 +133,7 @@ class RequestService
     	if(is_array($request['properties'][$property])){
 
     		$key = array_search($value, $request['properties'][$property]);
+    		$deletedValue = $request['properties'][$property][$key];
     		unset ($request['properties'][$property][$key]);
 
     		// If the array is now empty we want to drop the property
@@ -139,8 +144,17 @@ class RequestService
 
     	// If else we just drop the property
     	else{
+    	    $deletedValue = $request['properties'][$property];
     		unset ($request['properties'][$property]);
     	}
+    	if(key_exists('order',$request['properties'])){
+    	    $order = $this->commonGroundService->getResource($request['properties']['order']);
+    	    foreach($order['items'] as $item){
+    	        if($item['offer'] = $deletedValue){
+    	            $this->commonGroundService->deleteResource($item['@id']);
+                }
+            }
+        }
 
     	return $request;
 
@@ -211,13 +225,70 @@ class RequestService
 	    				    $value['contact'] = $contact['@id'];
 	    				$value = $this->commonGroundService->createResource($value, 'https://irc.huwelijksplanner.online/assents');
                         $template = 'https://wrc.huwelijksplanner.online/templates/e04defee-0bb3-4e5c-b21d-d6deb76bd1bc';
-	    				$this->messageService->createMessage($contact, $value, $template);
+	    				$this->messageService->createMessage($contact, ['assent'=>$value], $template);
 	    			}
 	    			else{
 	    				//$value = $this->commonGroundService->updateResource($value, $value['@id']);
 	    			}
 	    			$value = $value['@id'];
 	    			break;
+                case 'pdc/product'; //to be deleted once this is correct
+                case 'pdc/offer':
+                    // var_dump($value);
+                    // var_dump($request);
+
+                    // die;
+
+                    if(!key_exists('order', $request['properties'])){
+                        $order = [];
+                        $order['name'] = "Huwelijksplanner order";
+                        $order['targetOrganization'] = '002220647';
+                        $order['customer'] = $request['submitters'][0]['person'];
+                        $order['remark'] = $request['@id'];
+                        $order['stage'] = 'cart'; // Deze zou leeg moeten mogen zijn
+                        // $order['items'] = [];
+                        // $order['customer'] = $contact['@id'];
+
+                        if (!in_array('description',$order) || !$order['description']) {
+                            $order['description'] = "Huwelijksplanner Order";
+                        }
+
+                        $order = $this->commonGroundService->createResource($order, "https://orc.huwelijksplanner.online/orders");
+
+                        $request['properties']['order'] = $order['@id'];
+                        // var_dump($order);
+                    }
+                    $offer = $this->commonGroundService->getResource($value);
+                    // var_dump($offer);
+                    // die;
+                    if(!isset($order)){
+                        $orderId = $order = $request['properties']['order'];
+
+                    }
+                    else{
+                        $orderId = $order['@id'];
+                    }
+                    $orderItem = [];
+                    $orderItem['offer'] = $offer['@id'];
+                    $orderItem['name'] = $offer['name'];
+                    if(strlen($offer['description'])<255){
+                        $orderItem['description'] = $offer['description'];
+                    }else{
+                        $orderItem['description'] = ''; //@TODO dit moet weer weg
+                    }
+                    $orderItem['quantity'] = 1;
+                    $orderItem['price'] = $offer['price'];
+                    $orderItem['priceCurrency'] = $offer['priceCurrency'];
+                    //$orderItem['taxPercentage'] = $offer['taxes'][0]['percentage']; // Taxes in orders en invoices moet worden bijgewerkt
+                    $orderItem['taxPercentage'] = 0; /*@todo dit moet dus nog worden gefixed */
+                    $orderItem['order'] = $orderId;
+
+                    $orderItem = $this->commonGroundService->createResource($orderItem, 'https://orc.huwelijksplanner.online/order_items');
+                    // $request['properties']['order']['items'] .= $orderItem;
+
+                    // var_dump($orderItem);
+                    // die;
+                    break;
 	    			/*
 	    		case 'cc/people':
 	    			// This is a new assent so we also need to create a contact

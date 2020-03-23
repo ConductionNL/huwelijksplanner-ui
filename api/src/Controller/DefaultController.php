@@ -547,7 +547,7 @@ class DefaultController extends AbstractController
         }else{
             $this->addFlash('danger', 'De betaling is mislukt');
         }
-        $this->redirect($this->generateUrl('app_default_index').'/?request='.$invoice['remark']);
+        return $this->redirect($this->generateUrl('app_default_index').'?request='.$invoice['remark']);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\MessageService;
+use JsonSchema\Exception\ResourceNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -532,6 +533,23 @@ class DefaultController extends AbstractController
         return $this->redirect($invoice['paymentUrl']);
 
     }
+    /**
+     * @Route("/betalen/betaald/{id}")
+     */
+    public function payedAction(Session $session, $id = false, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
+    {
+        if(!$id){
+            throw new ResourceNotFoundException("There was no invoice defined");
+        }
+        $invoice = $commonGroundService->getResource('https://bc.huwelijksplanner.online/invoices/'.$id);
+        if($invoice['paid']){
+            $this->addFlash('success','Uw order is betaald!');
+        }else{
+            $this->addFlash('danger', 'De betaling is mislukt');
+        }
+        $this->redirect($this->generateUrl('app_default_index').'/?request='.$invoice['remark']);
+    }
+
     /**
      * @Route("/", name="app_default_index")
      * @Route("/{slug}", name="app_default_slug")

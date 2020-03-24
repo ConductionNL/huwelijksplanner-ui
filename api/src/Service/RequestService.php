@@ -62,8 +62,9 @@ class RequestService
         //$request['organization'] = $organization;
         $request['status']='incomplete';
         $request['properties']= [];
-
         if($requestParent){
+            var_dump($requestParent);
+            die;
             $requestParent = $this->commonGroundService->getResource($requestParent);
             foreach($requestParent['properties'] as $name=>$property){
                 if($this->matchProperty($name, $requestType)){

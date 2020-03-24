@@ -398,7 +398,7 @@ class DefaultController extends AbstractController
             if ($stage['slug'] == $slug && array_key_exists('completed', $stage) && $stage['completed']) {
                 $stageName = $stage['name'];
                 $slug = $stage['next'];
-                $variables['request']['current_stage'] = $stage['next'];
+                $variables['request']['currentStage'] = $stage['next'];
             }
         }
         unset($variables['request']['submitters']);
@@ -599,7 +599,7 @@ class DefaultController extends AbstractController
                 $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => 'f8298a12-91eb-46d0-b8a9-e7095f81be6f']);
                 break;
             case 'requests':
-                $variables['requests'] = $commonGroundService->getResourceList('https://vrc.huwelijksplanner.online/requests', ['submitter' => $variables['user']['burgerservicenummer'], 'order[date_created]' => 'desc']) ["hydra:member"];
+                $variables['requests'] = $commonGroundService->getResourceList('https://vrc.huwelijksplanner.online/requests', ['submitter' => $variables['user']['@id'], 'order[dateCreated]' => 'desc']) ["hydra:member"];
                 if (count($variables['requests']) == 0)
                     return $this->redirect($this->generateUrl('app_default_slug', ['requestType' => 'http://vtc.huwelijksplanner.online/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
                 break;

@@ -398,7 +398,7 @@ class DefaultController extends AbstractController
             if ($stage['slug'] == $slug && array_key_exists('completed', $stage) && $stage['completed']) {
                 $stageName = $stage['name'];
                 $slug = $stage['next'];
-                $variables['request']['current_stage'] = $stage['next'];
+                $variables['request']['currentStage'] = $stage['next'];
             }
         }
         unset($variables['request']['submitters']);

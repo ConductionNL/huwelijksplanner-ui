@@ -84,7 +84,7 @@ class RequestService
     		// Lets transfer any properties that are both inthe parent and the child request
     		foreach($requestType['properties'] as $property){
     			if(key_exists($property['slug'], $requestParent['properties'])){
-    				$request['properties'][] = $requestParent['properties'][$property['name']];
+    				$request['properties'][] = $requestParent['properties'][$property['slug']];
     			}
     		}
     	}

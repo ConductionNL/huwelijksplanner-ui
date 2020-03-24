@@ -402,6 +402,12 @@ class DefaultController extends AbstractController
             }
         }
         unset($variables['request']['submitters']);
+        if(key_exists('parent', $variables['request'])){
+            unset($variables['request']['parent']);
+        }
+        if(key_exists('children', $variables['request'])){
+            unset($variables['request']['children']);
+        }
         if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);

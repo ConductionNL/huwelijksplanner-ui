@@ -64,6 +64,7 @@ class RequestService
         $request['properties']= [];
 
         if($requestParent){
+            $requestParent = $this->commonGroundService->getResource($requestParent);
             foreach($requestParent['properties'] as $name=>$property){
                 if($this->matchProperty($name, $requestType)){
                     $request['properties'][$name] = $property;

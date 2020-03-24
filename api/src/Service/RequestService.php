@@ -30,7 +30,14 @@ class RequestService
         $this->messageService = $messageService;
 
     }
-
+    private function matchProperty($name, $requestType){
+        foreach($requestType['properties'] as $typeProperty){
+            if($name == $typeProperty['name']){
+                return true;
+            }
+        }
+        return false;
+    }
     /*
      * Creates a new reqousted basted on a reqoust type
      */
@@ -56,6 +63,13 @@ class RequestService
         $request['status']='incomplete';
         $request['properties']= [];
 
+        if($requestParent){
+            foreach($requestParent['properties'] as $name=>$property){
+                if($this->matchProperty($name, $requestType)){
+                    $request['properties'][$name] = $property;
+                }
+            }
+        }
         $requestTypeObject = $this->commonGroundService->getResource($request['requestType']);
 //    	if($requestTypeObject['unique'] == true)
 //        {

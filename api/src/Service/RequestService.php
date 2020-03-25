@@ -30,7 +30,14 @@ class RequestService
         $this->messageService = $messageService;
 
     }
-
+    private function matchProperty($slug, $properties){
+        foreach($properties as $property){
+            if($slug == $property['slug']){
+                return true;
+            }
+        }
+        return false;
+    }
     /*
      * Creates a new reqousted basted on a reqoust type
      */
@@ -56,17 +63,6 @@ class RequestService
         $request['status']='incomplete';
         $request['properties']= [];
 
-        $requestTypeObject = $this->commonGroundService->getResource($request['requestType']);
-//    	if($requestTypeObject['unique'] == true)
-//        {
-//            $existingRequests = $this->commonGroundService->getResourceList('http://vrc.huwelijksplanner.online/requests', ['request_type'=>$request['request_type'], 'status[]'=>['incomplete','processed','submitted'], 'submitter'=>$this->session->get('bsn')]);
-//            if(count($existingRequests) > 0)
-//            {
-//                //TODO: Throw error
-//               throw new
-//               die;
-//            }
-//        }
 
 
     	// juiste startpagina weergeven
@@ -87,7 +83,7 @@ class RequestService
 
     		// Lets transfer any properties that are both inthe parent and the child request
     		foreach($requestType['properties'] as $property){
-    			if(array_key_exists($property['slug'], $requestParent['properties'])){
+    			if(key_exists($property['slug'], $requestParent['properties'])){
     				$request['properties'][] = $requestParent['properties'][$property['slug']];
     			}
     		}

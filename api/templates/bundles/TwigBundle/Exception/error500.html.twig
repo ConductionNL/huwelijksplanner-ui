@@ -1,0 +1,12 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!-- .tbl-pricing -->
+    <div class="tbl-pricing tbl-prc-recommended animation" data-animation="animation-fade-in" data-delay=" {% if app.session.flashbag.peekAll|length > 0 %}3400{%else%}200{% endif %}" >
+        <h1>Storing</h1>
+        Error 500: Server error
+    </div>
+    <!-- .tbl-pricing end -->
+{% endblock %}

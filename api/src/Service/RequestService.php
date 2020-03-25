@@ -83,8 +83,16 @@ class RequestService
 
     		// Lets transfer any properties that are both inthe parent and the child request
     		foreach($requestType['properties'] as $property){
-    			if(key_exists($property['slug'], $requestParent['properties'])){
-    				$request['properties'][] = $requestParent['properties'][$property['slug']];
+                $slug = $property['slug'];
+                if($slug == 'getuige'){
+                        $slug = 'getuigen';
+                }
+                elseif($slug == 'partner'){
+                        $slug = 'partners';
+                }
+    			if(key_exists($slug, $requestParent['properties'])){
+
+    				$request['properties'][$slug] = $requestParent['properties'][$slug];
     			}
     		}
     	}
@@ -96,19 +104,22 @@ class RequestService
 
     	$request["submitters"][0]['person'] = $contact['@id'];
 
-        $assent = [];
-        $assent['name'] = 'Instemming huwelijk partnerschp';
-        $assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-        $assent['contact'] = $contact['@id'];
-        $assent['requester'] = $organization['@id'];
-        $assent['person'] = $user['burgerservicenummer'];
-        $assent['request'] = $request['@id'];
-        $assent['status'] = 'granted';
-        $assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
+        if(!key_exists('partners', $request)){
 
-        $request['properties']['partners'][] = $assent['@id'];
-        $request['submitters'][0]['assent'] = $assent['@id'];
+            $assent = [];
+            $assent['name'] = 'Instemming huwelijk partnerschp';
+            $assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
+            $assent['contact'] = $contact['@id'];
+            $assent['requester'] = $organization['@id'];
+            $assent['person'] = $user['burgerservicenummer'];
+            $assent['request'] = $request['@id'];
+            $assent['status'] = 'granted';
+            $assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
 
+
+            $request['properties']['partners'][] = $assent['@id'];
+            $request['submitters'][0]['assent'] = $assent['@id'];
+        }
     	$request = $this->commonGroundService->updateResource($request, $request['@id']);
 
     	return $request;

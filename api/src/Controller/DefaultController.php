@@ -39,6 +39,8 @@ class DefaultController extends AbstractController
         $request = $session->get('request');
         $request['status'] = 'submitted';
         unset($request['submitters']);
+        unset($request['children']);
+        unset($request['parent']);
         if ($request = $commonGroundService->updateResource($request, $request['@id'])) {
             $session->set('request', $request);
             $contact = $commonGroundService->getResource($request['submitters'][0]['person']);
@@ -535,6 +537,8 @@ class DefaultController extends AbstractController
             $invoice = $commonGroundService->createResource($order, 'https://bc.huwelijksplanner.online/order');
             $variables['request']['properties']['invoice'] = $invoice['@id'];
             unset($variables['request']['submitters']);
+            unset($variables['request']['children']);
+            unset($variables['request']['parent']);
             $variables['request'] = $commonGroundService->updateResource($variables['request'],$variables['request']['@id']);
         }
         return $this->redirect($invoice['paymentUrl']);

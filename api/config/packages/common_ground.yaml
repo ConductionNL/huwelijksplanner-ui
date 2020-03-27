@@ -32,9 +32,9 @@ parameters:
 
     common_ground.ac.location: 'https://ac.huwelijksplanner.online'
     common_ground.ac.apikey: '%env(APP_COMMONGROUND_KEY)%'
-#
-#    common_ground.as.location: 'https://as.zaakonline.nl'
-#    common_ground.as.apikey: '%env(APP_COMMONGROUND_KEY)%'
+
+    common_ground.as.location: 'https://as.zaakonline.nl'
+    common_ground.as.apikey: '%env(APP_COMMONGROUND_KEY)%'
 
     common_ground.bc.location: 'https://bc.huwelijksplanner.online'
     common_ground.bc.apikey: '%env(APP_COMMONGROUND_KEY)%'

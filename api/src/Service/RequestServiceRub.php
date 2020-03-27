@@ -290,11 +290,7 @@ class RequestService
                     $orderItem['taxPercentage'] = 0; /*@todo dit moet dus nog worden gefixed */
                     $orderItem['order'] = $orderId;
 
-                    $orderItem = $this->commonGroundService->createResource($orderItem, 'https://orc.huwelijksplanner.online/order_items');
-                    // $request['properties']['order']['items'] .= $orderItem;
-
-                    // var_dump($orderItem);
-                    // die;
+                    $orderItem = $this->commonGroundService->createResource($orderItem, 'https://orc.huwelijksplanner.online/order_items'); // HP secifiek
                     break;
 	    			/*
 	    		case 'cc/people':
@@ -333,20 +329,6 @@ class RequestService
 	    	}
     	}
 
-    	// Let validate the value
-	    if(array_key_exists ('format',$typeProperty)){
-	    	switch ($typeProperty['format']) {
-	    		case 'array':
-	    			break;
-	    		case 'array':
-	    			break;
-	    		case 'array':
-	    			break;
-	    		default:
-	    		//	$request['properties'][$typeProperty['name']] = $value;
-	    	}
-    	}
-
     	// Let procces the value
     	if($typeProperty['type'] == "array"){
     		// Lets make sure that the value is an array
@@ -364,21 +346,6 @@ class RequestService
     	else{
     		$request['properties'][$typeProperty['name']] = $value;
     	}
-
-    	/*@todo this misses busnes logic  */
-
-    	// Lets update the stage
-    	//$request["current_stage"] = $typeProperty["next"];
-
-    	/*
-    	 *
-			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
-				$slug = $property["next"];
-			}
-			else{
-				$slug = $property["slug"];
-			}
-    	 */
 
     	return $request;
     }
@@ -434,6 +401,7 @@ class RequestService
                         break;
                     }
                 }
+                
                 // Als we een waarde hebben en het hoefd geen array te zijn
                 if ($property['type'] != 'array') {
                     $requestType['stages'][$key]['completed'] = true;
@@ -448,19 +416,11 @@ class RequestService
                 } else {
                     $requestType['stages'][$key]['completed'] = false;
                 }
-//                var_dump($requestType['stages'][$key]);
-   //             var_dump($requestType['stages'][$key]);
-//                var_dump($requestType['stages'][$key]['completed']);
-                //var_dump($property["type"]);
-                //var_dump($property["min_items"]);
-                //var_dump($request["properties"]);
-                //var_dump($requestType["stages"][$key]);
             }
             else{
                 $requestType['stages'][$key]['completed'] = false;
             }
         }
-        //var_dump($requestType["stages"]);
 
         return $requestType;
     }

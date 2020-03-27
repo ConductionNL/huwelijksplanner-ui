@@ -508,26 +508,34 @@ class CommonGroundService
         return $host;
     }
 
+    public function getComponent($code)
+    {
+        // haal locatie uit array hier onder
+        //check is key exisits doh
+        return $this->getComponentList()[$code];
+    }
     /*
      * Get a list of available commonground components
      */
     public function getComponentList()
     {
         $components = [
-            'cc'  => ['href'=>'http://cc.zaakonline.nl',  'authorization'=>''],
-            'lc'  => ['href'=>'http://lc.zaakonline.nl',  'authorization'=>''],
-            'ltc' => ['href'=>'http://ltc.zaakonline.nl', 'authorization'=>''],
-            'brp' => ['href'=>'http://brp.zaakonline.nl', 'authorization'=>''],
-            'irc' => ['href'=>'http://irc.zaakonline.nl', 'authorization'=>''],
-            'ptc' => ['href'=>'http://ptc.zaakonline.nl', 'authorization'=>''],
-            'mrc' => ['href'=>'http://mrc.zaakonline.nl', 'authorization'=>''],
-            'arc' => ['href'=>'http://arc.zaakonline.nl', 'authorization'=>''],
-            'vtc' => ['href'=>'http://vtc.zaakonline.nl', 'authorization'=>''],
-            'vrc' => ['href'=>'http://vrc.zaakonline.nl', 'authorization'=>''],
-            'pdc' => ['href'=>'http://pdc.zaakonline.nl', 'authorization'=>''],
-            'wrc' => ['href'=>'http://wrc.zaakonline.nl', 'authorization'=>''],
-            'orc' => ['href'=>'http://orc.zaakonline.nl', 'authorization'=>''],
-            'bc'  => ['href'=>'http://orc.zaakonline.nl', 'authorization'=>''],
+            'ac'    => ['href'=> $this->params->get('common_ground.ac.location'),   'authorization'=>$this->params->get('common_ground.ac.apikey')],
+            'as'    => ['href'=> $this->params->get('common_ground.as.location'),   'authorization'=>$this->params->get('common_ground.as.apikey')],
+            'bc'    => ['href'=> $this->params->get('common_ground.bc.location'),   'authorization'=>$this->params->get('common_ground.bc.apikey')],
+            'brp'   => ['href'=> $this->params->get('common_ground.brp.location'),  'authorization'=>$this->params->get('common_ground.brp.apikey')],
+            'bs'    => ['href'=> $this->params->get('common_ground.bs.location'),   'authorization'=>$this->params->get('common_ground.bs.apikey')],
+            'cc'    => ['href'=> $this->params->get('common_ground.cc.location'),   'authorization'=>$this->params->get('common_ground.cc.apikey')],
+            'irc'   => ['href'=> $this->params->get('common_ground.irc.location'),  'authorization'=>$this->params->get('common_ground.irc.apikey')],
+            'lc'    => ['href'=> $this->params->get('common_ground.lc.location'),   'authorization'=>$this->params->get('common_ground.lc.apikey')],
+            'ltc'   => ['href'=> $this->params->get('common_ground.ltc.location'),  'authorization'=>$this->params->get('common_ground.ltc.apikey')],
+            'mrc'   => ['href'=> $this->params->get('common_ground.mrc.location'),  'authorization'=>$this->params->get('common_ground.mrc.apikey')],
+            'orc'   => ['href'=> $this->params->get('common_ground.orc.location'),  'authorization'=>$this->params->get('common_ground.orc.apikey')],
+            'pdc'   => ['href'=> $this->params->get('common_ground.pdc.location'),  'authorization'=>$this->params->get('common_ground.pdc.apikey')],
+            'ptc'   => ['href'=> $this->params->get('common_ground.ptc.location'),  'authorization'=>$this->params->get('common_ground.ptc.apikey')],
+            'vrc'   => ['href'=> $this->params->get('common_ground.vrc.location'),  'authorization'=>$this->params->get('common_ground.vrc.apikey')],
+            'vtc'   => ['href'=> $this->params->get('common_ground.vtc.location'),  'authorization'=>$this->params->get('common_ground.vtc.apikey')],
+            'wrc'   => ['href'=> $this->params->get('common_ground.wrc.location'),  'authorization'=>$this->params->get('common_ground.wrc.apikey')],
         ];
 
         return $components;

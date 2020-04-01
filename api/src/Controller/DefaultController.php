@@ -302,6 +302,8 @@ class DefaultController extends AbstractController
 
         $variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
         unset($variables['request']['submitters']);
+        unset($variables['request']['parent']);
+        unset($variables['request']['children']);
         if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);

@@ -5,6 +5,7 @@
 namespace App\Service;
 
 use GuzzleHttp\Client;
+use http\Message;
 use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -18,18 +19,19 @@ class RequestService
     private $client;
     private $session;
     private $commonGroundService;
+    private $messageService;
 
-    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService)
+    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService, MessageService $messageService)
     {
         $this->params = $params;
-        $this->cash = $cache;
+        $this->cache = $cache;
         $this->session= $session;
         $this->commonGroundService = $commonGroundService;
+        $this->messageService = $messageService;
 
     }
-
     /*
-     * Creates a new reqousted basted on a reqoust type
+     * Creates a new requested based on a request type
      */
     public function createFromRequestType($requestType, $requestParent = null ,$user = null, $organization= null, $application= null)
     {
@@ -45,37 +47,32 @@ class RequestService
     	if(!$application){
     		$application= $this->session->get('application');
     	}
+    	// If a request type requires a parent request, and a parent request is not specified then don't start the request
+    	if(key_exists('parentRequired', $requestType)
+            && $requestType['parentRequired']
+            && $requestParent == null
+        )
+        {
+            return false;
+        }
+
         $request= [];
-        $request['request_type'] = $requestType['@id'];
-        $request['organization'] = $organization['@id'];
-        $request['application'] = $application;
-        //$request['organization'] = $organization;
+        $request['requestType'] = $requestType['@id'];
+        $request['organization'] = $organization['@id']; //@TODO: dit moet de organisatie van het requestType worden, maar daar hangen nog legen RSINs in waar het vrc niets mee kan
         $request['status']='incomplete';
         $request['properties']= [];
 
-        $requestTypeObject = $this->commonGroundService->getResource($request['request_type']);
-//    	if($requestTypeObject['unique'] == true)
-//        {
-//            $existingRequests = $this->commonGroundService->getResourceList('http://vrc.huwelijksplanner.online/requests', ['request_type'=>$request['request_type'], 'status[]'=>['incomplete','processed','submitted'], 'submitter'=>$this->session->get('bsn')]);
-//            if(count($existingRequests) > 0)
-//            {
-//                //TODO: Throw error
-//               throw new
-//               die;
-//            }
-//        }
-    	if($user){
-    		$request['submitter'] = $user['burgerservicenummer'];
-    		//$request['submitters'] = [$user['burgerservicenummer']];
-    	}
+
 
     	// juiste startpagina weergeven
-    	if(!array_key_exists ("current_stage", $request) && array_key_exists (0, $requestType['stages'])){
-    		$request["current_stage"] = $requestType['stages'][0]['slug'];
+    	if(!array_key_exists ("currentStage", $request) && array_key_exists (0, $requestType['stages'])){
+    		$request["currentStage"] = $requestType['stages'][0]['slug'];
     	}
 
-    	$request = $this->commonGroundService->createResource($request, 'https://vrc.huwelijksplanner.online/requests');
-
+    	$request = $this->commonGroundService->createResource($request, $this->commonGroundService->getComponent('vrc')['href'].'/requests'); //HP Specifiek
+        if($user){
+            $request['submitters'] = [['brp'=>$user['@id']]];
+        }
 
     	// There is an optional case that a request type is a child of an already exsisting one
     	if($requestParent){
@@ -84,28 +81,43 @@ class RequestService
 
     		// Lets transfer any properties that are both inthe parent and the child request
     		foreach($requestType['properties'] as $property){
-    			if(array_key_exists($property['slug'], $requestParent['properties'])){
-    				$request['properties'][] = $requestParent['properties'][$property['slug']];
+                $slug = $property['slug'];
+
+                // We have to find a better way to work with these two slugs, this hardcoded way stands in the way of more configurability
+                if($slug == 'getuige'){
+                        $slug = 'getuigen';
+                }
+                elseif($slug == 'partner'){
+                        $slug = 'partners';
+                }
+
+    			if(key_exists($slug, $requestParent['properties'])){
+
+    				$request['properties'][$slug] = $requestParent['properties'][$slug];
     			}
     		}
     	}
+        //Maybe we should make contacts more generic
+        $contact = ['givenName'=>$user['naam']['voornamen'],'familyName'=>$user['naam']['geslachtsnaam']];
+    	$contact= $this->commonGroundService->createResource($contact, $this->commonGroundService->getComponent('cc')['href'].'/people');
 
-    	$contact = [];
-    	$contact['givenName']= $user['naam']['voornamen'];
-    	$contact['familyName']= $user['naam']['geslachtsnaam'];
-    	$contact= $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
+    	$request["submitters"][0]['person'] = $contact['@id'];
 
-    	$assent = [];
-    	$assent['name'] = 'Instemming huwelijk partnerschp';
-    	$assent['description'] = 'U bent automatisch toegevoegd aan een  huwelijk/partnerschap omdat u deze zelf heeft aangevraagd';
-    	$assent['contact'] = $contact['@id'];
-    	$assent['requester'] = $organization['@id'];
-    	$assent['person'] = $user['burgerservicenummer'];
-    	$assent['request'] = $request['@id'];
-    	$assent['status'] = 'granted';
-    	$assent = $this->commonGroundService->createResource($assent, 'https://irc.huwelijksplanner.online/assents');
+        if(!key_exists('partners', $request)){
 
-    	$request['properties']['partners'][] = $assent['@id'];
+            $assent = [];
+            $assent['name'] = 'Instemming '.$requestType['name'];
+            $assent['description'] = 'U bent automatisch toegevoegd aan een '.$requestType['name'].' verzoek omdat u deze zelf heeft opgestart';
+            $assent['contact'] = $contact['@id'];
+            $assent['requester'] = $organization['@id'];
+            $assent['person'] = $user['burgerservicenummer'];
+            $assent['request'] = $request['@id'];
+            $assent['status'] = 'granted';
+            $assent = $this->commonGroundService->createResource($assent, $this->commonGroundService->getComponent('irc')['href'].'/assents');
+
+            $request['properties']['partners'][] = $assent['@id'];
+            $request['submitters'][0]['assent'] = $assent['@id'];
+        }
     	$request = $this->commonGroundService->updateResource($request, $request['@id']);
 
     	return $request;
@@ -114,6 +126,7 @@ class RequestService
 
     public function unsetPropertyOnSlug($request, $property, $value = null)
     {
+        //@TODO: dit abstraheren
         if($property == "getuige"){
             $property = "getuigen";
         }
@@ -126,6 +139,7 @@ class RequestService
     	if(is_array($request['properties'][$property])){
 
     		$key = array_search($value, $request['properties'][$property]);
+    		$deletedValue = $request['properties'][$property][$key];
     		unset ($request['properties'][$property][$key]);
 
     		// If the array is now empty we want to drop the property
@@ -136,8 +150,17 @@ class RequestService
 
     	// If else we just drop the property
     	else{
+    	    $deletedValue = $request['properties'][$property];
     		unset ($request['properties'][$property]);
     	}
+    	if(key_exists('order',$request['properties'])){
+    	    $order = $this->commonGroundService->getResource($request['properties']['order']);
+    	    foreach($order['items'] as $item){
+    	        if($item['offer'] = $deletedValue){
+    	            $this->commonGroundService->deleteResource($item['@id']);
+                }
+            }
+        }
 
     	return $request;
 
@@ -163,7 +186,7 @@ class RequestService
     	// Let see if we need to do something special
     	if(array_key_exists ('iri',$typeProperty)){
 	    	switch ($typeProperty['iri']) {
-	    		case 'irc/assent':
+                case 'irc/assent':
 
 	    			// This is a new assent so we also need to create a contact
 	    			if($value == null || !array_key_exists ('@id', $value)) {
@@ -179,9 +202,13 @@ class RequestService
 		    				$contact['telephones']=[];
 		    				$contact['telephones'][]=["name"=>"primary","telephone"=> $value['telephone']];
 	    				}
-	    				//var_dump($contact);
+                        if($contact['telephones'][0]['telephone'] == null)
+                        {
+                            unset($contact['telephones']);
+                        }
+
 	    				if(!empty($contact))
-	    				    $contact = $this->commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
+	    				    $contact = $this->commonGroundService->createResource($contact, $this->commonGroundService->getComponent('cc')['href'].'/people');
 
 	    				unset($value['givenName']);
 	    				unset($value['familyName']);
@@ -191,24 +218,69 @@ class RequestService
 	    				if($value == null)
 	    				    $value = [];
 	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
-	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].' van A en B'; //@TODO: hier mogen A en B nog wel namen worden :P
-                        if($slug=="getuige" && array_key_exists('partner', $value)){
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].'-verzoek dat is opgestart door ';
+                        if(array_key_exists('partner', $value)){
                             $value['requester'] = $value['partner'];
                         }
                         else{
-                            $value['requester'] = $requestType['source_organization'];
+                            $value['requester'] = $requestType['sourceOrganization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
                         }
                         $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))
 	    				    $value['contact'] = $contact['@id'];
-	    				$value = $this->commonGroundService->createResource($value, 'https://irc.huwelijksplanner.online/assents');
+	    				$value = $this->commonGroundService->createResource($value, $this->commonGroundService->getComponent('irc')['href'].'/assents');
+                        $template = $this->commonGroundService->getComponent('wrc')['href'].'/templates/e04defee-0bb3-4e5c-b21d-d6deb76bd1bc';
+	    				$this->messageService->createMessage($contact, ['assent'=>$value], $template);
 	    			}
 	    			else{
 	    				//$value = $this->commonGroundService->updateResource($value, $value['@id']);
 	    			}
 	    			$value = $value['@id'];
 	    			break;
+                case 'pdc/offer':
+                    if(!key_exists('order', $request['properties'])){
+                        $order = [];
+                        $order['name'] = "Huwelijksplanner order";
+                        $order['targetOrganization'] = '002220647'; //@TODO: Dit moet nog een WRC verwijzing gaan worden
+                        $order['customer'] = $request['submitters'][0]['person'];
+                        $order['remark'] = $request['@id'];
+                        $order['stage'] = 'cart'; // Deze zou leeg moeten mogen zijn
+
+                        if (!in_array('description',$order) || !$order['description']) {
+                            $order['description'] = "Huwelijksplanner Order";
+                        }
+
+                        $order = $this->commonGroundService->createResource($order, $this->commonGroundService->getComponent('orc')['href'].'/orders');
+
+                        $request['properties']['order'] = $order['@id'];
+                    }
+                    $offer = $this->commonGroundService->getResource($value);
+                    if(!isset($order)){
+                        $orderId = $order = $request['properties']['order'];
+
+                    }
+                    else{
+                        $orderId = $order['@id'];
+                    }
+                    $orderItem = [];
+                    $orderItem['offer'] = $offer['@id'];
+                    $orderItem['name'] = $offer['name'];
+                    if(strlen($offer['description'])<255){
+                        $orderItem['description'] = $offer['description'];
+                    }else{
+                        $orderItem['description'] = ''; //@TODO dit moet weer weg
+                    }
+                    $orderItem['quantity'] = 1;
+                    $orderItem['price'] = number_format($offer['price'], 2);
+                    $orderItem['priceCurrency'] = $offer['priceCurrency'];
+                    //$orderItem['taxPercentage'] = $offer['taxes'][0]['percentage']; // Taxes in orders en invoices moet worden bijgewerkt
+                    $orderItem['taxPercentage'] = 0; /*@todo dit moet dus nog worden gefixed */
+                    $orderItem['order'] = $orderId;
+
+                    $orderItem = $this->commonGroundService->createResource($orderItem, $this->commonGroundService->getComponent('orc')['href'].'/order_items');
+                    // $request['properties']['order']['items'] .= $orderItem;
+                    break;
 	    			/*
 	    		case 'cc/people':
 	    			// This is a new assent so we also need to create a contact
@@ -246,20 +318,6 @@ class RequestService
 	    	}
     	}
 
-    	// Let validate the value
-	    if(array_key_exists ('format',$typeProperty)){
-	    	switch ($typeProperty['format']) {
-	    		case 'array':
-	    			break;
-	    		case 'array':
-	    			break;
-	    		case 'array':
-	    			break;
-	    		default:
-	    		//	$request['properties'][$typeProperty['name']] = $value;
-	    	}
-    	}
-
     	// Let procces the value
     	if($typeProperty['type'] == "array"){
     		// Lets make sure that the value is an array
@@ -278,21 +336,6 @@ class RequestService
     		$request['properties'][$typeProperty['name']] = $value;
     	}
 
-    	/*@todo this misses busnes logic  */
-
-    	// Lets update the stage
-    	//$request["current_stage"] = $typeProperty["next"];
-
-    	/*
-    	 *
-			if(isset($property) && array_key_exists("completed", $property) && $property["completed"]){
-				$slug = $property["next"];
-			}
-			else{
-				$slug = $property["slug"];
-			}
-    	 */
-
     	return $request;
     }
 
@@ -302,6 +345,7 @@ class RequestService
         foreach ($requestType['stages'] as $key=>$stage) {
 
             // Overwrites for omzetten
+            // @TODO: Dit mag toch wel wat configurabeler...
             if (
                     (
                     $stage['name'] == 'getuigen' ||
@@ -337,13 +381,20 @@ class RequestService
             if (key_exists('properties', $request) && array_key_exists($stage['name'], $request['properties']) && $request['properties'][$stage['name']] != null) {
 
                 // Let get the validation rules from the request type
-                $arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['properties']));
+//                $arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['properties']));
 
-                foreach ($arrIt as $sub) {
-                    $subArray = $arrIt->getSubIterator();
+//                foreach ($arrIt as $sub) {
+//                    $subArray = $arrIt->getSubIterator();
+//
+//                    if (array_key_exists('name', $subArray) and $subArray['name'] === $stage['name']) {
+//                        $property = iterator_to_array($subArray);
+//                        break;
+//                    }
+//                }
 
-                    if (array_key_exists('name', $subArray) and $subArray['name'] === $stage['name']) {
-                        $property = iterator_to_array($subArray);
+
+                foreach($requestType['properties'] as $property){
+                    if(is_array($property) && key_exists('name', $property) && $property['name'] == $stage['name']){
                         break;
                     }
                 }
@@ -352,28 +403,20 @@ class RequestService
                     $requestType['stages'][$key]['completed'] = true;
                 }
                 // als het een array is zonder minimum waarden
-                elseif (!array_key_exists('min_items', $property)) {
+                elseif (!array_key_exists('minItems', $property)) {
                     $requestType['stages'][$key]['completed'] = true;
                 }
                 // als de array een minimum waarde heeft en die waarde wordt gehaald
-                elseif (array_key_exists('min_items', $property) && $property['min_items'] && count($request['properties'][$stage['name']]) >= (int) $property['min_items']) {
+                elseif (array_key_exists('minItems', $property) && $property['minItems'] && count($request['properties'][$stage['name']]) >= (int) $property['minItems']) {
                     $requestType['stages'][$key]['completed'] = true;
                 } else {
                     $requestType['stages'][$key]['completed'] = false;
                 }
-//                var_dump($requestType['stages'][$key]);
-   //             var_dump($requestType['stages'][$key]);
-//                var_dump($requestType['stages'][$key]['completed']);
-                //var_dump($property["type"]);
-                //var_dump($property["min_items"]);
-                //var_dump($request["properties"]);
-                //var_dump($requestType["stages"][$key]);
             }
             else{
                 $requestType['stages'][$key]['completed'] = false;
             }
         }
-        //var_dump($requestType["stages"]);
 
         return $requestType;
     }

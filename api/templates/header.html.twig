@@ -1,7 +1,9 @@
 <!-- Header section. Update the background by changing the .header class background image. -->
-<div class="header">
+<div class="header ">
     <div class="container fluid-container header-content content-area">
-        <i class="header-icon far fa-rings-wedding"></i>
+        <a style="color: white" href="{% if requestType.stages is defined and requestType.stages is not empty %}/start-huwelijk{% else %}/{% endif %}">
+            <i class="header-icon far fa-rings-wedding"></i>
+        </a>
         <div class="header-title">
             {% if request.properties.type is defined and request.properties.type is not empty %}
                 <h1>{{ request.properties.type|capitalize }}</h1>
@@ -16,7 +18,8 @@
                     <i class="fas fa-lock-alt"></i> Beste {{ user.naam.voornamen }} {{ user.naam.geslachtsnaam }} u bent
                     ingelogd over een beveiligde verbinding.
                 </div>
-                <a class="btn btn-block" style="width: 150px; margin: auto; margin-top: -17.5px" href="{{ path('app_default_logout') }}">Uitloggen</a>
+                <a class="btn btn-block" style="width: 150px; margin: auto; margin-top: -17.5px"
+                   href="{{ path('app_default_logout') }}">Uitloggen</a>
             </div>
         {% elseif employeeContact is defined and employeeContact %}
             <div class="header-loginbar" style="margin-right: 110px;">
@@ -25,7 +28,8 @@
                     Beste {{ employeeContact.given_name }} {{ employeeContact.additional_name }} {{ employeeContact.family_name }}
                     u bent ingelogd over een beveiligde verbinding.
                 </div>
-                <a class="btn btn-block" style="width: 150px; margin: auto; margin-top: -17.5px" href="{{ path('app_default_logout') }}">Uitloggen</a>
+                <a class="btn btn-block" style="width: 150px; margin: auto; margin-top: -17.5px"
+                   href="{{ path('app_default_logout') }}">Uitloggen</a>
             </div>
         {% endif %}
     </div>

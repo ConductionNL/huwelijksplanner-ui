@@ -15,18 +15,30 @@ class SjabloonService
     private $cache;
     private $client;
     private $session;
+    private $commonGroundService;
 
-    public function __construct(ParameterBagInterface $params, SessionInterface $session, CacheInterface $cache)
+    public function __construct(ParameterBagInterface $params, SessionInterface $session, CacheInterface $cache, CommonGroundService $commonGroundService)
     {
         $this->params = $params;
         $this->session = $session;
         $this->cash = $cache;
+        $this->commonGroundService = $commonGroundService;
+
+        // To work with NLX we need a couple of default headers
+        $this->headers = [
+        		'Accept'        => 'application/ld+json',
+        		'Content-Type'  => 'application/json',
+        		'Authorization'  => $this->params->get('app_commonground_key'),
+        		'X-NLX-Request-Application-Id' => $this->params->get('app_commonground_id')// the id of the application performing the request
+        ];
 
         $this->client = new Client([
             // Base URI is used with relative requests
-            'base_uri' => 'https://wrc.zaakonline.nl/applications/536bfb73-63a5-4719-b535-d835607b88b2/',
+            'base_uri' => 'https://wrc.huwelijksplanner.online/applications/536bfb73-63a5-4719-b535-d835607b88b2/',
             // You can set any number of default request options.
-            'timeout'  => 4000.0,
+        	'timeout'  => 4000.0,
+        	// To work with NLX we need a couple of default headers
+        	'headers' => $this->headers,
         ]);
     }
 
@@ -38,9 +50,9 @@ class SjabloonService
             //return $item->get();
         }
 
-        $response = $this->client->request('GET', $slug);
-
-        $response = json_decode($response->getBody()->getContents(), true);
+//        $response = $this->client->request('GET', $slug);
+        $response = $this->commonGroundService->getResource('https://wrc.huwelijksplanner.online/applications/536bfb73-63a5-4719-b535-d835607b88b2/'.$slug);
+        //$response = json_decode($response->getBody()->getContents(), true);
         $response = $response['template'];
 
         $item->set($response);

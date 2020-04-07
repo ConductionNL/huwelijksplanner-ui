@@ -1,6 +1,6 @@
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
-metadata:
+metadata: 
   name: {{ include "name" . }}-{{ .Values.settings.env }}-cert
 spec:
   secretName: {{ include "name" . }}-{{ .Values.settings.env }}-cert

@@ -62,9 +62,7 @@ class RequestService
         $request['status']='incomplete';
         $request['properties']= [];
 
-
-
-    	// juiste startpagina weergeven
+    	// Juiste startpagina weergeven
     	if(!array_key_exists ("currentStage", $request) && array_key_exists (0, $requestType['stages'])){
     		$request["currentStage"] = $requestType['stages'][0]['slug'];
     	}
@@ -81,6 +79,7 @@ class RequestService
 
     		// Lets transfer any properties that are both inthe parent and the child request
     		foreach($requestType['properties'] as $property){
+
                 $slug = $property['slug'];
 
                 // We have to find a better way to work with these two slugs, this hardcoded way stands in the way of more configurability
@@ -92,25 +91,31 @@ class RequestService
                 }
 
     			if(key_exists($slug, $requestParent['properties'])){
-
     				$request['properties'][$slug] = $requestParent['properties'][$slug];
     			}
     		}
+            $contact = $requestParent["submitters"][0]['person'];
+            $bsn = null;
     	}
-        //Maybe we should make contacts more generic
-        $contact = ['givenName'=>$user['naam']['voornamen'],'familyName'=>$user['naam']['geslachtsnaam']];
-    	$contact= $this->commonGroundService->createResource($contact, $this->commonGroundService->getComponent('cc')['href'].'/people');
+    	// If we dont have parent we need to mkae a contact
+        else{
+            //Maybe we should make contacts more generic
+            $contact = ['givenName'=>$user['naam']['voornamen'],'familyName'=>$user['naam']['geslachtsnaam']];
+            $contact= $this->commonGroundService->createResource($contact, $this->commonGroundService->getComponent('cc')['href'].'/people')['@id'];
+            $bsn = $user['burgerservicenummer'];
+        }
+        $request["submitters"][0]['person'] = $contact;
 
-    	$request["submitters"][0]['person'] = $contact['@id'];
 
+    	// Wat doet partners hier?
         if(!key_exists('partners', $request)){
 
             $assent = [];
             $assent['name'] = 'Instemming '.$requestType['name'];
             $assent['description'] = 'U bent automatisch toegevoegd aan een '.$requestType['name'].' verzoek omdat u deze zelf heeft opgestart';
-            $assent['contact'] = $contact['@id'];
+            $assent['contact'] = $contact;
             $assent['requester'] = $organization['@id'];
-            $assent['person'] = $user['burgerservicenummer'];
+            $assent['person'] = $bsn;
             $assent['request'] = $request['@id'];
             $assent['status'] = 'granted';
             $assent = $this->commonGroundService->createResource($assent, $this->commonGroundService->getComponent('irc')['href'].'/assents');
@@ -378,7 +383,13 @@ class RequestService
             }
 
             // Lets see is we have a value for this stage in our request and has a value
-            if (key_exists('properties', $request) && array_key_exists($stage['name'], $request['properties']) && $request['properties'][$stage['name']] != null) {
+            if (
+                key_exists('properties', $request)
+                &&
+                array_key_exists($stage['name'], $request['properties'])
+                &&
+                $request['properties'][$stage['name']] != null
+            ) {
 
                 // Let get the validation rules from the request type
 //                $arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($requestType['properties']));

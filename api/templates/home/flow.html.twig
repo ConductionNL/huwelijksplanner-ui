@@ -11,6 +11,15 @@
             	{% if requestType.stages is defined and requestType.stages is not empty %}
             	<div style="margin-left: -50px" class="col-md-12 text-center flow">
                     <ul>
+                        {% if request.parent is defined and request.parent is not empty %}
+                        <li style="margin-top: -15px; margin-right: 15px;">
+                            <a href="{{ path('app_default_slug',{'request': request.parent['@id'] }) }}">
+                                <i class="fas fa-arrow-left fa-3x "></i>
+                                <br/>
+                                <p style="color: white;">Terug</p>
+                            </a>
+                        </li>
+                        {% endif %}
                         {% for stage in requestType.stages %}
                         <li style="margin-top: -15px; margin-right: 15px;" class="{# animation #} {% if stage.completed  is defined and stage.completed is not empty and stage.completed == true %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="{{ loop.index*200 }}">
                         	<a href="{{ stage.slug }}">

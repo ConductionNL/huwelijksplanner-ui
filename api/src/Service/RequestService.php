@@ -5,12 +5,15 @@
 namespace App\Service;
 
 use GuzzleHttp\Client;
+use http\Env\Request;
 use http\Message;
 use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 use App\Service\CommonGroundService;
+use App\Service\ZgwService;
+use App\Service\CamundaService;
 
 class RequestService
 {
@@ -19,14 +22,18 @@ class RequestService
     private $client;
     private $session;
     private $commonGroundService;
+    private $zgwService;
+    private $camundaService;
     private $messageService;
 
-    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService, MessageService $messageService)
+    public function __construct(ParameterBagInterface $params, CacheInterface $cache, SessionInterface $session, CommonGroundService $commonGroundService, ZgwService $zgwService, CamundaService $camundaService, MessageService $messageService)
     {
         $this->params = $params;
         $this->cache = $cache;
         $this->session= $session;
         $this->commonGroundService = $commonGroundService;
+        $this->zgwService = $zgwService;
+        $this->camundaService = $camundaService;
         $this->messageService = $messageService;
 
     }
@@ -430,5 +437,38 @@ class RequestService
         }
 
         return $requestType;
+    }
+
+    public function updateRequest($request, $url)
+    {
+        // Lets see if we need to make a case
+        if($request['status'] == 'submitted' && (!$request['cases'] || count($request['status']) == 0 )){
+            // Lets look at the request type
+            $requestType = $this->commonGroundService->getResource($request['requestType']);
+
+            if(array_key_exists('caseType', $requestType) && $requestType['caseType'] && $case = $this->caseFromRequest($request, $requestType['caseType'])){
+                // Lets double check if cases is already an array
+                if(!is_array( $request['cases'])){
+                    $request['cases'] = [];
+                }
+
+                $request['cases'][] = $case['@id'];
+            }
+        }
+
+        return $this->commongroundService->updateResource($request, $url);
+    }
+
+    public function caseFromRequest($request, string $caseType)
+    {
+        $case = [];
+        $case['zaaktype'] = $caseType;
+        $case['bronorganisatie'] = $this->commonGroundService->getResource($request->getOrganization())->getRsin();;
+        $case['verantwoordelijkeOrganisatie'] = $this->commonGroundService->getResource($request->getOrganization())->getRsin();
+        $case['omschrijving'] = $request->getName();
+        $case['startdatum'] = date('Y-m-d');
+
+        // Dan gaan we dus een zaak aanmaken
+        return $this->zgwService->createResource($case, $caseUrl);
     }
 }

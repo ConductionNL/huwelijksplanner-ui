@@ -17,20 +17,6 @@ security:
             anonymous: true
             pattern:  ^/$
             methods: [GET]
-        main:
-            provider: chain_provider
-            # comment this function out on crud enviroments
-            #logout:
-            #    path:   app_user_login            
-            #form_login:
-            #    login_path: app_user_login
-            #    check_path: app_user_login   
-            guard:
-                authenticators:
-                    - App\Security\CommongroundApplicationAuthenticator
-                    - App\Security\CommongroundUserAuthenticator  
-                entry_point: App\Security\CommongroundApplicationAuthenticator
-
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
 

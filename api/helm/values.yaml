@@ -8,19 +8,20 @@ settings:
   name: hpui
   title: Huwelijks Planner
   version: V.0.1
+  id: 
   description: '&#039;Dit is de huwelijksplanner app&#039;'
-  repro: 'https://github.com/ConductionNL/huwelijksplanner-ui'
-  domain: 'huwelijksplanner.online'
-  domains:
-    - huwelijksplanner.online
-  domainsJson: ["huwelijksplanner.online"]
+  type: component
+  repro: https://github.com/ConductionNL/huwelijksplanner-ui
+  demo: huwelijksplanner.online
+  container: 
+  domain: conduction.nl
+  subdomain: 
   organisationName: Conduction
   email: info@conduction.nl
   country: Netherlands
   state: Noord-Holland
   locality: Amsterdam
-  unit: Common-Ground  
-  demo: huwelijksplanner.online
+  unit: Common-Ground
   env: dev
   debug: 1
   cache: 1
@@ -40,14 +41,15 @@ settings:
   # If you are runnig a single component on a kubernetes cluster you can just easaliy enable the load balancer, if not you need to set up a multi component load balancer
   notificationEnabled: false
   audittrailEnabled: false
+  authorisationEnabled: false
   healthEnabled: false
   archiveEnabled: false
 
 security:
-  commongroundId: 45c1a4b6-59d3-4a6e-86bf-88a872f35845
-  commongroundKey: 45c1a4b6-59d3-4a6e-86bf-88a872f35845
-  applicationKey: 45c1a4b6-59d3-4a6e-86bf-88a872f35845
-  userKey: 79d5b14c-70ab-41fb-ac02-917e3288870b
+  commongroundId: "45c1a4b6-59d3-4a6e-86bf-88a872f35845"
+  commongroundKey: "45c1a4b6-59d3-4a6e-86bf-88a872f35845"
+  applicationKey: "45c1a4b6-59d3-4a6e-86bf-88a872f35845"
+  userKey: "79d5b14c-70ab-41fb-ac02-917e3288870b"
   authorisationProviderUser: https://uc.larping.eu
   authorisationProviderApplication: https://ac.larping.eu
 

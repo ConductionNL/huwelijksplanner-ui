@@ -31,8 +31,8 @@ securityDefinitions:
 host: irc.zaakonline.nl
 servers:
   -
-    description: 'Demo Omgeving'
-    url: 'http://proto.demo.common-ground.dev'
+    name: conduction.nl
+    url: pc.dev.conduction.nl
 externalDocs:
   -
     description: 'OAS Documentatie'

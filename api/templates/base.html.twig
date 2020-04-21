@@ -552,12 +552,12 @@
 
         {% block body %}{% endblock %}
 
+        {% set datadelay = 0 %}
         <!-- the alert box -->
         {% if app.session.flashbag.peekAll|length > 0 %}
-            {% set datadelay = 0 %}
             {% for type, messages in app.session.flashbag.all %}
                 {% for message in messages %}
-                    {% set datadelay = ( counter | default(0) ) + 3000 %}
+                    {% set datadelay = loop.index * 3000 %}
                     <!-- .row -->
                     <div class="row animation save-confirmation" data-animation="animation-bounce-out" data-delay="{{ datadelay }}">
                         <div class="post-heading-center animation" data-animation="animation-fade-in-down">

@@ -22,6 +22,9 @@
     "behat/transliterator": {
         "version": "v1.2.0"
     },
+    "composer/ca-bundle": {
+        "version": "1.2.6"
+    },
     "composer/semver": {
         "version": "1.5.0"
     },
@@ -169,6 +172,9 @@
     "michelf/php-markdown": {
         "version": "1.9.0"
     },
+    "mollie/mollie-api-php": {
+        "version": "v2.16.0"
+    },
     "moneyphp/money": {
         "version": "v1.3.0"
     },
@@ -189,6 +195,9 @@
     },
     "nikic/php-parser": {
         "version": "v4.2.2"
+    },
+    "ocramius/package-versions": {
+        "version": "1.5.1"
     },
     "php": {
         "version": "7.3"
@@ -274,8 +283,8 @@
             "config/packages/stof_doctrine_extensions.yaml"
         ]
     },
-    "swiftmailer/swiftmailer": {
-        "version": "v6.2.3"
+    "sumup/sumup-ecom-php-sdk": {
+        "version": "1.0.2"
     },
     "symfony/asset": {
         "version": "v4.3.1"

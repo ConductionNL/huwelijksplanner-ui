@@ -41,7 +41,7 @@ class DefaultController extends AbstractController
         unset($request['submitters']);
         unset($request['children']);
         unset($request['parent']);
-        if ($request = $commonGroundService->updateResource($request, $request['@id'])) {
+        if ($request = $requestService->updateRequest($request, $request['@id'])) {
             $session->set('request', $request);
             $contact = $commonGroundService->getResource($request['submitters'][0]['person']);
             if(key_exists('emails', $contact) && key_exists(0, $contact['emails'])) {
@@ -58,12 +58,12 @@ class DefaultController extends AbstractController
     /**
      * @Route("request/cancel")
      */
-    public function cancelrequestAction(Session $session, CommonGroundService $commonGroundService)
+    public function cancelrequestAction(Session $session, RequestService $requestService)
     {
         $request = $session->get('request');
         $request['status'] = 'cancelled';
         unset($request['submitters']);
-        if ($request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
+        if ($request = $requestService->updateRequest($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
 
             $session->set('request', $request);
             $this->addFlash('success', 'Uw verzoek is geanuleerd');
@@ -93,7 +93,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/assent/add/{property}")
      */
-    public function assentAddAction(Session $session, Request $httpRequest, $property, CommonGroundService $commonGroundService)
+    public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService)
     {
         $requestType = $session->get('requestType');
         $request = $session->get('request');
@@ -121,9 +121,9 @@ class DefaultController extends AbstractController
         if (!array_key_exists($property, $request['properties'])) {
             $request['properties'][$property] = [];
         }
-        $request['properties'][$property][] = 'http://irc.zaakonline.nl' . $assent['@id'];
+        $request['properties'][$property][] = 'https://irc.zaakonline.nl' . $assent['@id'];
         unset($request['submitters']);
-        $request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online" . $request['@id']);
+        $request = $requestService->updateRequest($request, "https://vrc.huwelijksplanner.online" . $request['@id']);
 
         $session->set('requestType', false);
         $session->set('request', false);
@@ -169,7 +169,7 @@ class DefaultController extends AbstractController
         if (!$bsn && !$user) {
             // No login suplied so redirect to digispoof
             //return $this->redirect('http://digispoof.zaakonline.nl?responceUrl='.urlencode($httpRequest->getScheme() . '://' . $httpRequest->getHttpHost().$httpRequest->getBasePath()));
-            return $this->redirect('http://digispoof.huwelijksplanner.online?responceUrl=' . $httpRequest->getScheme() . '://' . $httpRequest->getHttpHost() . $httpRequest->getBasePath() . $this->generateUrl('app_default_assentlogin', ["id" => $id]));
+            return $this->redirect('https://digispoof.huwelijksplanner.online?responceUrl=' . $httpRequest->getScheme() . '://' . $httpRequest->getHttpHost() . $httpRequest->getBasePath() . $this->generateUrl('app_default_assentlogin', ["id" => $id]));
         }
 
 
@@ -209,7 +209,7 @@ class DefaultController extends AbstractController
 
             $contact = $commonGroundService->createResource($contact, 'https://cc.huwelijksplanner.online/people');
 
-            $assent['contact'] = 'http://cc.zaakonline.nl' . $contact['@id'];
+            $assent['contact'] = 'https://cc.zaakonline.nl' . $contact['@id'];
             $assent['person'] = $user['burgerservicenummer'];
 
             $assent = $assentService->updateAssent($assent);
@@ -301,7 +301,7 @@ class DefaultController extends AbstractController
         unset($variables['request']['submitters']);
         unset($variables['request']['parent']);
         unset($variables['request']['children']);
-        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
+        if ($variables['request'] = $requestService->updateRequest($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
@@ -414,7 +414,7 @@ class DefaultController extends AbstractController
         if(key_exists('children', $variables['request'])){
             unset($variables['request']['children']);
         }
-        if ($variables['request'] = $commonGroundService->updateResource($variables['request'], $variables['request']['@id'])) {
+        if ($variables['request'] = $requestService->updateRequest($variables['request'], $variables['request']['@id'])) {
 
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
@@ -438,7 +438,7 @@ class DefaultController extends AbstractController
                     $assent = $variables['request']['properties'][$localSlug];
                 }
 
-                $returnUrl = $this->generateUrl('app_default_assentlogin', ["id" => str_replace('http://irc.v/assents/', '', $assent)]);
+                $returnUrl = $this->generateUrl('app_default_assentlogin', ["id" => str_replace('https://irc.v/assents/', '', $assent)]);
 
                 return $this->redirect('https://digispoof.huwelijksplanner.online?responceUrl='. $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . $returnUrl);
             }
@@ -542,7 +542,7 @@ class DefaultController extends AbstractController
             unset($variables['request']['submitters']);
             unset($variables['request']['children']);
             unset($variables['request']['parent']);
-            $variables['request'] = $commonGroundService->updateResource($variables['request'],$variables['request']['@id']);
+            $variables['request'] = $requestService->updateRequest($variables['request'],$variables['request']['@id']);
         }
         return $this->redirect($invoice['paymentUrl']);
 
@@ -615,16 +615,16 @@ class DefaultController extends AbstractController
             case 'requests':
                 $variables['requests'] = $commonGroundService->getResourceList('https://vrc.huwelijksplanner.online/requests', ['submitters.brp' => $variables['user']['@id'], 'order[dateCreated]' => 'desc']) ["hydra:member"];
                 if (count($variables['requests']) == 0)
-                    return $this->redirect($this->generateUrl('app_default_slug', ['requestType' => 'http://vtc.huwelijksplanner.online/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
+                    return $this->redirect($this->generateUrl('app_default_slug', ['requestType' => 'https://vtc.huwelijksplanner.online/request_types/5b10c1d6-7121-4be2-b479-7523f1b625f1']));
                 break;
             case 'new-request':
                 $variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.huwelijksplanner.online/request_types')["hydra:member"];
                 break;
             case 'switch-organisation':
-            	$variables['organisations'] = $commonGroundService->getResourceList('http://wrc.huwelijksplanner.online/organizations')["hydra:member"];
+            	$variables['organisations'] = $commonGroundService->getResourceList('https://wrc.huwelijksplanner.online/organizations')["hydra:member"];
             	break;
             case 'switch-application':
-            	$variables['applications'] = $commonGroundService->getResourceList('http://wrc.huwelijksplanner.online/applications')["hydra:member"];
+            	$variables['applications'] = $commonGroundService->getResourceList('https://wrc.huwelijksplanner.online/applications')["hydra:member"];
             	break;
         }
         if ($template = $sjabloonService->getOnSlug($slug)) {

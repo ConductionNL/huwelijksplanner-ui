@@ -50,7 +50,7 @@ class SjabloonService
             //return $item->get();
         }
 
-//        $response = $this->client->request('GET', $slug);
+        $response = $this->client->request('GET', $slug);
         $response = $this->commonGroundService->getResource('https://wrc.huwelijksplanner.online/applications/536bfb73-63a5-4719-b535-d835607b88b2/'.$slug);
         //$response = json_decode($response->getBody()->getContents(), true);
 

@@ -242,7 +242,7 @@ class RequestService
 	    				if(!empty($contact))
 	    				    $value['contact'] = $contact['@id'];
 	    				$value = $this->commonGroundService->createResource($value, ['component'=>'irc', 'type'=>'assents']);
-                        $template = ['component'=>'wrc', 'type'=>'templates','id'=>'e04defee-0bb3-4e5c-b21d-d6deb76bd1bc'];
+                        $template = $this->commonGroundService->getResource(['component'=>'wrc', 'type'=>'templates','id'=>'e04defee-0bb3-4e5c-b21d-d6deb76bd1bc'])['@id'];
 	    				$this->messageService->createMessage($contact, ['assent'=>$value], $template);
 	    			}
 	    			else{
@@ -456,7 +456,7 @@ class RequestService
             }
         }
 
-        return $this->commongroundService->updateResource($request, $url);
+        return $this->commonGroundService->updateResource($request, $url);
     }
 
     public function caseFromRequest($request, string $caseType)

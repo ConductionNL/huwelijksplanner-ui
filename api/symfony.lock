@@ -286,6 +286,9 @@
     "sumup/sumup-ecom-php-sdk": {
         "version": "1.0.2"
     },
+    "swiftmailer/swiftmailer": {
+        "version": "v6.2.3"
+    },
     "symfony/asset": {
         "version": "v4.3.1"
     },

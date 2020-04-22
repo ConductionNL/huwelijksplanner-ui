@@ -529,6 +529,7 @@ class DefaultController extends AbstractController
             throw $this->createNotFoundException('There is no order defined');
         }
         $order = $commonGroundService->getResource($variables['request']['properties']['order']);
+        $order['url'] = $order['@id'];
         if(key_exists('invoice', $variables['request']['properties']) && $variables['request']['properties']['invoice'] != null){
             $invoice = $commonGroundService->getResource($variables['request']['properties']['invoice']);
             if($invoice['dateCreated'] < $order['dateModified']){

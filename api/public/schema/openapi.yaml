@@ -2417,12 +2417,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-04-22 07:19:19'
+        example: '2020-04-22 07:28:21'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-04-22 07:19:19'
+        example: '2020-04-22 07:28:21'
     required: []
   AuditTrail-write:
     properties:
@@ -2470,12 +2470,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-04-22 07:19:19'
+        example: '2020-04-22 07:28:21'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-04-22 07:19:19'
+        example: '2020-04-22 07:28:21'
     required: []
   ChangeLog-write:
     properties:
@@ -2516,8 +2516,8 @@ securityDefinitions:
 host: irc.zaakonline.nl
 servers:
   -
-    name: conduction.nl
-    url: hpui.dev.conduction.nl
+    name: huwelijksplanner.online
+    url: hpui.dev.huwelijksplanner.online
 externalDocs:
   -
     description: 'OAS Documentatie'

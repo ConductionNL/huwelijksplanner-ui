@@ -14,7 +14,7 @@ settings:
   repro: https://github.com/ConductionNL/huwelijksplanner-ui
   demo: huwelijksplanner.online
   container: 
-  domain: conduction.nl
+  domain: huwelijksplanner.online
   subdomain: 
   organisationName: Conduction
   email: info@conduction.nl

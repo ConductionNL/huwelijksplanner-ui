@@ -200,6 +200,7 @@ class RequestService
 	    	switch ($typeProperty['iri']) {
                 case 'irc/assent':
 
+                    $submitter = $request['submitters'][0];
 	    			// This is a new assent so we also need to create a contact
 	    			if($value == null || !array_key_exists ('@id', $value)) {
 
@@ -230,13 +231,8 @@ class RequestService
 	    				if($value == null)
 	    				    $value = [];
 	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
-	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].'-verzoek dat is opgestart door ';
-                        if(array_key_exists('partner', $value)){
-                            $value['requester'] = $value['partner'];
-                        }
-                        else{
-                            $value['requester'] = $requestType['sourceOrganization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
-                        }
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"]."-verzoek dat is opgestart door {$this->commonGroundService->getResource($submitter['person'])['name']}";
+                        $value['requester'] = $this->commonGroundService->getResource($submitter['brp'])['burgerservicenummer'];
                         $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))

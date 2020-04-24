@@ -446,14 +446,14 @@ class RequestService
             // Lets look at the request type
             $requestType = $this->commonGroundService->getResource($request['requestType']);
 
-            if(array_key_exists('caseType', $requestType) && $requestType['caseType'] && $case = $this->caseFromRequest($request, $requestType['caseType'])){
-                // Lets double check if cases is already an array
-                if(!is_array( $request['cases'])){
-                    $request['cases'] = [];
-                }
-
-                $request['cases'][] = $case['@id'];
-            }
+//            if(array_key_exists('caseType', $requestType) && $requestType['caseType'] && $case = $this->caseFromRequest($request, $requestType['caseType'])){
+//                // Lets double check if cases is already an array
+//                if(!is_array( $request['cases'])){
+//                    $request['cases'] = [];
+//                }
+//
+//                $request['cases'][] = $case['@id'];
+//            }
         }
 
         return $this->commonGroundService->updateResource($request, $url);

@@ -34,7 +34,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("request/submit")
      */
-    public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, MessageService $messageService)
+    public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, MessageService $messageService, RequestService $requestService)
     {
         $request = $session->get('request');
         $request['status'] = 'submitted';

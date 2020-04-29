@@ -420,7 +420,7 @@ class DefaultController extends AbstractController
             $session->set('requestType', $variables['requestType']);
 
             /*TODO: Dit moet een keer netter*/
-            if($stageName = 'partners'){
+            if($stageName == 'partners'){
                 $stageName = 'partner';
             }
 

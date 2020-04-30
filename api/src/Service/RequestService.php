@@ -168,8 +168,8 @@ class RequestService
     	if(key_exists('order',$request['properties'])){
     	    $order = $this->commonGroundService->getResource($request['properties']['order']);
     	    foreach($order['items'] as $item){
-    	        if($item['offer'] = $deletedValue){
-    	            $this->commonGroundService->deleteResource($item['@id']);
+    	        if($item['offer'] == $deletedValue){
+    	            $this->commonGroundService->deleteResource($item);
                 }
             }
         }

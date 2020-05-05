@@ -2579,9 +2579,22 @@ components:
     CacheItem-read:
       type: object
       description: ''
+      properties:
+        id:
+          readOnly: true
+          description: 'The UUID identifier of this resource'
+          externalDocs:
+            url: 'http://schema.org/identifier'
+          type: string
+          format: uuid
+        href:
+          type: string
     CacheItem-write:
       type: object
       description: ''
+      properties:
+        href:
+          type: string
     'CacheItem:jsonld-read':
       type: object
       description: ''
@@ -2595,6 +2608,15 @@ components:
         '@type':
           readOnly: true
           type: string
+        id:
+          readOnly: true
+          description: 'The UUID identifier of this resource'
+          externalDocs:
+            url: 'http://schema.org/identifier'
+          type: string
+          format: uuid
+        href:
+          type: string
     'CacheItem:jsonld-write':
       type: object
       description: ''
@@ -2607,6 +2629,8 @@ components:
           type: string
         '@type':
           readOnly: true
+          type: string
+        href:
           type: string
     ChangeLog-read:
       type: object
@@ -2836,12 +2860,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-04-29 08:08:29'
+        example: '2020-05-05 13:53:48'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-04-29 08:08:29'
+        example: '2020-05-05 13:53:48'
     required: []
   AuditTrail-write:
     properties:
@@ -2850,6 +2874,19 @@ definitions:
         type: string
         example: 'This log line looks suspicius'
         maxLength: 2555
+    required: []
+  CacheItem-read:
+    properties:
+      id:
+        description: 'The UUID identifier of this resource'
+        type: string
+        example: e2984465-190a-4562-829e-a8cca81aa35d
+        format: uuid
+      href: []
+    required: []
+  CacheItem-write:
+    properties:
+      href: []
     required: []
   ChangeLog-read:
     properties:
@@ -2889,12 +2926,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-04-29 08:08:29'
+        example: '2020-05-05 13:53:48'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-04-29 08:08:29'
+        example: '2020-05-05 13:53:48'
     required: []
   ChangeLog-write:
     properties:

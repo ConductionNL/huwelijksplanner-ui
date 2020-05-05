@@ -93,7 +93,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/assent/add/{property}")
      */
-    public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService)
+    public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService, CommonGroundService $commonGroundService)
     {
         $requestType = $session->get('requestType');
         $request = $session->get('request');
@@ -102,7 +102,7 @@ class DefaultController extends AbstractController
         // First we need to make an new assent
         $assent = [];
         $assent['name'] = 'Instemming huwelijk of partnerschap';
-        $assent['description'] = 'U is gevraagd of u wilt instemmen met een huwelijk of partnerschaps';
+        $assent['description'] = 'U is gevraagd of u wilt instemmen met een huwelijk of partnerschap';
         //$assent['requester'] = (string) $requestType['sourceOrganization'];
         //$assent['request'] = $request['id'];
 
@@ -419,6 +419,10 @@ class DefaultController extends AbstractController
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
 
+            /*TODO: Dit moet een keer netter*/
+            if($stageName == 'partners'){
+                $stageName = 'partner';
+            }
 
             /*@todo translation*/
             $this->addFlash('success', ucfirst($stageName) . ' is ingesteld');

@@ -15,6 +15,268 @@ info:
     'Dit is de huwelijksplanner app'         
     
 paths:
+  '/adresses/{id}/audit_trail':
+    get:
+      tags:
+        - CacheItem
+      operationId: get_audit_trailCacheItemItem
+      summary: 'Retrieves a CacheItem resource.'
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        -
+          name: Authorization
+          description: 'The JWT of the entity performing the request'
+          in: header
+        -
+          name: API-Version
+          description: 'The version of the API conform [Landelijke API-strategie.](https://geonovum.github.io/KP-APIs/#versioning)'
+          example: 1.0.1
+          in: header
+        -
+          name: X-NLX-Logrecord-ID
+          description: 'A  globally unique id of the request, which makes a request traceable throughout the network.'
+          in: header
+        -
+          name: X-NLX-Request-Process-Id
+          description: 'A process id for purpose registration (doelbinding)'
+          in: header
+        -
+          name: X-NLX-Request-Data-Elements
+          description: 'A list of requested data elements'
+          in: header
+        -
+          name: X-NLX-Request-Data-Subject
+          description: 'A key-value list of data subjects related to this request. e.g. `bsn=12345678, kenteken=ab-12-fg`'
+          in: header
+        -
+          name: X-NLX-Audit-Clarification
+          description: 'A clarification as to why a request has been made  (doelbinding)'
+          in: header
+        -
+          name: Link
+          description: 'A [websub](https://www.w3.org/TR/websub/#discovery) header like <https://hub.example.com/>; rel="hub"'
+          in: header
+        -
+          name: 'extend[]'
+          required: false
+          description: 'An array of nested objects to include in the return object'
+          in: query
+          schema:
+            type: array
+        -
+          name: 'fields[]'
+          required: false
+          description: 'An array of fields to return in output, wil return all fields is not supplied'
+          in: query
+          schema:
+            type: array
+        -
+          name: validOn
+          required: false
+          description: 'Returns object as valid on a given date time'
+          schema:
+            type: string
+            format: date-time
+          in: query
+        -
+          name: validFrom
+          required: false
+          description: 'Returns objects valid from a given date time'
+          schema:
+            type: string
+            format: date-time
+          in: query
+        -
+          name: validUntil
+          required: false
+          description: 'Returns objects valid until a given date time'
+          schema:
+            type: string
+            format: date-time
+          in: query
+      responses:
+        200:
+          description: 'CacheItem resource response'
+          content:
+            application/ld+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem:jsonld-read'
+            application/json+ld:
+              schema:
+                $ref: '#/components/schemas/CacheItem:jsonld-read'
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+hal:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+vnd.api:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/health+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+health:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+        404:
+          description: 'Resource not found'
+      produces:
+        - application/health+json
+  '/adresses/{id}/change_log':
+    get:
+      tags:
+        - CacheItem
+      operationId: get_change_logsCacheItemItem
+      summary: 'Retrieves a CacheItem resource.'
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        -
+          name: Authorization
+          description: 'The JWT of the entity performing the request'
+          in: header
+        -
+          name: API-Version
+          description: 'The version of the API conform [Landelijke API-strategie.](https://geonovum.github.io/KP-APIs/#versioning)'
+          example: 1.0.1
+          in: header
+        -
+          name: X-NLX-Logrecord-ID
+          description: 'A  globally unique id of the request, which makes a request traceable throughout the network.'
+          in: header
+        -
+          name: X-NLX-Request-Process-Id
+          description: 'A process id for purpose registration (doelbinding)'
+          in: header
+        -
+          name: X-NLX-Request-Data-Elements
+          description: 'A list of requested data elements'
+          in: header
+        -
+          name: X-NLX-Request-Data-Subject
+          description: 'A key-value list of data subjects related to this request. e.g. `bsn=12345678, kenteken=ab-12-fg`'
+          in: header
+        -
+          name: X-NLX-Audit-Clarification
+          description: 'A clarification as to why a request has been made  (doelbinding)'
+          in: header
+        -
+          name: Link
+          description: 'A [websub](https://www.w3.org/TR/websub/#discovery) header like <https://hub.example.com/>; rel="hub"'
+          in: header
+        -
+          name: 'extend[]'
+          required: false
+          description: 'An array of nested objects to include in the return object'
+          in: query
+          schema:
+            type: array
+        -
+          name: 'fields[]'
+          required: false
+          description: 'An array of fields to return in output, wil return all fields is not supplied'
+          in: query
+          schema:
+            type: array
+        -
+          name: validOn
+          required: false
+          description: 'Returns object as valid on a given date time'
+          schema:
+            type: string
+            format: date-time
+          in: query
+        -
+          name: validFrom
+          required: false
+          description: 'Returns objects valid from a given date time'
+          schema:
+            type: string
+            format: date-time
+          in: query
+        -
+          name: validUntil
+          required: false
+          description: 'Returns objects valid until a given date time'
+          schema:
+            type: string
+            format: date-time
+          in: query
+      responses:
+        200:
+          description: 'CacheItem resource response'
+          content:
+            application/ld+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem:jsonld-read'
+            application/json+ld:
+              schema:
+                $ref: '#/components/schemas/CacheItem:jsonld-read'
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+hal:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+vnd.api:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/health+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+health:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+        404:
+          description: 'Resource not found'
+      produces:
+        - application/health+json
   /audit_trails:
     get:
       tags:
@@ -1027,6 +1289,131 @@ paths:
             schema:
               $ref: '#/components/schemas/AuditTrail-write'
         description: 'The updated AuditTrail resource'
+  /cache_items:
+    post:
+      tags:
+        - CacheItem
+      operationId: postCacheItemCollection
+      summary: 'Creates a CacheItem resource.'
+      responses:
+        201:
+          description: 'CacheItem resource created'
+          content:
+            application/ld+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem:jsonld-read'
+            application/json+ld:
+              schema:
+                $ref: '#/components/schemas/CacheItem:jsonld-read'
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+hal:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+vnd.api:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/health+json:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/json+health:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/CacheItem-read'
+        400:
+          description: 'Invalid input'
+        404:
+          description: 'Resource not found'
+      requestBody:
+        content:
+          application/ld+json:
+            schema:
+              $ref: '#/components/schemas/CacheItem:jsonld-write'
+          application/json+ld:
+            schema:
+              $ref: '#/components/schemas/CacheItem:jsonld-write'
+          application/hal+json:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          application/json+hal:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          application/json+vnd.api:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          application/health+json:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          application/json+health:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          application/x-yaml:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/CacheItem-write'
+        description: 'The new CacheItem resource'
+      parameters:
+        -
+          name: Authorization
+          description: 'The JWT of the entity performing the request'
+          in: header
+        -
+          name: API-Version
+          description: 'The version of the API conform [Landelijke API-strategie.](https://geonovum.github.io/KP-APIs/#versioning)'
+          example: 1.0.1
+          in: header
+        -
+          name: X-NLX-Logrecord-ID
+          description: 'A  globally unique id of the request, which makes a request traceable throughout the network.'
+          in: header
+        -
+          name: X-NLX-Request-Process-Id
+          description: 'A process id for purpose registration (doelbinding)'
+          in: header
+        -
+          name: X-NLX-Request-Data-Elements
+          description: 'A list of requested data elements'
+          in: header
+        -
+          name: X-NLX-Request-Data-Subject
+          description: 'A key-value list of data subjects related to this request. e.g. `bsn=12345678, kenteken=ab-12-fg`'
+          in: header
+        -
+          name: X-NLX-Audit-Clarification
+          description: 'A clarification as to why a request has been made  (doelbinding)'
+          in: header
   /change_logs:
     get:
       tags:
@@ -2189,6 +2576,38 @@ components:
         '@type':
           readOnly: true
           type: string
+    CacheItem-read:
+      type: object
+      description: ''
+    CacheItem-write:
+      type: object
+      description: ''
+    'CacheItem:jsonld-read':
+      type: object
+      description: ''
+      properties:
+        '@context':
+          readOnly: true
+          type: string
+        '@id':
+          readOnly: true
+          type: string
+        '@type':
+          readOnly: true
+          type: string
+    'CacheItem:jsonld-write':
+      type: object
+      description: ''
+      properties:
+        '@context':
+          readOnly: true
+          type: string
+        '@id':
+          readOnly: true
+          type: string
+        '@type':
+          readOnly: true
+          type: string
     ChangeLog-read:
       type: object
       description: 'An resource representing a log line.'
@@ -2417,12 +2836,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-04-22 14:49:06'
+        example: '2020-04-29 08:08:29'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-04-22 14:49:06'
+        example: '2020-04-29 08:08:29'
     required: []
   AuditTrail-write:
     properties:
@@ -2470,12 +2889,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-04-22 14:49:06'
+        example: '2020-04-29 08:08:29'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-04-22 14:49:06'
+        example: '2020-04-29 08:08:29'
     required: []
   ChangeLog-write:
     properties:
@@ -2492,6 +2911,12 @@ tags:
       An resource representing a log line.
       
       This entity represents a product that can be ordered via the OrderRegistratieComponent.
+  -
+    name: CacheItem
+    description: |
+      
+      
+      
   -
     name: ChangeLog
     description: |

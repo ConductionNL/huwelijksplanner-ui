@@ -34,7 +34,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("request/submit")
      */
-    public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, MessageService $messageService)
+    public function submitrequestAction(Session $session, CommonGroundService $commonGroundService, MessageService $messageService, RequestService $requestService)
     {
         $request = $session->get('request');
         $request['status'] = 'submitted';
@@ -58,20 +58,31 @@ class DefaultController extends AbstractController
     /**
      * @Route("request/cancel")
      */
-    public function cancelrequestAction(Session $session, RequestService $requestService)
+    public function cancelrequestAction(Session $session, RequestService $requestService, CommonGroundService $commonGroundService)
     {
         $request = $session->get('request');
-        $request['status'] = 'cancelled';
-        unset($request['submitters']);
-        if ($request = $requestService->updateRequest($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
 
-            $session->set('request', $request);
-            $this->addFlash('success', 'Uw verzoek is geanuleerd');
+        if($request != "submitted") {
+            if ($request = $commonGroundService->deleteResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
+
+                $session->set('request', $request);
+                $this->addFlash('success', 'Uw verzoek is geannuleerd');
+            } else {
+                $this->addFlash('danger', 'Uw verzoek kon niet worden geannuleerd');
+            }
         } else {
-            $this->addFlash('danger', 'Uw verzoek kon niet worden geanuleerd');
+            $request['status'] = 'cancelled';
+
+            unset($request['submitters']);
+            unset($request['children']);
+            unset($request['parent']);
+
+            $request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id']);
         }
 
-        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => "checklist"]));
+        unset($_SESSION['request']);
+
+        return $this->redirect($this->generateUrl('app_default_view', ["slug" => "requests"]));
     }
 
     /**
@@ -93,7 +104,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/assent/add/{property}")
      */
-    public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService)
+    public function assentAddAction(Session $session, Request $httpRequest, $property, RequestService $requestService, CommonGroundService $commonGroundService)
     {
         $requestType = $session->get('requestType');
         $request = $session->get('request');
@@ -102,7 +113,7 @@ class DefaultController extends AbstractController
         // First we need to make an new assent
         $assent = [];
         $assent['name'] = 'Instemming huwelijk of partnerschap';
-        $assent['description'] = 'U is gevraagd of u wilt instemmen met een huwelijk of partnerschaps';
+        $assent['description'] = 'U is gevraagd of u wilt instemmen met een huwelijk of partnerschap';
         //$assent['requester'] = (string) $requestType['sourceOrganization'];
         //$assent['request'] = $request['id'];
 
@@ -419,6 +430,10 @@ class DefaultController extends AbstractController
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
 
+            /*TODO: Dit moet een keer netter*/
+            if($stageName == 'partners'){
+                $stageName = 'partner';
+            }
 
             /*@todo translation*/
             $this->addFlash('success', ucfirst($stageName) . ' is ingesteld');

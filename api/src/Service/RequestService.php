@@ -74,7 +74,7 @@ class RequestService
     		$request["currentStage"] = $requestType['stages'][0]['slug'];
     	}
 
-    	$request = $this->commonGroundService->createResource($request, $this->commonGroundService->getComponent('vrc')['href'].'/requests'); //HP Specifiek
+    	$request = $this->commonGroundService->createResource($request, ['component'=>'vrc', 'type'=>'requests']);
         if($user){
             $request['submitters'] = [['brp'=>$user['@id']]];
         }
@@ -108,7 +108,7 @@ class RequestService
         else{
             //Maybe we should make contacts more generic
             $contact = ['givenName'=>$user['naam']['voornamen'],'familyName'=>$user['naam']['geslachtsnaam']];
-            $contact= $this->commonGroundService->createResource($contact, $this->commonGroundService->getComponent('cc')['href'].'/people')['@id'];
+            $contact= $this->commonGroundService->createResource($contact, ['component'=>'cc', 'type'=>'people'])['@id'];
             $bsn = $user['burgerservicenummer'];
         }
         $request["submitters"][0]['person'] = $contact;
@@ -125,7 +125,7 @@ class RequestService
             $assent['person'] = $bsn;
             $assent['request'] = $request['@id'];
             $assent['status'] = 'granted';
-            $assent = $this->commonGroundService->createResource($assent, $this->commonGroundService->getComponent('irc')['href'].'/assents');
+            $assent = $this->commonGroundService->createResource($assent, ['component'=>'irc', 'type'=>'assents']);
 
             $request['properties']['partners'][] = $assent['@id'];
             $request['submitters'][0]['assent'] = $assent['@id'];
@@ -168,8 +168,8 @@ class RequestService
     	if(key_exists('order',$request['properties'])){
     	    $order = $this->commonGroundService->getResource($request['properties']['order']);
     	    foreach($order['items'] as $item){
-    	        if($item['offer'] = $deletedValue){
-    	            $this->commonGroundService->deleteResource($item['@id']);
+    	        if($item['offer'] == $deletedValue){
+    	            $this->commonGroundService->deleteResource($item);
                 }
             }
         }
@@ -200,6 +200,7 @@ class RequestService
 	    	switch ($typeProperty['iri']) {
                 case 'irc/assent':
 
+                    $submitter = $request['submitters'][0];
 	    			// This is a new assent so we also need to create a contact
 	    			if($value == null || !array_key_exists ('@id', $value)) {
 
@@ -220,7 +221,7 @@ class RequestService
                         }
 
 	    				if(!empty($contact))
-	    				    $contact = $this->commonGroundService->createResource($contact, $this->commonGroundService->getComponent('cc')['href'].'/people');
+	    				    $contact = $this->commonGroundService->createResource($contact, ['component'=>'cc', 'type'=>'people']);
 
 	    				unset($value['givenName']);
 	    				unset($value['familyName']);
@@ -230,19 +231,14 @@ class RequestService
 	    				if($value == null)
 	    				    $value = [];
 	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
-	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].'-verzoek dat is opgestart door ';
-                        if(array_key_exists('partner', $value)){
-                            $value['requester'] = $value['partner'];
-                        }
-                        else{
-                            $value['requester'] = $requestType['sourceOrganization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
-                        }
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"]."-verzoek dat is opgestart door {$this->commonGroundService->getResource($submitter['person'])['name']}";
+                        $value['requester'] = $this->commonGroundService->getResource($submitter['brp'])['burgerservicenummer'];
                         $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))
 	    				    $value['contact'] = $contact['@id'];
-	    				$value = $this->commonGroundService->createResource($value, $this->commonGroundService->getComponent('irc')['href'].'/assents');
-                        $template = $this->commonGroundService->getComponent('wrc')['href'].'/templates/e04defee-0bb3-4e5c-b21d-d6deb76bd1bc';
+	    				$value = $this->commonGroundService->createResource($value, ['component'=>'irc', 'type'=>'assents']);
+                        $template = $this->commonGroundService->getResource(['component'=>'wrc', 'type'=>'templates','id'=>'e04defee-0bb3-4e5c-b21d-d6deb76bd1bc'])['@id'];
 	    				$this->messageService->createMessage($contact, ['assent'=>$value], $template);
 	    			}
 	    			else{
@@ -263,7 +259,7 @@ class RequestService
                             $order['description'] = "Huwelijksplanner Order";
                         }
 
-                        $order = $this->commonGroundService->createResource($order, $this->commonGroundService->getComponent('orc')['href'].'/orders');
+                        $order = $this->commonGroundService->createResource($order, ['component'=>'orc', 'type'=>'orders']);
 
                         $request['properties']['order'] = $order['@id'];
                     }
@@ -290,7 +286,7 @@ class RequestService
                     $orderItem['taxPercentage'] = 0; /*@todo dit moet dus nog worden gefixed */
                     $orderItem['order'] = $orderId;
 
-                    $orderItem = $this->commonGroundService->createResource($orderItem, $this->commonGroundService->getComponent('orc')['href'].'/order_items');
+                    $orderItem = $this->commonGroundService->createResource($orderItem, ['component'=>'orc', 'type'=>'order_items']);
                     // $request['properties']['order']['items'] .= $orderItem;
                     break;
 	    			/*
@@ -446,17 +442,17 @@ class RequestService
             // Lets look at the request type
             $requestType = $this->commonGroundService->getResource($request['requestType']);
 
-            if(array_key_exists('caseType', $requestType) && $requestType['caseType'] && $case = $this->caseFromRequest($request, $requestType['caseType'])){
-                // Lets double check if cases is already an array
-                if(!is_array( $request['cases'])){
-                    $request['cases'] = [];
-                }
-
-                $request['cases'][] = $case['@id'];
-            }
+//            if(array_key_exists('caseType', $requestType) && $requestType['caseType'] && $case = $this->caseFromRequest($request, $requestType['caseType'])){
+//                // Lets double check if cases is already an array
+//                if(!is_array( $request['cases'])){
+//                    $request['cases'] = [];
+//                }
+//
+//                $request['cases'][] = $case['@id'];
+//            }
         }
 
-        return $this->commongroundService->updateResource($request, $url);
+        return $this->commonGroundService->updateResource($request, $url);
     }
 
     public function caseFromRequest($request, string $caseType)

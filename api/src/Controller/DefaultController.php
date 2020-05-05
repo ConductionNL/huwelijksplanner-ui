@@ -58,20 +58,31 @@ class DefaultController extends AbstractController
     /**
      * @Route("request/cancel")
      */
-    public function cancelrequestAction(Session $session, RequestService $requestService)
+    public function cancelrequestAction(Session $session, RequestService $requestService, CommonGroundService $commonGroundService)
     {
         $request = $session->get('request');
-        $request['status'] = 'cancelled';
-        unset($request['submitters']);
-        if ($request = $requestService->updateRequest($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
 
-            $session->set('request', $request);
-            $this->addFlash('success', 'Uw verzoek is geanuleerd');
+        if($request != "submitted") {
+            if ($request = $commonGroundService->deleteResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
+
+                $session->set('request', $request);
+                $this->addFlash('success', 'Uw verzoek is geannuleerd');
+            } else {
+                $this->addFlash('danger', 'Uw verzoek kon niet worden geannuleerd');
+            }
         } else {
-            $this->addFlash('danger', 'Uw verzoek kon niet worden geanuleerd');
+            $request['status'] = 'cancelled';
+
+            unset($request['submitters']);
+            unset($request['children']);
+            unset($request['parent']);
+
+            $request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id']);
         }
 
-        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => "checklist"]));
+        unset($_SESSION['request']);
+
+        return $this->redirect($this->generateUrl('app_default_view', ["slug" => "requests"]));
     }
 
     /**

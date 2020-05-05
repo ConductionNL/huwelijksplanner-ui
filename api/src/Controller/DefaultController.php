@@ -384,7 +384,7 @@ class DefaultController extends AbstractController
         /*@todo dut configureerbaar maken */
         if(is_array($variables['request']['properties'])){
             // hardcode overwrite for "gratis trouwen"
-            if ($value == "https://pdc.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee" || $value == "https://pdc.dev.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee") ) {
+            if ($value == "https://pdc.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee" || $value == "https://pdc.dev.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee"){
                 $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
                 $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
 

@@ -474,12 +474,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ConductionNL/CommonGroundBundle.git",
-                "reference": "f947d4b57addca1a5314cfe1f3f75187bf9545d3"
+                "reference": "09aa6ea1cc79de08c334d966ed8d07b4461c7eb6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ConductionNL/CommonGroundBundle/zipball/f947d4b57addca1a5314cfe1f3f75187bf9545d3",
-                "reference": "f947d4b57addca1a5314cfe1f3f75187bf9545d3",
+                "url": "https://api.github.com/repos/ConductionNL/CommonGroundBundle/zipball/09aa6ea1cc79de08c334d966ed8d07b4461c7eb6",
+                "reference": "09aa6ea1cc79de08c334d966ed8d07b4461c7eb6",
                 "shasum": ""
             },
             "require": {
@@ -492,6 +492,7 @@
                 "symfony/cache-contracts": "^1.1@stable",
                 "symfony/console": "^4.3@stable",
                 "symfony/contracts": "^1.0",
+                "symfony/event-dispatcher": "^4.2",
                 "symfony/maker-bundle": "^1.11@stable",
                 "symfony/var-exporter": "^4.2"
             },
@@ -545,7 +546,7 @@
                 "postcode",
                 "rsin"
             ],
-            "time": "2020-05-08T11:44:27+00:00"
+            "time": "2020-05-08T12:39:16+00:00"
         },
         {
             "name": "doctrine/annotations",

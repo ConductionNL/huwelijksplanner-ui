@@ -96,3 +96,5 @@ services:
         tags: ['twig.extension']
     'Conduction\CommonGroundBundle\Twig\CommonGroundRuntime':
         tags: ['twig.runtime']
+
+    'Symfony\Component\EventDispatcher\EventDispatcher': ~

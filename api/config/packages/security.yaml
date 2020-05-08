@@ -5,9 +5,9 @@ security:
             chain:
                 providers: [CommongroundApplicationProvider, CommongroundUserProvider]
         commongroundApplicationProvider:
-            id: App\Security\User\CommongroundApplicationProvider
+            id: Conduction\CommonGroundBundle\Security\User\CommongroundApplicationProvider
         commongroundUserProvider:
-            id: App\Security\User\CommongroundUserProvider
+            id: Conduction\CommonGroundBundle\Security\User\CommongroundUserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/

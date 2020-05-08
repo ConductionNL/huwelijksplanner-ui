@@ -115,9 +115,6 @@
     "easyrdf/easyrdf": {
         "version": "0.9.1"
     },
-    "egulias/email-validator": {
-        "version": "2.1.14"
-    },
     "fig/link-util": {
         "version": "1.0.0"
     },
@@ -285,9 +282,6 @@
     },
     "sumup/sumup-ecom-php-sdk": {
         "version": "1.0.2"
-    },
-    "swiftmailer/swiftmailer": {
-        "version": "v6.2.3"
     },
     "symfony/asset": {
         "version": "v4.3.1"

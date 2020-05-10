@@ -54,7 +54,7 @@ class ApplicationService
     	// Lets handle a posible login
     	$bsn = $this->request->get('bsn');
     	if($bsn || $bsn = $this->request->query->get('bsn')){
-    		$user = $this->commonGroundService->getResource('https://brp.huwelijksplanner.online/ingeschrevenpersonen/'.$bsn);
+    		$user = $this->commonGroundService->getResource(['component'=>'brp','type'=>'ingeschrevenpersonen','id'=>$bsn]);
     		$this->session->set('user', $user);
     	}
     	$variables['user']  = $this->session->get('user');
@@ -68,10 +68,11 @@ class ApplicationService
     	// lets default
     	elseif(!$this->session->get('organization') ){
     		/*@todo param bag interface */
-    		$organization= $this->commonGroundService->getResource('http://wrc.huwelijksplanner.online/organizations/68b64145-0740-46df-a65a-9d3259c2fec8');
+    		$organization= $this->commonGroundService->getResource(['component'=>'wrc','type'=>'organizations','id'=>'68b64145-0740-46df-a65a-9d3259c2fec8']);
     	    $this->session->set('organization', $organization);
     		//$this->session->set('organization', 0000);
     	}
+
     	$variables['organization']  = $this->session->get('organization');
 
     	// application
@@ -83,7 +84,7 @@ class ApplicationService
     	// lets default
     	elseif(!$this->session->get('application')){
     		/*@todo param bag interface */
-    		$application= $this->commonGroundService->getResource('http://wrc.huwelijksplanner.online/applications/536bfb73-63a5-4719-b535-d835607b88b2');
+    		$application= $this->commonGroundService->getResource(['component'=>'wrc','type'=>'applications','id'=>'536bfb73-63a5-4719-b535-d835607b88b2']);
     		$this->session->set('application', $application);
     	}
     	$variables['application']  = $this->session->get('application');
@@ -97,12 +98,13 @@ class ApplicationService
     		$requestParent = $this->request->request->get('requestParent');
     		if(!$requestParent){ $requestParent =  $this->request->query->get('requestParent');}
 
-    		$requestType = $this->commonGroundService->getResource($requestType);
+    		//$requestType = $this->commonGroundService->getResource($requestType);
+            $request = [];
+            $request['$requestType'] = $requestType;
     		$request = $this->requestService->createFromRequestType($requestType, $requestParent);
 
     		// Validate current reqoust type
-
-    		$requestType = $this->requestService->checkRequestType($request, $requestType);
+            $requestType = $this->requestService->checkRequestType($request, $requestType);
 
             $this->session->set('requestType', $requestType);
             if($request != null)

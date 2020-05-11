@@ -165,6 +165,15 @@ class RequestService
     	    $deletedValue = $request['properties'][$property];
     		unset ($request['properties'][$property]);
     	}
+
+    	$resource = $this->commonGroundService->getResource($deletedValue);
+
+    	if($resource['@type'] == 'assent'){
+    	    $resource['status'] = 'cancelled';
+    	    $this->commonGroundService->updateResource($resource, ['component'=>'irc', 'type'=>$resource['@type'], 'id'=>$resource['id']]);
+        }
+
+
     	if(key_exists('order',$request['properties'])){
     	    $order = $this->commonGroundService->getResource($request['properties']['order']);
     	    foreach($order['items'] as $item){
@@ -173,6 +182,8 @@ class RequestService
                 }
             }
         }
+    	//@TODO: Dit is een vreselijk hacky methode om irc-verwijzingen te detecteren, moet mooier.
+
 
     	return $request;
 

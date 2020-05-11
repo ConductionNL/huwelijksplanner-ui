@@ -571,7 +571,7 @@ class DefaultController extends AbstractController
         if(!$id){
             throw new ResourceNotFoundException("There was no invoice defined");
         }
-        $invoice = $commonGroundService->getResource('https://bc.huwelijksplanner.online/invoices/'.$id);
+        $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
         if($invoice['paid']){
             $this->addFlash('success','Uw order is betaald!');
         }else{

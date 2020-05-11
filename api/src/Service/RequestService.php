@@ -165,6 +165,13 @@ class RequestService
     	    $deletedValue = $request['properties'][$property];
     		unset ($request['properties'][$property]);
     	}
+    	$resource = $this->commonGroundService->getResource($deletedValue);
+    	if($resource['@type'] == 'Assent'){
+    	    $resource['status'] = 'cancelled';
+    	    $this->commonGroundService->updateResource($resource, ['component'=>'irc', 'type'=>'assents', 'id'=>$resource['id']]);
+        }
+
+
     	if(key_exists('order',$request['properties'])){
     	    $order = $this->commonGroundService->getResource($request['properties']['order']);
     	    foreach($order['items'] as $item){
@@ -173,6 +180,7 @@ class RequestService
                 }
             }
         }
+
 
     	return $request;
 

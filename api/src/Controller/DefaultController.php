@@ -386,14 +386,14 @@ class DefaultController extends AbstractController
         }
 
         /*@todo dut configureerbaar maken */
-        // hardcode overwrite for "gratis trouwen"
-        if (is_array($variables['request']['properties'])) {
-            if (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee") {
+        if(is_array($variables['request']['properties'])){
+            // hardcode overwrite for "gratis trouwen"
+            if ($value == "https://pdc.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee" || $value == "https://pdc.dev.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee"){
                 $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
                 $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
 
             } // hardcode overwrite for "eenvoudig trouwen"
-            elseif (array_key_exists("plechtigheid", $variables['request']['properties']) && $variables['request']['properties']["plechtigheid"] == "https://pdc.huwelijksplanner.online/offers/2b9ba0a9-376d-45e2-aa83-809ef07fa104") {
+            elseif ($value == "https://pdc.huwelijksplanner.online/offers/2b9ba0a9-376d-45e2-aa83-809ef07fa104" || $value == "https://pdc.dev.huwelijksplanner.online/offers/2b9ba0a9-376d-45e2-aa83-809ef07fa104") {
                 $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
                 $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
             } else {
@@ -577,10 +577,10 @@ class DefaultController extends AbstractController
         if (!$id) {
             throw new ResourceNotFoundException("There was no invoice defined");
         }
-        $invoice = $commonGroundService->getResource('https://bc.huwelijksplanner.online/invoices/' . $id);
-        if ($invoice['paid']) {
-            $this->addFlash('success', 'Uw order is betaald!');
-        } else {
+        $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
+        if($invoice['paid']){
+            $this->addFlash('success','Uw order is betaald!');
+        }else{
             $this->addFlash('danger', 'De betaling is mislukt');
         }
         return $this->redirect($this->generateUrl('app_default_index') . '?request=' . $invoice['remark']);

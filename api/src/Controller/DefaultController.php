@@ -364,7 +364,7 @@ class DefaultController extends AbstractController
         // If we have a slug then a specific property is bieng set
         if ($slug) {
             // dit mag wat abstracter
-            if ($slug == "datum") {
+            if ($slug == "datum" || $slug == "datum-melding") {
                 $date = $value["datum"];
                 $time = $value["tijd"];
                 $dateArray = explode(" ", $date);

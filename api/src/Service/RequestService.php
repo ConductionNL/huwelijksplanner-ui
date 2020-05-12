@@ -71,7 +71,7 @@ class RequestService
 
     	// Juiste startpagina weergeven
     	if(!array_key_exists ("currentStage", $request) && array_key_exists (0, $requestType['stages'])){
-    		$request["currentStage"] = $requestType['stages'][0]['slug'];
+    		$request["currentStage"] = $requestType['stages'][0]['name'];
     	}
 
     	$request = $this->commonGroundService->createResource($request, ['component'=>'vrc', 'type'=>'requests']);
@@ -87,18 +87,18 @@ class RequestService
     		// Lets transfer any properties that are both inthe parent and the child request
     		foreach($requestType['properties'] as $property){
 
-                $slug = $property['slug'];
+                $name = $property['name'];
 
                 // We have to find a better way to work with these two slugs, this hardcoded way stands in the way of more configurability
-                if($slug == 'getuige'){
-                        $slug = 'getuigen';
+                if($name == 'getuige'){
+                        $name = 'getuigen';
                 }
-                elseif($slug == 'partner'){
-                        $slug = 'partners';
+                elseif($name == 'partner'){
+                        $name = 'partners';
                 }
 
-    			if(key_exists($slug, $requestParent['properties'])){
-    				$request['properties'][$slug] = $requestParent['properties'][$slug];
+    			if(key_exists($name, $requestParent['properties'])){
+    				$request['properties'][$name] = $requestParent['properties'][$name];
     			}
     		}
             $contact = $requestParent["submitters"][0]['person'];
@@ -115,7 +115,7 @@ class RequestService
 
 
     	// Wat doet partners hier?
-        if(!key_exists('partners', $request)){
+        if(!key_exists('partners', $request['properties'])){
 
             $assent = [];
             $assent['name'] = 'Instemming '.$requestType['name'];

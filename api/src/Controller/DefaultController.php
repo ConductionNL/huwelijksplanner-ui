@@ -44,7 +44,7 @@ class DefaultController extends AbstractController
         if ($request = $requestService->updateRequest($request, $request['@id'])) {
             $session->set('request', $request);
             $contact = $commonGroundService->getResource($request['submitters'][0]['person']);
-            if(key_exists('emails', $contact) && key_exists(0, $contact['emails'])) {
+            if (key_exists('emails', $contact) && key_exists(0, $contact['emails'])) {
                 $messageService->createMessage($contact, ['request' => $request, 'requestType' => $commonGroundService->getResource($request['requestType'])], 'https://wrc.huwelijksplanner.online/templates/66e43592-22a2-49c2-8c3e-10d9a00d5487');
             }
             $this->addFlash('success', 'Uw verzoek is ingediend');
@@ -62,8 +62,14 @@ class DefaultController extends AbstractController
     {
         $request = $session->get('request');
 
-        if($request != "submitted") {
-            if ($request = $commonGroundService->deleteResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id'])) {
+        if ($request['status'] != "submitted") {
+            if (isset($request['submitters'])) {
+                foreach ($request['submitters'] as $submitter) {
+                   $commonGroundService->deleteResource($submitter, $submitter['@id']);
+                }
+            }
+
+            if ($request = $commonGroundService->deleteResource($request, $request['@id'])) {
 
                 $session->set('request', $request);
                 $this->addFlash('success', 'Uw verzoek is geannuleerd');
@@ -82,7 +88,7 @@ class DefaultController extends AbstractController
 
         unset($_SESSION['request']);
 
-        return $this->redirect($this->generateUrl('app_default_view', ["slug" => "requests"]));
+        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => "requests"]));
     }
 
     /**
@@ -278,16 +284,14 @@ class DefaultController extends AbstractController
         if ($httpRequest->request->get('familyName')) {
             $contact['familyName'] = $httpRequest->request->get('familyName');
         }
-        if($httpRequest->request->get('email') != null){
+        if ($httpRequest->request->get('email') != null) {
             $contact['emails'][0] = ["name" => "primary", "email" => $httpRequest->request->get('email')];
-        }
-        else{
+        } else {
             unset($contact['emails']);
         }
-        if($httpRequest->request->get('telephone') != null){
+        if ($httpRequest->request->get('telephone') != null) {
             $contact['telephones'][0] = ["name" => "primary", "telephone" => $httpRequest->request->get('telephone')];
-        }
-        else{
+        } else {
             unset($contact['telephones']);
         }
         if ($contact = $commonGroundService->updateResource($contact, $assent['contact'])) {
@@ -316,7 +320,7 @@ class DefaultController extends AbstractController
 
             $session->set('request', $variables['request']);
             $session->set('requestType', $variables['requestType']);
-            if($slug == 'getuigen'){
+            if ($slug == 'getuigen') {
                 $slug = 'getuige';
             }
 
@@ -364,7 +368,7 @@ class DefaultController extends AbstractController
         // If we have a slug then a specific property is bieng set
         if ($slug) {
             // dit mag wat abstracter
-            if ($slug == "datum") {
+            if ($slug == "datum" || $slug == "datum-melding") {
                 $date = $value["datum"];
                 $time = $value["tijd"];
                 $dateArray = explode(" ", $date);
@@ -419,10 +423,10 @@ class DefaultController extends AbstractController
             }
         }
         unset($variables['request']['submitters']);
-        if(key_exists('parent', $variables['request'])){
+        if (key_exists('parent', $variables['request'])) {
             unset($variables['request']['parent']);
         }
-        if(key_exists('children', $variables['request'])){
+        if (key_exists('children', $variables['request'])) {
             unset($variables['request']['children']);
         }
         if ($variables['request'] = $requestService->updateRequest($variables['request'], $variables['request']['@id'])) {
@@ -431,7 +435,7 @@ class DefaultController extends AbstractController
             $session->set('requestType', $variables['requestType']);
 
             /*TODO: Dit moet een keer netter*/
-            if($stageName == 'partners'){
+            if ($stageName == 'partners') {
                 $stageName = 'partner';
             }
 
@@ -445,7 +449,7 @@ class DefaultController extends AbstractController
                 $session->set('request', false);
                 $session->set('user', false);
                 $localSlug = $variables['slug'];
-                if($localSlug == 'partner')
+                if ($localSlug == 'partner')
                     $localSlug = 'partners';
                 if (is_array($variables['request']['properties'][$localSlug])) {
                     $assent = end($variables['request']['properties'][$localSlug]);
@@ -455,7 +459,7 @@ class DefaultController extends AbstractController
 
                 $returnUrl = $this->generateUrl('app_default_assentlogin', ["id" => str_replace('https://irc.v/assents/', '', $assent)]);
 
-                return $this->redirect('https://digispoof.huwelijksplanner.online?responceUrl='. $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . $returnUrl);
+                return $this->redirect('https://digispoof.huwelijksplanner.online?responceUrl=' . $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . $returnUrl);
             }
 
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
@@ -534,41 +538,43 @@ class DefaultController extends AbstractController
             return $this->redirect($this->generateUrl('app_default_slug', ["slug" => $slug]));
         }
     }
+
     /**
      * @Route("/betalen/betaal", name="app_default_payment")
      */
     public function paymentAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
         $variables = $applicationService->getVariables();
-        if(!key_exists('order',$variables['request']['properties'])){
+        if (!key_exists('order', $variables['request']['properties'])) {
             throw $this->createNotFoundException('There is no order defined');
         }
         $order = $commonGroundService->getResource($variables['request']['properties']['order']);
         $order['url'] = $order['@id'];
-        if(key_exists('invoice', $variables['request']['properties']) && $variables['request']['properties']['invoice'] != null){
+        if (key_exists('invoice', $variables['request']['properties']) && $variables['request']['properties']['invoice'] != null) {
             $invoice = $commonGroundService->getResource($variables['request']['properties']['invoice']);
-            if($invoice['dateCreated'] < $order['dateModified']){
+            if ($invoice['dateCreated'] < $order['dateModified']) {
                 $commonGroundService->deleteResource($invoice['@id']);
                 unset($invoice);
             }
         }
-        if(!isset($invoice)){
+        if (!isset($invoice)) {
             $invoice = $commonGroundService->createResource($order, 'https://bc.huwelijksplanner.online/order');
             $variables['request']['properties']['invoice'] = $invoice['@id'];
             unset($variables['request']['submitters']);
             unset($variables['request']['children']);
             unset($variables['request']['parent']);
-            $variables['request'] = $requestService->updateRequest($variables['request'],$variables['request']['@id']);
+            $variables['request'] = $requestService->updateRequest($variables['request'], $variables['request']['@id']);
         }
         return $this->redirect($invoice['paymentUrl']);
 
     }
+
     /**
      * @Route("/betalen/betaald/{id}")
      */
     public function payedAction(Session $session, $id = false, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
-        if(!$id){
+        if (!$id) {
             throw new ResourceNotFoundException("There was no invoice defined");
         }
         $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
@@ -577,7 +583,7 @@ class DefaultController extends AbstractController
         }else{
             $this->addFlash('danger', 'De betaling is mislukt');
         }
-        return $this->redirect($this->generateUrl('app_default_index').'?request='.$invoice['remark']);
+        return $this->redirect($this->generateUrl('app_default_index') . '?request=' . $invoice['remark']);
     }
 
     /**
@@ -617,7 +623,7 @@ class DefaultController extends AbstractController
                 $slug = 'trouwen';
                 break;
             case 'ambtenaar':
-            	$variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
+                $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '7f4ff7ae-ed1b-45c9-9a73-3ed06a36b9cc']);
                 break;
             case 'locatie':
                 $variables['products'] = $commonGroundService->getResourceList('https://pdc.huwelijksplanner.online/products', ['groups.id' => '170788e7-b238-4c28-8efc-97bdada02c2e']);
@@ -637,11 +643,11 @@ class DefaultController extends AbstractController
                 $variables['requestTypes'] = $commonGroundService->getResourceList('https://vtc.huwelijksplanner.online/request_types')["hydra:member"];
                 break;
             case 'switch-organisation':
-            	$variables['organisations'] = $commonGroundService->getResourceList('https://wrc.huwelijksplanner.online/organizations')["hydra:member"];
-            	break;
+                $variables['organisations'] = $commonGroundService->getResourceList('https://wrc.huwelijksplanner.online/organizations')["hydra:member"];
+                break;
             case 'switch-application':
-            	$variables['applications'] = $commonGroundService->getResourceList('https://wrc.huwelijksplanner.online/applications')["hydra:member"];
-            	break;
+                $variables['applications'] = $commonGroundService->getResourceList('https://wrc.huwelijksplanner.online/applications')["hydra:member"];
+                break;
         }
         if ($template = $sjabloonService->getOnSlug($slug)) {
             // We want to include the html in our own template

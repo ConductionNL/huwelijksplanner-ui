@@ -38,18 +38,26 @@ class DefaultController extends AbstractController
     {
         $request = $session->get('request');
         $request['status'] = 'submitted';
+
         unset($request['submitters']);
         unset($request['children']);
         unset($request['parent']);
+
         if ($request = $requestService->updateRequest($request, $request['@id'])) {
             $session->set('request', $request);
             $contact = $commonGroundService->getResource($request['submitters'][0]['person']);
+
             if (key_exists('emails', $contact) && key_exists(0, $contact['emails'])) {
                 $messageService->createMessage($contact, ['request' => $request, 'requestType' => $commonGroundService->getResource($request['requestType'])], 'https://wrc.huwelijksplanner.online/templates/66e43592-22a2-49c2-8c3e-10d9a00d5487');
             }
             $this->addFlash('success', 'Uw verzoek is ingediend');
         } else {
             $this->addFlash('danger', 'Uw verzoek kon niet worden ingediend');
+        }
+
+        if ($request['requestType'] == "https://vtc.dev.huwelijksplanner.online/request_types/146cb7c8-46b9-4911-8ad9-3238bab4313e"){
+
+            return $this->redirect($this->generateUrl('app_default_index'));
         }
 
         return $this->redirect($this->generateUrl('app_default_slug', ["slug" => "checklist"]));

@@ -2860,36 +2860,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        example: '2020-05-11 09:23:33'
-=======
-        example: '2020-05-11 10:03:11'
->>>>>>> development
-=======
-        example: '2020-05-11 14:07:00'
->>>>>>> dev-barry
-=======
-        example: '2020-05-12 09:02:17'
->>>>>>> development
+        example: '2020-05-12 11:13:13'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        example: '2020-05-11 09:23:33'
-=======
-        example: '2020-05-11 10:03:11'
->>>>>>> development
-=======
-        example: '2020-05-11 14:07:00'
->>>>>>> dev-barry
-=======
-        example: '2020-05-12 09:02:17'
->>>>>>> development
+        example: '2020-05-12 11:13:13'
     required: []
   AuditTrail-write:
     properties:
@@ -2950,36 +2926,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        example: '2020-05-11 09:23:33'
-=======
-        example: '2020-05-11 10:03:11'
->>>>>>> development
-=======
-        example: '2020-05-11 14:07:00'
->>>>>>> dev-barry
-=======
-        example: '2020-05-12 09:02:17'
->>>>>>> development
+        example: '2020-05-12 11:13:13'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        example: '2020-05-11 09:23:33'
-=======
-        example: '2020-05-11 10:03:11'
->>>>>>> development
-=======
-        example: '2020-05-11 14:07:00'
->>>>>>> dev-barry
-=======
-        example: '2020-05-12 09:02:17'
->>>>>>> development
+        example: '2020-05-12 11:13:13'
     required: []
   ChangeLog-write:
     properties:

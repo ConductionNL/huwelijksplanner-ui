@@ -71,7 +71,7 @@ class RequestService
 
     	// Juiste startpagina weergeven
     	if(!array_key_exists ("currentStage", $request) && array_key_exists (0, $requestType['stages'])){
-    		$request["currentStage"] = $requestType['stages'][0]['name'];
+    		$request["currentStage"] = $requestType['stages'][0]['slug'];
     	}
 
     	$request = $this->commonGroundService->createResource($request, ['component'=>'vrc', 'type'=>'requests']);

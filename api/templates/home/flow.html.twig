@@ -8,7 +8,7 @@
     	<div class="container">
             <!-- .row -->
             <div style="margin-left: -80px" class="row">
-            	{% if requestType.stages is defined and requestType.stages is not empty %}
+            	{% if request.id is defined and request.id is not empty %}
             	<div style="margin-left: -50px" class="col-md-12 text-center flow">
                     <ul>
                         {% if request.parent is defined and request.parent is not empty %}

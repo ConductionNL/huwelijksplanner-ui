@@ -87,18 +87,18 @@ class RequestService
     		// Lets transfer any properties that are both inthe parent and the child request
     		foreach($requestType['properties'] as $property){
 
-                $slug = $property['slug'];
+                $name = $property['name'];
 
                 // We have to find a better way to work with these two slugs, this hardcoded way stands in the way of more configurability
-                if($slug == 'getuige'){
-                        $slug = 'getuigen';
+                if($name == 'getuige'){
+                        $name = 'getuigen';
                 }
-                elseif($slug == 'partner'){
-                        $slug = 'partners';
+                elseif($name == 'partner'){
+                        $name = 'partners';
                 }
 
-    			if(key_exists($slug, $requestParent['properties'])){
-    				$request['properties'][$slug] = $requestParent['properties'][$slug];
+    			if(key_exists($name, $requestParent['properties'])){
+    				$request['properties'][$name] = $requestParent['properties'][$name];
     			}
     		}
             $contact = $requestParent["submitters"][0]['person'];
@@ -115,7 +115,7 @@ class RequestService
 
 
     	// Wat doet partners hier?
-        if(!key_exists('partners', $request)){
+        if(!key_exists('partners', $request['properties'])){
 
             $assent = [];
             $assent['name'] = 'Instemming '.$requestType['name'];
@@ -165,6 +165,13 @@ class RequestService
     	    $deletedValue = $request['properties'][$property];
     		unset ($request['properties'][$property]);
     	}
+    	$resource = $this->commonGroundService->getResource($deletedValue);
+    	if($resource['@type'] == 'Assent'){
+    	    $resource['status'] = 'cancelled';
+    	    $this->commonGroundService->updateResource($resource, ['component'=>'irc', 'type'=>'assents', 'id'=>$resource['id']]);
+        }
+
+
     	if(key_exists('order',$request['properties'])){
     	    $order = $this->commonGroundService->getResource($request['properties']['order']);
     	    foreach($order['items'] as $item){
@@ -173,6 +180,7 @@ class RequestService
                 }
             }
         }
+
 
     	return $request;
 
@@ -200,6 +208,7 @@ class RequestService
 	    	switch ($typeProperty['iri']) {
                 case 'irc/assent':
 
+                    $submitter = $request['submitters'][0];
 	    			// This is a new assent so we also need to create a contact
 	    			if($value == null || !array_key_exists ('@id', $value)) {
 
@@ -230,13 +239,8 @@ class RequestService
 	    				if($value == null)
 	    				    $value = [];
 	    				$value['name'] = 'Instemming als '.$slug.' bij '.$requestType["name"];
-	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"].'-verzoek dat is opgestart door ';
-                        if(array_key_exists('partner', $value)){
-                            $value['requester'] = $value['partner'];
-                        }
-                        else{
-                            $value['requester'] = $requestType['sourceOrganization']; //@TODO: ook hier een BRP-verwijzing naar de aanvragende partner
-                        }
+	    				$value['description'] = 'U bent uitgenodigd als '.$slug.' voor het '.$requestType["name"]."-verzoek dat is opgestart door {$this->commonGroundService->getResource($submitter['person'])['name']}";
+                        $value['requester'] = $this->commonGroundService->getResource($submitter['brp'])['burgerservicenummer'];
                         $value['request'] = $request['id'];
 	    				$value['status'] = 'requested';
 	    				if(!empty($contact))

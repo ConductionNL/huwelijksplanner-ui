@@ -71,15 +71,21 @@ class DefaultController extends AbstractController
         $request = $session->get('request');
 
         if ($request['status'] != "submitted") {
-            if (isset($request['submitters'])) {
-                foreach ($request['submitters'] as $submitter) {
-                   $commonGroundService->deleteResource($submitter, $submitter['@id']);
+            unset($request['submitters']);
+
+            if(isset($request['children'])){
+                foreach($request['children'] as $childRequest) {
+                    unset($childRequest['parent']);
+                    unset($childRequest['submitters']);
+                    $childRequest = $commonGroundService->deleteResource($childRequest, $childRequest['@id']);
                 }
             }
 
+            unset($request['parent']);
+
             if ($request = $commonGroundService->deleteResource($request, $request['@id'])) {
 
-                $session->set('request', $request);
+//                $session->set('request', $request);
                 $this->addFlash('success', 'Uw verzoek is geannuleerd');
             } else {
                 $this->addFlash('danger', 'Uw verzoek kon niet worden geannuleerd');

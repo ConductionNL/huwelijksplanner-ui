@@ -318,7 +318,7 @@ class DefaultController extends AbstractController
     {
         $variables = $applicationService->getVariables();
 
-        $variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);
+        $variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $variables['requestType']. $slug, $value);
 
         $variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
         unset($variables['request']['submitters']);

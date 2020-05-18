@@ -40,7 +40,7 @@ class RequestService
     /*
      * Creates a new requested based on a request type
      */
-    public function createFromRequestType($requestType, $requestParent = null ,$user = null, $organization= null, $application= null)
+    public function createFromRequestType($requestType, $requestParent = null ,$user = null, $organization= null, $application= null, $property = null)
     {
     	// If a user has not been provided let try to get one from the session
     	if(!$user){
@@ -83,6 +83,10 @@ class RequestService
     	if($requestParent){
     		$requestParent = $this->commonGroundService->getResource($requestParent);
     		$request['parent'] = $requestParent['@id'];
+    		if($property){
+                $requestParent['properties'][$property] = $request['@id'];
+                $this->commonGroundService->saveResource($requestParent);
+            }
 
     		// Lets transfer any properties that are both inthe parent and the child request
     		foreach($requestType['properties'] as $property){
@@ -136,12 +140,19 @@ class RequestService
     }
 
 
-    public function unsetPropertyOnSlug($request, $property, $value = null)
+    public function unsetPropertyOnSlug($request, $requestType, $slug, $value = null)
     {
-        //@TODO: dit abstraheren
-        if($property == "getuige"){
-            $property = "getuigen";
+
+        foreach($requestType['properties'] as $typeProperty){
+            if($typeProperty['slug'] == $slug){
+                $property = $typeProperty['name'];
+            }
+//            var_dump($typeProperty);
+
         }
+//        die;
+        //@TODO: dit abstraheren
+
     	// Lets see if the property exists
     	if(!array_key_exists ($property, $request['properties'])){
     		return $request;
@@ -317,10 +328,11 @@ class RequestService
 	    				$value= $this->commonGroundService->updateResource($value, $value['@id']);
 	    			}
 	    			$value = $value['@id'];
-	    			break;
+	    			break;*/
 	    		case 'vrc/request':
+	    		    $this->createFromRequestType($typeProperty['type'],$request, null, null, null, $typeProperty['name']);
 	    			break;
-	    		case 'orc/order':
+	    		/*case 'orc/order':
 	    			// This is a new assent so we also need to create a contact
 	    			if(!$value['@id']){
 	    				$value= $this->commonGroundService->createResource($value, 'https://orc.huwelijksplanner.online/order');

@@ -147,11 +147,12 @@ class RequestService
             if($typeProperty['slug'] == $slug){
                 $property = $typeProperty['name'];
             }
+//            var_dump($typeProperty);
+
         }
+//        die;
         //@TODO: dit abstraheren
-        if($property == "getuige"){
-            $property = "getuigen";
-        }
+
     	// Lets see if the property exists
     	if(!array_key_exists ($property, $request['properties'])){
     		return $request;

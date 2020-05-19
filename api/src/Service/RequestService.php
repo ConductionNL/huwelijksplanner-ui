@@ -149,7 +149,10 @@ class RequestService
             }
 
         }
-
+        // Should be CGS isResource when converted to bundle
+        if(filter_var($value, FILTER_VALIDATE_URL)){
+            $value = $this->commonGroundService->cleanUrl($value);
+        }
     	// Lets see if the property exists
     	if(!array_key_exists ($property, $request['properties'])){
     		return $request;

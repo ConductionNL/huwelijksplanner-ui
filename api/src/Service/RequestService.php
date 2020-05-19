@@ -165,7 +165,9 @@ class RequestService
     		// If the array is now empty we want to drop the property
     		if(count($request['properties'][$property]) == 0){
     			unset ($request['properties'][$property]);
-    		}
+    		}else{
+    		    $request['properties'][$property] = array_values($request['properties'][$property]);
+            }
     	}
 
     	// If else we just drop the property
@@ -454,6 +456,15 @@ class RequestService
                     }
                     if(count($request['properties'][$stage['name']]) == $property['maxItems']){
                         $requestType['stages'][$key]['completed'] = true;
+                    }
+                    if(key_exists('sufficient',$requestType['stages'][$key])
+                        && $requestType['stages'][$key]['sufficient']
+                        && count($request['properties'][$stage['name']]) < $property['minItems']
+                    ){
+                        $requestType['stages'][$key]['sufficient'] = false;
+                        if(key_exists('completed',$requestType['stages'][$key])){
+                            $requestType['stages'][$key]['completed'] = false;
+                        }
                     }
 
                 }

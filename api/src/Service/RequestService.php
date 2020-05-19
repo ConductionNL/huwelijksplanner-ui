@@ -147,11 +147,8 @@ class RequestService
             if($typeProperty['slug'] == $slug){
                 $property = $typeProperty['name'];
             }
-//            var_dump($typeProperty);
 
         }
-//        die;
-        //@TODO: dit abstraheren
 
     	// Lets see if the property exists
     	if(!array_key_exists ($property, $request['properties'])){
@@ -367,11 +364,21 @@ class RequestService
     	return $request;
     }
 
+    public function checkRequestStatus($request, $requestType){
+        $noFinishedProperties = 0;
+        foreach($requestType['properties'] as $typeProperty)
+        {
+            if(key_exists($typeProperty['name'], $request['properties'])){
+                //TODO: dit is nu super basic, maar mag per property specifieker opgelost worden
+                $noFinishedProperties++;
+            }
+        }
+        return ($noFinishedProperties/count($requestType['properties']))*100;
+    }
+
     public function checkRequestType($request, $requestType)
     {
-        //echo "<pre>";
         foreach ($requestType['stages'] as $key=>$stage) {
-
             // Overwrites for omzetten
             // @TODO: Dit mag toch wel wat configurabeler...
             if (
@@ -440,6 +447,16 @@ class RequestService
                 elseif (!array_key_exists('minItems', $property)) {
                     $requestType['stages'][$key]['completed'] = true;
                 }
+                elseif(array_key_exists('minItems',$property) && array_key_exists('maxItems', $property))
+                {
+                    if(count($request['properties'][$stage['name']]) >= $property['minItems']){
+                        $requestType['stages'][$key]['sufficient'] = true;
+                    }
+                    if(count($request['properties'][$stage['name']]) == $property['maxItems']){
+                        $requestType['stages'][$key]['completed'] = true;
+                    }
+
+                }
                 // als de array een minimum waarde heeft en die waarde wordt gehaald
                 elseif (array_key_exists('minItems', $property) && $property['minItems'] && count($request['properties'][$stage['name']]) >= (int) $property['minItems']) {
                     $requestType['stages'][$key]['completed'] = true;
@@ -451,7 +468,6 @@ class RequestService
                 $requestType['stages'][$key]['completed'] = false;
             }
         }
-
         return $requestType;
     }
 

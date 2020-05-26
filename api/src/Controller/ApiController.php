@@ -3,12 +3,12 @@
 
 namespace App\Controller;
 
+use Conduction\CommonGroundBundle\Service\CommonGroundService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\CacheItem;
-use App\Service\CommonGroundService;
 
 class ApiController extends AbstractController
 {

@@ -9,7 +9,7 @@ info:
     - Enviroment: dev
     - Version: V.0.1
     - Repository: [online](https://github.com/ConductionNL/huwelijksplanner-ui) / [zip](https://github.com/ConductionNL/huwelijksplanner-ui/archive/master.zip)
-    - Docker Image: [online]() 
+    - Docker Image: [online](https://hub.docker.com/repository/docker/conduction/hpui-php) 
     - Datamodel: [postman](/schema/hpui.postman_collection.json) / [oas](/schema/openapi.yaml) / [pdf](/schema/datamodel.pdf) / [mwb](/schema/datamodel.mwb) 
     
     'Dit is de huwelijksplanner app'         
@@ -2869,12 +2869,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-05-26 20:19:56'
+        example: '2020-05-26 20:25:08'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-05-26 20:19:56'
+        example: '2020-05-26 20:25:08'
     required: []
   AuditTrail-write:
     properties:
@@ -2922,12 +2922,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-05-26 20:19:56'
+        example: '2020-05-26 20:25:08'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-05-26 20:19:56'
+        example: '2020-05-26 20:25:08'
     required: []
   ChangeLog-write:
     properties:

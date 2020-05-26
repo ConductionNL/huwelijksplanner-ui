@@ -108,7 +108,7 @@ parameters:
     nlx_inway: '%env(NLX_INWAY)%'
 
     # Busnes Engine
-    env(APP_COMMONGROUND_BE_LOCATION): 'https://ac.%env(APP_DOMAIN)%'
+    env(APP_COMMONGROUND_BE_LOCATION): 'https://camunda.utrechtproeftuin.nl/engine-rest'
     env(APP_COMMONGROUND_BE_USERNAME): '%env(APP_COMMONGROUND_ID)%'
     env(APP_COMMONGROUND_BE_PASSWORD): '%env(APP_COMMONGROUND_SECRET)%'
     
@@ -242,9 +242,9 @@ parameters:
         be:
             location: '%env(APP_COMMONGROUND_BE_LOCATION)%'
             auth: 'username-password'
-            username: '%env(APP_COMMONGROUND_BE_USERNAME)%'
-            password: '%env(APP_COMMONGROUND_BE_PASSWORD)%'
-            accept: 'application/ld+json'
+            username: 'conduction'
+            password: '8DsLgGkybAHQ6Zzg'
+            accept: 'application/json'
             autowire: false
         drc:
             location: '%env(APP_COMMONGROUND_DRC_LOCATION)%'

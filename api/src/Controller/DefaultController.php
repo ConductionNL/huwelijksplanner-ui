@@ -10,6 +10,7 @@ use JsonSchema\Exception\ResourceNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,9 @@ use App\Service\RequestTypeService;
 use App\Service\ContactService;
 use App\Service\AssentService;
 
+// Events
+use Conduction\CommonGroundBundle\Event\CommonGroundEvents;
+use Conduction\CommonGroundBundle\Event\CommongroundUpdateEvent;
 
 /**
  */
@@ -41,7 +45,7 @@ class DefaultController extends AbstractController
         unset($request['submitters']);
         unset($request['children']);
         unset($request['parent']);
-        if ($request = $requestService->updateRequest($request, $request['@id'])) {
+        if ($request = $commonGroundService->saveRequest($request, $request['@id'])) {
             $session->set('request', $request);
             $contact = $commonGroundService->getResource($request['submitters'][0]['person']);
             if(key_exists('emails', $contact) && key_exists(0, $contact['emails'])) {
@@ -345,7 +349,7 @@ class DefaultController extends AbstractController
      * @Route("/{slug}/post", name="app_default_post")
      * @Route("/{slug}/set/{value}" , requirements={"value"=".+"}, name="app_default_set")
      */
-    public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
+    public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request, EventDispatcherInterface $eventDispatcher)
     {
 
         $variables = $applicationService->getVariables();
@@ -437,6 +441,13 @@ class DefaultController extends AbstractController
 
             /*@todo translation*/
             $this->addFlash('success', ucfirst($stageName) . ' is ingesteld');
+
+            /* @todo dit hoort absoluut in de commonground service */
+            // creates the ResourceUpdatedEvent and dispatches it
+            $eventDispatcher->dispatch(
+                new CommongroundUpdateEvent($variables['request'], []),
+                CommonGroundEvents::UPDATED
+            );
 
             // nog iets van uitleg
             if ($request->query->get('forceAssent')) {

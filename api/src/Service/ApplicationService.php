@@ -98,7 +98,7 @@ class ApplicationService
     		$requestParent = $this->request->request->get('requestParent');
     		if(!$requestParent){ $requestParent =  $this->request->query->get('requestParent');}
 
-    		//$requestType = $this->commonGroundService->getResource($requestType);
+    		$requestType = $this->commonGroundService->getResource($requestType);
             $request = [];
             $request['$requestType'] = $requestType;
     		$request = $this->requestService->createFromRequestType($requestType, $requestParent);

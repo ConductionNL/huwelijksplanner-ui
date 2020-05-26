@@ -8,7 +8,7 @@
     	<div class="container">
             <!-- .row -->
             <div style="margin-left: -80px" class="row">
-            	{% if requestType.stages is defined and requestType.stages is not empty %}
+            	{% if request.id is defined and request.id is not empty %}
             	<div style="margin-left: -50px" class="col-md-12 text-center flow">
                     <ul>
                         {% if request.parent is defined and request.parent is not empty %}
@@ -21,7 +21,8 @@
                         </li>
                         {% endif %}
                         {% for stage in requestType.stages %}
-                        <li style="margin-top: -15px; margin-right: 15px;" class="{# animation #} {% if stage.completed  is defined and stage.completed is not empty and stage.completed == true %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="{{ loop.index*200 }}">
+                        <li style="margin-top: -15px; margin-right: 15px;" class="{# animation #} {% if (stage.completed  is defined and stage.completed is not empty and stage.completed == true)
+                            or (stage.sufficient is defined and stage.sufficient is not empty and stage.sufficient == true) %}completed{% endif %}" data-animation="animation-bounce-in" data-delay="{{ loop.index*200 }}">
                         	<a href="{{ stage.slug }}">
                         		<i {% if stage.slug == slug or stage.slug in slug %}  style="border: 4px solid white; background: #2A5587; color: white" {% endif %} class="{{ stage.icon }} fa-3x "></i>
                             <br/>

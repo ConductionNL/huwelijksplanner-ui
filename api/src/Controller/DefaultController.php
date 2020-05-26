@@ -54,12 +54,19 @@ class DefaultController extends AbstractController
         } else {
             $this->addFlash('danger', 'Uw verzoek kon niet worden ingediend');
         }
-
-        if ($request['requestType'] == "https://vtc.dev.huwelijksplanner.online/request_types/146cb7c8-46b9-4911-8ad9-3238bab4313e"){
+        if ($request['requestType'] == $commonGroundService->cleanUrl("{$commonGroundService->getComponent('vtc')['location']}/request_types/146cb7c8-46b9-4911-8ad9-3238bab4313e") //Melding
+        ){
 
             return $this->redirect($this->generateUrl('app_default_index'));
         }
-
+        if( $request['requestType'] == $commonGroundService->cleanUrl("{$commonGroundService->getComponent('vtc')['location']}/request_types/27f6ecf0-34bb-4100-a375-d14f2d5ee1d0") //Babs voor een dag
+            || $request['requestType'] == $commonGroundService->cleanUrl("{$commonGroundService->getComponent('vtc')['location']}/request_types/cdd7e88b-1890-425d-a158-7f9ec92c9508") // Babs andere gemeente
+            || $request['requestType'] == $commonGroundService->cleanUrl("{$commonGroundService->getComponent('vtc')['location']}/request_types/c8704ea6-4962-4b7e-8d4e-69a257aa9577") // Eigen locatie
+            ){
+            $session->set('requestType', false);
+            $session->set('request', false);
+        return $this->redirect($this->generateUrl('app_default_slug', ["slug"=>"requests"]));
+    }
         return $this->redirect($this->generateUrl('app_default_slug', ["slug" => "checklist"]));
     }
 
@@ -324,7 +331,7 @@ class DefaultController extends AbstractController
     {
         $variables = $applicationService->getVariables();
 
-        $variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $slug, $value);
+        $variables['request'] = $requestService->unsetPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 
         $variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
         unset($variables['request']['submitters']);
@@ -429,13 +436,25 @@ class DefaultController extends AbstractController
         $variables['requestType'] = $requestService->checkRequestType($variables['request'], $variables['requestType']);
         $stageName = $slug;
 
+
         foreach ($variables['requestType']['stages'] as $stage) {
+
+
+            if($stage['slug'] == $slug
+                && ((array_key_exists('completed', $stage) && $stage['completed'])
+                    || (array_key_exists('sufficient', $stage) && $stage['sufficient']))
+                && count($variables['requestType']['stages']) == 1){
+                return $this->redirect($this->generateUrl('app_default_submitrequest'));
+            }
             if ($stage['slug'] == $slug && array_key_exists('completed', $stage) && $stage['completed']) {
                 $stageName = $stage['name'];
                 $slug = $stage['next'];
                 $variables['request']['currentStage'] = $stage['next'];
+
+
             }
         }
+
         unset($variables['request']['submitters']);
         if (key_exists('parent', $variables['request'])) {
             unset($variables['request']['parent']);

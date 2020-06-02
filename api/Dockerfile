@@ -30,7 +30,7 @@ RUN set -eux; \
 	composer clear-cache
 
 # do not use .env files in production
-COPY .env ./
+COPY .env /
 
 # copy only specifically what we need
 COPY helm helm/

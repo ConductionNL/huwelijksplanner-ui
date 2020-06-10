@@ -3,13 +3,13 @@ entries:
   hpui:
   - apiVersion: v1
     appVersion: V.0.1
-    created: "2020-06-02T14:43:12.7733379Z"
+    created: "2020-05-27T07:06:44.2988894Z"
     description: '&#039;Dit is de huwelijksplanner app&#039;'
-    digest: 7e790199c32e52f84c7a7180db1b73641dd748e0ea466c515f34bf47b1020e49
+    digest: b9f4f06584452ea280d1ec2c788fcab4054858004bf51644cfe086009b064db5
     home: pc.zaakonline.nl
     icon: pc.zaakonline.nl
     name: hpui
     urls:
     - hpui-0.1.0.tgz
     version: 0.1.0
-generated: "2020-06-02T14:43:12.7677831Z"
+generated: "2020-05-27T07:06:44.2910864Z"

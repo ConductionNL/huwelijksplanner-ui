@@ -374,7 +374,15 @@ class DefaultController extends AbstractController
      * @Route("/{slug}/post", name="app_default_post")
      * @Route("/{slug}/set/{value}" , requirements={"value"=".+"}, name="app_default_set")
      */
-    public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request, EventDispatcherInterface $eventDispatcher)
+    public function setAction(
+        Session $session,
+        $slug = null,
+        $value = null,
+        ApplicationService $applicationService,
+        RequestService $requestService,
+        CommonGroundService $commonGroundService,
+        Request $request,
+        EventDispatcherInterface $eventDispatcher)
     {
 
         $variables = $applicationService->getVariables();
@@ -387,7 +395,9 @@ class DefaultController extends AbstractController
         }
 
         if ($request->get('_route') == "app_default_post" || $request->get('_route') == "app_default_post_request") {
-            parse_str($request->getContent(), $value);
+            // Passing the variables to the resource
+            $value = $request->request->all();
+            //parse_str($request->getContent(), $value);
         }
 
         // If we have a slug then a specific property is bieng set

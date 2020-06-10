@@ -27,13 +27,13 @@ spec:
                 servicePort: 80
     {{- else if eq $.Values.settings.env "prod" }}
     - host {{ $.Values.settings.domain }}
-      http:
+     http:
           paths:
             - backend:
                 serviceName: {{ $.Values.settings.name }}
                 servicePort: 80
     - host www.{{ $.Values.settings.domain }}
-      http:
+     http:
           paths:
             - backend:
                 serviceName: {{ $.Values.settings.name }}

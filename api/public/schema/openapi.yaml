@@ -8,9 +8,9 @@ info:
     - Reference: hpui
     - Enviroment: dev
     - Version: V.0.1
-    - Repository: [online](https://github.com/ConductionNL/proto-component) / [zip](https://github.com/ConductionNL/proto-component/archive/master.zip)
-    - Docker Image: [online](https://hub.docker.com/repository/docker/conduction/pc-php) 
-    - Datamodel: [postman](/schema/pc.postman_collection.json) / [oas](/schema/openapi.yaml) / [pdf](/schema/datamodel.pdf) / [modelio (zip)](/schema/Datamodel_Modelio.zip) 
+    - Repository: [online](https://github.com/ConductionNL/huwelijksplanner-ui) / [zip](https://github.com/ConductionNL/huwelijksplanner-ui/archive/master.zip)
+    - Docker Image: [online](https://hub.docker.com/repository/docker/conduction/hpui-php) 
+    - Datamodel: [postman](/schema/hpui.postman_collection.json) / [oas](/schema/openapi.yaml) / [pdf](/schema/datamodel.pdf) / [modelio (zip)](/schema/Datamodel_Modelio.zip) 
     
     'Dit is de huwelijksplanner app'         
     
@@ -2869,12 +2869,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-06-04 09:00:42'
+        example: '2020-06-10 16:15:51'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-06-04 09:00:42'
+        example: '2020-06-10 16:15:51'
     required: []
   AuditTrail-write:
     properties:
@@ -2922,12 +2922,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-06-04 09:00:42'
+        example: '2020-06-10 16:15:51'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-06-04 09:00:42'
+        example: '2020-06-10 16:15:51'
     required: []
   ChangeLog-write:
     properties:

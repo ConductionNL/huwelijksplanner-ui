@@ -15,7 +15,6 @@ settings:
   demo: huwelijksplanner.online
   container: https://hub.docker.com/repository/docker/conduction/hpui-php
   domain: huwelijksplanner.online
-  subdomain: 
   organisationName: Conduction
   email: info@conduction.nl
   country: Netherlands

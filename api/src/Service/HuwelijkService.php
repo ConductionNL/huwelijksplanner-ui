@@ -6,11 +6,8 @@ namespace App\Service;
 
 use Conduction\CommonGroundBundle\Service\CommonGroundService;
 use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-
-use App\Service\BRPService;
 
 class HuwelijkService
 {
@@ -62,14 +59,11 @@ class HuwelijkService
 
     public function login(string $bsn)
     {
-    	/* @todo eigenlijk moeten brp calls via de commonground service */
-    	if($bsn && $persoon = $brpService->getPersonOnBsn($bsn)){
-    		$this->session-> set('user', $persoon);
-    	}
+        /* @todo eigenlijk moeten brp calls via de commonground service */
+        if ($bsn && $persoon = $brpService->getPersonOnBsn($bsn)) {
+            $this->session->set('user', $persoon);
+        }
 
-    	return $persoon;
+        return $persoon;
     }
-
-
-
 }

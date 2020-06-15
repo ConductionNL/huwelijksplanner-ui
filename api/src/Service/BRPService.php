@@ -26,11 +26,14 @@ class BRPService
 
     public function getPersonOnBsn($bsn)
     {
-        $response = $this->client->request('GET', 'https://brp.zaakonline.nl/ingeschrevenpersonen/'.$bsn, [
-            'headers' => [
-                'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn',
-            ],
-        ]
+        $response = $this->client->request(
+            'GET',
+            'https://brp.zaakonline.nl/ingeschrevenpersonen/'.$bsn,
+            [
+                'headers' => [
+                    'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn',
+                ],
+            ]
         );
 
         $response = json_decode($response->getBody(), true);

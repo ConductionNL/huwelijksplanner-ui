@@ -2,11 +2,15 @@
 // src/Controller/LuckyController.php
 namespace App\Controller;
 
+use App\Service\ApplicationService;
 use App\Service\MessageService;
+use Conduction\CommonGroundBundle\Service\CommonGroundService;
+use Conduction\CommonGroundBundle\Service\RequestService;
 use JsonSchema\Exception\ResourceNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,9 +27,9 @@ use App\Service\RequestTypeService;
 use App\Service\ContactService;
 use App\Service\AssentService;
 
-use App\Service\CommonGroundService;
-use App\Service\RequestService;
-use App\Service\ApplicationService;
+// Events
+use Conduction\CommonGroundBundle\Event\CommonGroundEvents;
+use Conduction\CommonGroundBundle\Event\CommongroundUpdateEvent;
 
 /**
  */
@@ -370,7 +374,15 @@ class DefaultController extends AbstractController
      * @Route("/{slug}/post", name="app_default_post")
      * @Route("/{slug}/set/{value}" , requirements={"value"=".+"}, name="app_default_set")
      */
-    public function setAction(Session $session, $slug = null, $value = null, ApplicationService $applicationService, RequestService $requestService, CommonGroundService $commonGroundService, Request $request)
+    public function setAction(
+        Session $session,
+        $slug = null,
+        $value = null,
+        ApplicationService $applicationService,
+        RequestService $requestService,
+        CommonGroundService $commonGroundService,
+        Request $request,
+        EventDispatcherInterface $eventDispatcher)
     {
 
         $variables = $applicationService->getVariables();
@@ -383,7 +395,9 @@ class DefaultController extends AbstractController
         }
 
         if ($request->get('_route') == "app_default_post" || $request->get('_route') == "app_default_post_request") {
-            parse_str($request->getContent(), $value);
+            // Passing the variables to the resource
+            $value = $request->request->all();
+            //parse_str($request->getContent(), $value);
         }
 
         // If we have a slug then a specific property is bieng set
@@ -474,6 +488,13 @@ class DefaultController extends AbstractController
 
             /*@todo translation*/
             $this->addFlash('success', ucfirst($stageName) . ' is ingesteld');
+
+            /* @todo dit hoort absoluut in de commonground service */
+            // creates the ResourceUpdatedEvent and dispatches it
+            $eventDispatcher->dispatch(
+                new CommongroundUpdateEvent($variables['request'], []),
+                CommonGroundEvents::UPDATED
+            );
 
             // nog iets van uitleg
             if ($request->query->get('forceAssent')) {

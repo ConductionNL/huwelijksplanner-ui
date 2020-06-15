@@ -21,23 +21,24 @@ class CammundaService
         $this->params = $params;
         $this->session = $session;
         $this->cash = $cache;
-        $this->session = $session;
+        $this->session= $session;
 
         // To work with NLX we need a couple of default headers
         $this->headers = [
-            'Accept'                       => 'application/ld+json',
-            'Content-Type'                 => 'application/json',
-            'Authorization'                => $this->params->get('app_commonground_key'),
-            'X-NLX-Request-Application-Id' => $this->params->get('app_commonground_id'), // the id of the application performing the request
+            'Accept'        => 'application/ld+json',
+            'Content-Type'  => 'application/json',
+            'Authorization'  => $this->params->get('app_commonground_key'),
+            'X-NLX-Request-Application-Id' => $this->params->get('app_commonground_id')// the id of the application performing the request
         ];
 
-        if ($session->get('user')) {
+        if($session->get('user')){
             $headers['X-NLX-Request-User-Id'] = $session->get('user')['@id'];
         }
 
-        if ($session->get('process')) {
+        if($session->get('process')){
             $headers[] = $session->get('process')['@id'];
         }
+
 
         // We might want to overwrite the guzle config, so we declare it as a separate array that we can then later adjust, merge or otherwise influence
         $this->guzzleConfig = [
@@ -67,30 +68,31 @@ class CammundaService
         $parsedUrl = parse_url($url);
 
         // We only do this on non-production enviroments
-        if ($this->params->get('app_env') != 'prod') {
+        if($this->params->get('app_env') != "prod"){
 
             // Lets make sure we dont have doubles
-            $url = str_replace($this->params->get('app_env').'.', '', $url);
+            $url = str_replace($this->params->get('app_env').'.','',$url);
 
             // e.g https://wrc.larping.eu/ becomes https://wrc.dev.larping.eu/
             $host = explode('.', $parsedUrl['host']);
             $subdomain = $host[0];
-            $url = str_replace($subdomain.'.', $subdomain.'.'.$this->params->get('app_env').'.', $url);
+            $url = str_replace($subdomain.'.',$subdomain.'.'.$this->params->get('app_env').'.',$url);
         }
 
         // To work with NLX we need a couple of default headers
         $headers = $this->headers;
 
         $elementList = [];
-        foreach ($query as $element) {
-            if (!is_array($element)) {
+        foreach($query as $element){
+            if(!is_array($element)){
                 break;
             }
-            $elementList[] = implode('=', $element);
+            $elementList[] = implode("=",$element);
         }
-        $elementList = implode(',', $elementList);
+        $elementList = implode(",", $elementList);
 
-        if ($elementList) {
+
+        if($elementList){
             $headers['X-NLX-Request-Data-Elements'] = $elementList;
             $headers['X-NLX-Request-Data-Subject'] = $elementList;
         }
@@ -100,27 +102,23 @@ class CammundaService
             //return $item->get();
         }
 
-        if (!$async) {
-            $response = $this->client->request(
-                'GET',
-                $url,
-                [
-                    'query'   => $query,
+        if(!$async){
+            $response = $this->client->request('GET', $url, [
+                    'query' => $query,
                     'headers' => $headers,
                 ]
             );
-        } else {
-            $response = $this->client->requestAsync(
-                'GET',
-                $url,
-                [
-                    'query'   => $query,
+        }
+        else {
+
+            $response = $this->client->requestAsync('GET', $url, [
+                    'query' => $query,
                     'headers' => $headers,
                 ]
             );
         }
 
-        if ($response->getStatusCode() != 200) {
+        if($response->getStatusCode() != 200){
             var_dump('GET returned:'.$response->getStatusCode());
             var_dump(json_encode($query));
             var_dump(json_encode($headers));
@@ -132,10 +130,10 @@ class CammundaService
         $response = json_decode($response->getBody(), true);
 
         /* @todo this should look to al @id keus not just the main root */
-        if (array_key_exists('hydra:member', $response) && $response['hydra:member']) {
-            foreach ($response['hydra:member'] as $key => $embedded) {
-                if (array_key_exists('@id', $embedded) && $embedded['@id']) {
-                    $response['hydra:member'][$key]['@id'] = $parsedUrl['scheme'].'://'.$parsedUrl['host'].$embedded['@id'];
+        if(array_key_exists('hydra:member', $response) && $response['hydra:member']){
+            foreach($response['hydra:member'] as $key => $embedded){
+                if(array_key_exists('@id', $embedded) && $embedded['@id']){
+                    $response['hydra:member'][$key]['@id'] =  $parsedUrl["scheme"]."://".$parsedUrl["host"].$embedded['@id'];
                 }
             }
         }
@@ -145,6 +143,7 @@ class CammundaService
         $this->cash->save($item);
 
         return $response;
+
     }
 
     /*
@@ -152,6 +151,7 @@ class CammundaService
      */
     public function getResource($url, $query = [], $force = false, $async = false)
     {
+
         if (!$url) {
             //return false;
         }
@@ -160,16 +160,16 @@ class CammundaService
         $parsedUrl = parse_url($url);
 
         // We only do this on non-production enviroments
-        if ($this->params->get('app_env') != 'prod') {
+        if($this->params->get('app_env') != "prod"){
 
             // Lets make sure we dont have doubles
-            $url = str_replace($this->params->get('app_env').'.', '', $url);
+            $url = str_replace($this->params->get('app_env').'.','',$url);
 
             // e.g https://wrc.larping.eu/ becomes https://wrc.dev.larping.eu/
             $host = explode('.', $parsedUrl['host']);
-
+            
             $subdomain = $host[0];
-            $url = str_replace($subdomain.'.', $subdomain.'.'.$this->params->get('app_env').'.', $url);
+            $url = str_replace($subdomain.'.',$subdomain.'.'.$this->params->get('app_env').'.',$url);
         }
 
         // To work with NLX we need a couple of default headers
@@ -181,27 +181,23 @@ class CammundaService
             //return $item->get();
         }
 
-        if (!$async) {
-            $response = $this->client->request(
-                'GET',
-                $url,
-                [
-                    'query'   => $query,
+        if(!$async){
+            $response = $this->client->request('GET', $url, [
+                    'query' => $query,
                     'headers' => $headers,
                 ]
             );
-        } else {
-            $response = $this->client->requestAsync(
-                'GET',
-                $url,
-                [
-                    'query'   => $query,
+        }
+        else {
+
+            $response = $this->client->requestAsync('GET', $url, [
+                    'query' => $query,
                     'headers' => $headers,
                 ]
             );
         }
 
-        if ($response->getStatusCode() != 200) {
+        if($response->getStatusCode() != 200){
             var_dump('GET returned:'.$response->getStatusCode());
             var_dump(json_encode($query));
             var_dump(json_encode($headers));
@@ -212,8 +208,8 @@ class CammundaService
 
         $response = json_decode($response->getBody(), true);
 
-        if (array_key_exists('@id', $response) && $response['@id']) {
-            $response['@id'] = $parsedUrl['scheme'].'://'.$parsedUrl['host'].$response['@id'];
+        if(array_key_exists('@id', $response) && $response['@id']){
+            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
         }
 
         $item->set($response);
@@ -236,15 +232,15 @@ class CammundaService
         $parsedUrl = parse_url($url);
 
         // We only do this on non-production enviroments
-        if ($this->params->get('app_env') != 'prod') {
+        if($this->params->get('app_env') != "prod"){
 
             // Lets make sure we dont have doubles
-            $url = str_replace($this->params->get('app_env').'.', '', $url);
+            $url = str_replace($this->params->get('app_env').'.','',$url);
 
             // e.g https://wrc.larping.eu/ becomes https://wrc.dev.larping.eu/
             $host = explode('.', $parsedUrl['host']);
             $subdomain = $host[0];
-            $url = str_replace($subdomain.'.', $subdomain.'.'.$this->params->get('app_env').'.', $url);
+            $url = str_replace($subdomain.'.',$subdomain.'.'.$this->params->get('app_env').'.',$url);
         }
 
         // To work with NLX we need a couple of default headers
@@ -258,33 +254,30 @@ class CammundaService
         unset($resource['_links']);
         unset($resource['_embedded']);
 
-        foreach ($resource as $key=>$value) {
-            if ($value == null || (is_array($value && empty($value)))) {
+        foreach($resource as $key=>$value){
+            if($value == null || (is_array($value && empty($value)))){
                 unset($resource[$key]);
             }
         }
 
-        if (!$async) {
-            $response = $this->client->request(
-                'PUT',
-                $url,
-                [
-                    'body'    => json_encode($resource),
+
+        if(!$async){
+            $response = $this->client->request('PUT', $url, [
+                    'body' => json_encode($resource),
                     'headers' => $headers,
                 ]
             );
-        } else {
-            $response = $this->client->requestAsync(
-                'PUT',
-                $url,
-                [
-                    'body'    => json_encode($resource),
+        }
+        else {
+
+            $response = $this->client->requestAsync('PUT', $url, [
+                    'body' => json_encode($resource),
                     'headers' => $headers,
                 ]
             );
         }
 
-        if ($response->getStatusCode() != 200) {
+        if($response->getStatusCode() != 200){
             var_dump('PUT returned:'.$response->getStatusCode());
             var_dump($headers);
             var_dump(json_encode($resource));
@@ -295,8 +288,8 @@ class CammundaService
 
         $response = json_decode($response->getBody(), true);
 
-        if (array_key_exists('@id', $response) && $response['@id']) {
-            $response['@id'] = $parsedUrl['scheme'].'://'.$parsedUrl['host'].$response['@id'];
+        if(array_key_exists('@id', $response) && $response['@id']){
+            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
         }
 
         // Lets cash this item for speed purposes
@@ -321,40 +314,36 @@ class CammundaService
         $parsedUrl = parse_url($url);
 
         // We only do this on non-production enviroments
-        if ($this->params->get('app_env') != 'prod') {
+        if($this->params->get('app_env') != "prod"){
 
             // Lets make sure we dont have doubles
-            $url = str_replace($this->params->get('app_env').'.', '', $url);
+            $url = str_replace($this->params->get('app_env').'.','',$url);
 
             // e.g https://wrc.larping.eu/ becomes https://wrc.dev.larping.eu/
             $host = explode('.', $parsedUrl['host']);
             $subdomain = $host[0];
-            $url = str_replace($subdomain.'.', $subdomain.'.'.$this->params->get('app_env').'.', $url);
+            $url = str_replace($subdomain.'.',$subdomain.'.'.$this->params->get('app_env').'.',$url);
         }
 
         $headers = $this->headers;
 
-        if (!$async) {
-            $response = $this->client->request(
-                'POST',
-                $url,
-                [
-                    'body'    => json_encode($resource),
+        if(!$async){
+            $response = $this->client->request('POST', $url, [
+                    'body' => json_encode($resource),
                     'headers' => $headers,
                 ]
             );
-        } else {
-            $response = $this->client->requestAsync(
-                'POST',
-                $url,
-                [
-                    'body'    => json_encode($resource),
+        }
+        else {
+            $response = $this->client->requestAsync('POST', $url, [
+                    'body' => json_encode($resource),
                     'headers' => $headers,
                 ]
             );
         }
 
-        if ($response->getStatusCode() != 201 && $response->getStatusCode() != 200) {
+
+        if($response->getStatusCode() != 201 && $response->getStatusCode() != 200){
             var_dump('POST returned:'.$response->getStatusCode());
             var_dump($headers);
             var_dump(json_encode($resource));
@@ -363,10 +352,11 @@ class CammundaService
             die;
         }
 
+
         $response = json_decode($response->getBody(), true);
 
-        if (array_key_exists('@id', $response) && $response['@id']) {
-            $response['@id'] = $parsedUrl['scheme'].'://'.$parsedUrl['host'].$response['@id'];
+        if(array_key_exists('@id', $response) && $response['@id']){
+            $response['@id'] = $parsedUrl["scheme"]."://".$parsedUrl["host"].$response['@id'];
         }
 
         // Lets cash this item for speed purposes

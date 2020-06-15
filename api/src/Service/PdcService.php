@@ -30,13 +30,10 @@ class PdcService
 
     public function getProducts($query = [])
     {
-        $response = $this->client->request(
-            'GET',
-            '/products',
-            [
-                'headers' => ['Accept' => 'application/json'],
-                'query'   => $query,
-            ]
+        $response = $this->client->request('GET', '/products', [
+            'headers' => ['Accept' => 'application/json'],
+            'query'   => $query,
+        ]
         );
 
         $response = json_decode($response->getBody(), true);
@@ -46,15 +43,12 @@ class PdcService
 
     public function getProduct($id)
     {
-        $response = $this->client->request(
-            'GET',
-            '/products/'.$id,
-            [
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
-        );
+        $response = $this->client->request('GET', '/products/'.$id, [
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
+                );
 
         $response = json_decode($response->getBody(), true);
 
@@ -63,15 +57,12 @@ class PdcService
 
     public function getGroups($query)
     {
-        $response = $this->client->request(
-            'GET',
-            '/groups',
-            [
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
-        );
+        $response = $this->client->request('GET', '/groups', [
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
+            );
 
         $response = json_decode($response->getBody(), true);
 
@@ -80,14 +71,11 @@ class PdcService
 
     public function getGroup($id)
     {
-        $response = $this->client->request(
-            'GET',
-            '/groups/'.$id,
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ]
+        $response = $this->client->request('GET', '/groups/'.$id, [
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]
         );
 
         $response = json_decode($response->getBody(), true);
@@ -97,14 +85,11 @@ class PdcService
 
     public function getProductOnUri($uri)
     {
-        $response = $this->client->request(
-            'GET',
-            $uri,
-            [
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
+        $response = $this->client->request('GET', $uri, [
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
         );
 
         $response = json_decode($response->getBody(), true);
@@ -114,15 +99,12 @@ class PdcService
 
     public function createProduct($product)
     {
-        $response = $this->client->request(
-            'POST',
-            '/products',
-            [
-                'json'    => $product,
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
+        $response = $this->client->request('POST', '/products', [
+            'json'    => $product,
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
         );
 
         $response = json_decode($response->getBody(), true);
@@ -132,15 +114,12 @@ class PdcService
 
     public function updateProduct($product)
     {
-        $response = $this->client->request(
-            'PUT',
-            '/products/'.$product['id'],
-            [
-                'json'    => $product,
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
+        $response = $this->client->request('PUT', '/products/'.$product['id'], [
+            'json'    => $product,
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
         );
 
         $response = json_decode($response->getBody(), true);
@@ -150,16 +129,13 @@ class PdcService
 
     public function createGroup($group)
     {
-        $response = $this->client->request(
-            'POST',
-            '/groups',
-            [
-                'json'    => $group,
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
-        );
+        $response = $this->client->request('POST', '/groups', [
+            'json'    => $group,
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
+            );
 
         $response = json_decode($response->getBody(), true);
 
@@ -168,16 +144,13 @@ class PdcService
 
     public function updateGroup($group)
     {
-        $response = $this->client->request(
-            'PUT',
-            '/groups/'.$group['id'],
-            [
-                'json'    => $group,
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
-        );
+        $response = $this->client->request('PUT', '/groups/'.$group['id'], [
+            'json'    => $group,
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
+            );
 
         $response = json_decode($response->getBody(), true);
 

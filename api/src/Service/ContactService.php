@@ -27,15 +27,12 @@ class ContactService
 
     public function getContact($id)
     {
-        $response = $this->client->request(
-            'GET',
-            '/people/'.$id,
-            [
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
-        );
+        $response = $this->client->request('GET', '/people/'.$id, [
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
+                );
 
         $response = json_decode($response->getBody(), true);
 
@@ -44,14 +41,11 @@ class ContactService
 
     public function getContactOnUri($uri)
     {
-        $response = $this->client->request(
-            'GET',
-            $uri,
-            [
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
+        $response = $this->client->request('GET', $uri, [
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
         );
 
         $response = json_decode($response->getBody(), true);
@@ -61,15 +55,12 @@ class ContactService
 
     public function createContact($contact)
     {
-        $response = $this->client->request(
-            'POST',
-            '/people',
-            [
-                'json'    => $contact,
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
+        $response = $this->client->request('POST', '/people', [
+            'json'    => $contact,
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
         );
 
         $response = json_decode($response->getBody(), true);
@@ -79,15 +70,12 @@ class ContactService
 
     public function updateContact($contact)
     {
-        $response = $this->client->request(
-            'PUT',
-            '/people/'.$contact['id'],
-            [
-                'json'    => $contact,
-                'headers' => [
-                    //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
-                ],
-            ]
+        $response = $this->client->request('PUT', '/people/'.$contact['id'], [
+            'json'    => $contact,
+            'headers' => [
+                //'x-api-key' => '64YsjzZkrWWnK8bUflg8fFC1ojqv5lDn'
+            ],
+        ]
         );
 
         $response = json_decode($response->getBody(), true);

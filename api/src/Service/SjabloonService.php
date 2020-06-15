@@ -27,19 +27,19 @@ class SjabloonService
 
         // To work with NLX we need a couple of default headers
         $this->headers = [
-        		'Accept'        => 'application/ld+json',
-        		'Content-Type'  => 'application/json',
-        		'Authorization'  => $this->params->get('app_commonground_key'),
-        		'X-NLX-Request-Application-Id' => $this->params->get('app_commonground_id')// the id of the application performing the request
+            'Accept'                       => 'application/ld+json',
+            'Content-Type'                 => 'application/json',
+            'Authorization'                => $this->params->get('app_commonground_key'),
+            'X-NLX-Request-Application-Id' => $this->params->get('app_commonground_id'), // the id of the application performing the request
         ];
 
         $this->client = new Client([
             // Base URI is used with relative requests
             'base_uri' => 'https://wrc.huwelijksplanner.online/applications/536bfb73-63a5-4719-b535-d835607b88b2/',
             // You can set any number of default request options.
-        	'timeout'  => 4000.0,
-        	// To work with NLX we need a couple of default headers
-        	'headers' => $this->headers,
+            'timeout'  => 4000.0,
+            // To work with NLX we need a couple of default headers
+            'headers' => $this->headers,
         ]);
     }
 

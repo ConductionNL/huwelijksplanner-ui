@@ -418,10 +418,11 @@ class DefaultController extends AbstractController
         }
 
         /*@todo dut configureerbaar maken */
-        if(is_array($variables['request']['properties'] && $slug = "plechtigheid")){
+        if($slug == "plechtigheid"){
             // hardcode overwrite for "gratis trouwen"
 
             $valueId = $commonGroundService->getUuidFromUrl($value);
+
 
             switch($valueId) {
                 case "1ba1772b-cc8a-4808-ad1e-f9b3c93bdebf": // Flits huwelijks

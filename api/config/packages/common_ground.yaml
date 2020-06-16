@@ -274,6 +274,9 @@ parameters:
   # ContactMomentComponent
   env(APP_COMMONGROUND_CMC_LOCATION): "https://cmc.%env(APP_DOMAIN)%"
   env(APP_COMMONGROUND_CMC_APIKEY): "%env(APP_COMMONGROUND_KEY)%"
+  # QuruComponent
+  env(APP_COMMONGROUND_QC_LOCATION): "https://qc.%env(APP_DOMAIN)%"
+  env(APP_COMMONGROUND_QC_APIKEY): "%env(APP_COMMONGROUND_KEY)%"
 
   # Test for commonground component by array
   common_ground.components:
@@ -447,6 +450,9 @@ parameters:
     cmc:
       location: "%env(APP_COMMONGROUND_CMC_LOCATION)%"
       apikey: "%env(APP_COMMONGROUND_CMC_APIKEY)%"
+    qc:
+        location: "%env(APP_COMMONGROUND_QC_LOCATION)%"
+        apikey: "%env(APP_COMMONGROUND_QC_APIKEY)%"
 
   common_ground.oas.type: service
   common_ground.oas.host: irc.zaakonline.nl

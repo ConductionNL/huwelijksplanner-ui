@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b298544afba6f4757399357295d94171",
+    "content-hash": "f838a5a7ce0f119f2553920461b2085e",
     "packages": [
         {
             "name": "api-platform/api-pack",
@@ -474,12 +474,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ConductionNL/CommonGroundBundle.git",
-                "reference": "521f31148635f40a2d62c62e53b6a730c03453dc"
+                "reference": "de197fca34a8d0db97150f4b059e439b0fa2ac8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ConductionNL/CommonGroundBundle/zipball/521f31148635f40a2d62c62e53b6a730c03453dc",
-                "reference": "521f31148635f40a2d62c62e53b6a730c03453dc",
+                "url": "https://api.github.com/repos/ConductionNL/CommonGroundBundle/zipball/de197fca34a8d0db97150f4b059e439b0fa2ac8d",
+                "reference": "de197fca34a8d0db97150f4b059e439b0fa2ac8d",
                 "shasum": ""
             },
             "require": {
@@ -557,7 +557,7 @@
                 "postcode",
                 "rsin"
             ],
-            "time": "2020-05-29T17:20:03+00:00"
+            "time": "2020-06-03T07:32:33+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -2894,7 +2894,6 @@
             "require-dev": {
                 "doctrine/instantiator": "^1.0.5",
                 "mockery/mockery": "^1.0",
-                "phpdocumentor/type-resolver": "0.4.*",
                 "phpunit/phpunit": "^6.4"
             },
             "type": "library",

@@ -43,35 +43,27 @@ class DefaultController extends AbstractController
         $request = $session->get('request');
         $request['status'] = 'submitted';
 
+        if(array_key_exists('parent', $request)){
+            $parent = $request['parent'];
+        }
+
         unset($request['submitters']);
         unset($request['children']);
         unset($request['parent']);
 
         if ($request = $requestService->updateRequest($request, $request['@id'])) {
-            $session->set('request', $request);
-            $contact = $commonGroundService->getResource($request['submitters'][0]['person']);
 
-            if (key_exists('emails', $contact) && key_exists(0, $contact['emails'])) {
-                $messageService->createMessage($contact, ['request' => $request, 'requestType' => $commonGroundService->getResource($request['requestType'])], 'https://wrc.huwelijksplanner.online/templates/66e43592-22a2-49c2-8c3e-10d9a00d5487');
-            }
             $this->addFlash('success', 'Uw verzoek is ingediend');
         } else {
             $this->addFlash('danger', 'Uw verzoek kon niet worden ingediend');
         }
-        if ($request['requestType'] == $commonGroundService->cleanUrl("{$commonGroundService->getComponent('vtc')['location']}/request_types/146cb7c8-46b9-4911-8ad9-3238bab4313e") //Melding
-        ){
 
-            return $this->redirect($this->generateUrl('app_default_index'));
+        // If the request had a parrent we are going into that parent
+        if($parent){
+            return $this->redirect($this->generateUrl('app_default_index', ["request"=>$parent['@id']]));
         }
-        if( $request['requestType'] == $commonGroundService->cleanUrl("{$commonGroundService->getComponent('vtc')['location']}/request_types/27f6ecf0-34bb-4100-a375-d14f2d5ee1d0") //Babs voor een dag
-            || $request['requestType'] == $commonGroundService->cleanUrl("{$commonGroundService->getComponent('vtc')['location']}/request_types/cdd7e88b-1890-425d-a158-7f9ec92c9508") // Babs andere gemeente
-            || $request['requestType'] == $commonGroundService->cleanUrl("{$commonGroundService->getComponent('vtc')['location']}/request_types/c8704ea6-4962-4b7e-8d4e-69a257aa9577") // Eigen locatie
-            ){
-            $session->set('requestType', false);
-            $session->set('request', false);
+
         return $this->redirect($this->generateUrl('app_default_slug', ["slug"=>"requests"]));
-    }
-        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => "checklist"]));
     }
 
     /**
@@ -636,12 +628,14 @@ class DefaultController extends AbstractController
         if (!$id) {
             throw new ResourceNotFoundException("There was no invoice defined");
         }
+
         $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
         if($invoice['paid']){
             $this->addFlash('success','Uw order is betaald!');
         }else{
             $this->addFlash('danger', 'De betaling is mislukt');
         }
+
         return $this->redirect($this->generateUrl('app_default_index') . '?request=' . $invoice['remark']);
     }
 

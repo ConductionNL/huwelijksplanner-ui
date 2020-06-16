@@ -420,23 +420,32 @@ class DefaultController extends AbstractController
         /*@todo dut configureerbaar maken */
         if(is_array($variables['request']['properties'])){
             // hardcode overwrite for "gratis trouwen"
-            if ($value == "https://pdc.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee" || $value == "https://pdc.dev.huwelijksplanner.online/offers/77f6419d-b264-4898-8229-9916d9deccee"){
-                $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
-                $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
 
-            } // hardcode overwrite for "eenvoudig trouwen"
-            elseif ($value == "https://pdc.huwelijksplanner.online/offers/2b9ba0a9-376d-45e2-aa83-809ef07fa104" || $value == "https://pdc.dev.huwelijksplanner.online/offers/2b9ba0a9-376d-45e2-aa83-809ef07fa104") {
-                $variables['request']['properties']['locatie'] = "https://pdc.huwelijksplanner.online/offers/3a32750c-f901-4c99-adea-d211b96cbf48";
-                $variables['request']['properties']['ambtenaar'] = "https://pdc.huwelijksplanner.online/offers/d5a657ff-846f-4d75-880c-abf4e9cb0c27";
-            } else {
-                if (key_exists('locatie', $variables['request']['properties']) && $slug == 'plechtigheid') {
-                    unset($variables['request']['properties']['locatie']);
-                    $this->addFlash('success', 'U kunt nu een locatie kiezen');
-                }
-                if (key_exists('ambtenaar', $variables['request']['properties']) && $slug == 'plechtigheid') {
-                    unset($variables['request']['properties']['ambtenaar']);
-                    $this->addFlash('success', 'U kunt nu een ambtenaar kiezen');
-                }
+            $valueId = $commonGroundService->getUuidFromUrl($variables['request']['properties']['plechtigheid']);
+
+            switch($valueId) {
+                case "1ba1772b-cc8a-4808-ad1e-f9b3c93bdebf": // Flits huwelijks
+                    $variables['request']['properties']['ambtenaar'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'55af09c8-361b-418a-af87-df8f8827984b']);
+                    $variables['request']['properties']['locatie'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'9aef22c4-0c35-4615-ab0e-251585442b55']);
+                    break;
+                case "77f6419d-b264-4898-8229-9916d9deccee": // Gratis trouwen
+                    $variables['request']['properties']['ambtenaar'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'55af09c8-361b-418a-af87-df8f8827984b']);
+                    $variables['request']['properties']['locatie'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'7a3489d5-2d2c-454b-91c9-caff4fed897f']);
+                    break;
+                case "2b9ba0a9-376d-45e2-aa83-809ef07fa104": // Eenvoudig trouwen
+                    $variables['request']['properties']['ambtenaar'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'55af09c8-361b-418a-af87-df8f8827984b']);
+                    $variables['request']['properties']['locatie'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'7a3489d5-2d2c-454b-91c9-caff4fed897f']);
+                    break;
+                case "bfeb9399-fce6-49b8-a047-70928f3611fb": // Uitgebreid trouwen
+                    if (key_exists('locatie', $variables['request']['properties']) && $slug == 'plechtigheid') {
+                        unset($variables['request']['properties']['locatie']);
+                        $this->addFlash('success', 'U kunt nu een locatie kiezen');
+                    }
+                    if (key_exists('ambtenaar', $variables['request']['properties']) && $slug == 'plechtigheid') {
+                        unset($variables['request']['properties']['ambtenaar']);
+                        $this->addFlash('success', 'U kunt nu een ambtenaar kiezen');
+                    }
+                    break;
             }
         }
 
@@ -599,6 +608,7 @@ class DefaultController extends AbstractController
         if (!key_exists('order', $variables['request']['properties'])) {
             throw $this->createNotFoundException('There is no order defined');
         }
+
         $order = $commonGroundService->getResource($variables['request']['properties']['order']);
         $order['url'] = $order['@id'];
         if (key_exists('invoice', $variables['request']['properties']) && $variables['request']['properties']['invoice'] != null) {

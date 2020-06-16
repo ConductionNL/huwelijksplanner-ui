@@ -418,7 +418,7 @@ class DefaultController extends AbstractController
         }
 
         /*@todo dut configureerbaar maken */
-        if(is_array($variables['request']['properties'])){
+        if(is_array($variables['request']['properties'] && array_key_exists('plechtigheid',variables['request']['properties']) )){
             // hardcode overwrite for "gratis trouwen"
 
             $valueId = $commonGroundService->getUuidFromUrl($variables['request']['properties']['plechtigheid']);

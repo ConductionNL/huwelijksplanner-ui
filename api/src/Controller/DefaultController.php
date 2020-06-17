@@ -415,8 +415,8 @@ class DefaultController extends AbstractController
 
             switch($valueId) {
                 case "1ba1772b-cc8a-4808-ad1e-f9b3c93bdebf": // Flits huwelijks
-                    $variables['request']['properties']['ambtenaar'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'55af09c8-361b-418a-af87-df8f8827984b']); // bestaat niet
-                    $variables['request']['properties']['locatie'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'3a32750c-f901-4c99-adea-d211b96cbf48']);
+                    $variables['request']['properties']['ambtenaar'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'d5a657ff-846f-4d75-880c-abf4e9cb0c27']); // bestaat niet
+                    $variables['request']['properties']['locatie'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'9aef22c4-0c35-4615-ab0e-251585442b55']);
                     break;
                 case "77f6419d-b264-4898-8229-9916d9deccee": // Gratis trouwen
                     $variables['request']['properties']['ambtenaar'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'d5a657ff-846f-4d75-880c-abf4e9cb0c27']);

@@ -72,40 +72,29 @@ class DefaultController extends AbstractController
     public function cancelrequestAction(Session $session, RequestService $requestService, CommonGroundService $commonGroundService)
     {
         $request = $session->get('request');
+        $request['status'] = 'submitted';
 
-        if ($request['status'] != "submitted") {
-            unset($request['submitters']);
-
-            if(isset($request['children'])){
-                foreach($request['children'] as $childRequest) {
-                    unset($childRequest['parent']);
-                    unset($childRequest['submitters']);
-                    $childRequest = $commonGroundService->deleteResource($childRequest, $childRequest['@id']);
-                }
-            }
-
-            unset($request['parent']);
-
-            if ($request = $commonGroundService->deleteResource($request, $request['@id'])) {
-
-//                $session->set('request', $request);
-                $this->addFlash('success', 'Uw verzoek is geannuleerd');
-            } else {
-                $this->addFlash('danger', 'Uw verzoek kon niet worden geannuleerd');
-            }
-        } else {
-            $request['status'] = 'cancelled';
-
-            unset($request['submitters']);
-            unset($request['children']);
-            unset($request['parent']);
-
-            $request = $commonGroundService->updateResource($request, "https://vrc.huwelijksplanner.online/requests/" . $request['id']);
+        if(array_key_exists('parent', $request)){
+            $parent = $request['parent'];
         }
 
-        unset($_SESSION['request']);
+        unset($request['submitters']);
+        unset($request['children']);
+        unset($request['parent']);
 
-        return $this->redirect($this->generateUrl('app_default_slug', ["slug" => "requests"]));
+        if ($request = $requestService->updateRequest($request, $request['@id'])) {
+
+            $this->addFlash('success', 'Uw verzoek is ingediend');
+        } else {
+            $this->addFlash('danger', 'Uw verzoek kon niet worden ingediend');
+        }
+
+        // If the request had a parrent we are going into that parent
+        if($parent){
+            return $this->redirect($this->generateUrl('app_default_index', ["request"=>$parent['@id']]));
+        }
+
+        return $this->redirect($this->generateUrl('app_default_slug', ["slug"=>"requests"]));
     }
 
     /**
@@ -438,6 +427,11 @@ class DefaultController extends AbstractController
                     $variables['request']['properties']['locatie'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'7a3489d5-2d2c-454b-91c9-caff4fed897f']);
                     break;
                 case "bfeb9399-fce6-49b8-a047-70928f3611fb": // Uitgebreid trouwen
+                    /*
+                    $variables['request']['properties']['ambtenaar'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'55af09c8-361b-418a-af87-df8f8827984b']);
+                    $variables['request']['properties']['locatie'] = $commonGroundService->cleanUrl(['component'=>'pdc','type'=>'offers','id'=>'7a3489d5-2d2c-454b-91c9-caff4fed897f']);
+                    break;
+                    */
                     if (key_exists('locatie', $variables['request']['properties']) && $slug == 'plechtigheid') {
                         unset($variables['request']['properties']['locatie']);
                         $this->addFlash('success', 'U kunt nu een locatie kiezen');

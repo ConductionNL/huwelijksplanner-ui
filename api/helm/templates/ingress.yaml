@@ -55,4 +55,4 @@ spec:
                         serviceName: {{ $.Values.settings.name }}
                         servicePort: 80
       {{- end }}
-  {{ end }}
+{{ end }}

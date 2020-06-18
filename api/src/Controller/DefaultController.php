@@ -626,32 +626,38 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/betalen/betaald/{id}")
-     */
-    public function payedAction(Session $session, $id = false, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
-    {
-        if (!$id) {
-            throw new ResourceNotFoundException("There was no invoice defined");
-        }
-
-        $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
-        if($invoice['paid']){
-            $this->addFlash('success','Uw order is betaald!');
-        }else{
-            $this->addFlash('danger', 'De betaling is mislukt');
-        }
-
-        return $this->redirect($this->generateUrl('app_default_index') . '?request=' . $invoice['remark']);
-    }
-
-    /**
+     * @Route("/betalen/betaald/{payment_id}")
      * @Route("/", name="app_default_index")
      * @Route("/{slug}", name="app_default_slug")
      *
      */
-    public function viewAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
+    public function viewAction(Session $session, $slug = false, $payment_id = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
         $variables = $applicationService->getVariables();
+
+        // Afhandelen betaling
+        if($payment_id){
+            $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
+            if($invoice['paid']){
+                $this->addFlash('success','Uw order is betaald!');
+            }else{
+                $this->addFlash('danger', 'De betaling is mislukt');
+            }
+
+            // Als we geen lopende sessie met een request hebben meoten we er een aanmaken
+            if(!$variables['request']){
+                return $this->redirect($this->generateUrl('app_default_index') . '?request=' . $invoice['remark']);
+            }
+
+            // Hackytacky overwrite om checklist te forceren
+            $slug = 'checklist';
+        }
+
+        // overwrite optie voor slugs
+        if($request->query->get('stage')){
+            $slug = $request->query->get('stage');
+            $variables['request']["currentStage"] = $slug;
+        }
 
         // Hacky Tacky overzetten van meldingen data
         $requestType = $request->query->get('requestType');
@@ -667,7 +673,7 @@ class DefaultController extends AbstractController
                     foreach($requestParent['properties'] as $key => $value){
                         $variables['request']['properties']['melding-'.$key] = $value;
                     }
-                    break; 
+                    break;
             }
         }
 
@@ -686,12 +692,13 @@ class DefaultController extends AbstractController
         // If we have a cuurent stage on the request
         if (!$slug && array_key_exists('request', $variables)) {
             $slug = $variables['request']["currentStage"];
-        } elseif (!$slug) {
+        } elseif (!$slug) {}{
             /*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
             $slug = "trouwen";
         }
         $variables['slug'] = $slug;
-        //var_dump($variables['request']);
+
+
 
         /*@todo olld skool overwite variabel maken */
         switch ($slug) {

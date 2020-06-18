@@ -452,14 +452,9 @@ class DefaultController extends AbstractController
         $stageName = $slug;
 
 
-        $requestTypeUuid = $commonGroundService->getUuidFromUrl($variables['requestType']);
-
-        // Hack voor het indienen van sub verzoeken
-        if($requestTypeUuid == "c8704ea6-4962-4b7e-8d4e-69a257aa9577" || $requestTypeUuid == "27f6ecf0-34bb-4100-a375-d14f2d5ee1d0" || $requestTypeUuid == "27f6ecf0-34bb-4100-a375-d14f2d5ee1d0"){
-            return $this->redirect($this->generateUrl('app_default_submitrequest'));
-        }
-
         foreach ($variables['requestType']['stages'] as $stage) {
+
+
             if($stage['slug'] == $slug
                 && ((array_key_exists('completed', $stage) && $stage['completed'])
                     || (array_key_exists('sufficient', $stage) && $stage['sufficient']))
@@ -640,6 +635,7 @@ class DefaultController extends AbstractController
     {
         $variables = $applicationService->getVariables();
 
+
         // Afhandelen betaling
         if($payment_id){
             $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
@@ -664,23 +660,7 @@ class DefaultController extends AbstractController
             $variables['request']["currentStage"] = $slug;
         }
 
-        // Hacky Tacky overzetten van meldingen data
-        $requestType = $httpRequest->query->get('requestType');
-        $requestParent = $httpRequest->query->get('requestParent'); https://vtc.huwelijksplanner.online/request_types/
-        if($requestType && $requestParent) {
-
-            // Laten we eens kijken naar de verschillende request types dan
-            $requestType = $commonGroundService->getUuidFromUrl('requestType');
-            $requestParent = $commonGroundService->getResource('requestParent');
-
-            switch ($requestType) {
-                case '146cb7c8-46b9-4911-8ad9-3238bab4313e': // Melding voorgenomen huwelijk
-                    foreach($requestParent['properties'] as $key => $value){
-                        $variables['request']['properties']['melding-'.$key] = $value;
-                    }
-                    break;
-            }
-        }
+        var_dump($variables['request']);
 
         /*
          *
@@ -695,14 +675,14 @@ class DefaultController extends AbstractController
         //$variables['request']
 
         // If we have a cuurent stage on the request
-        if (!$slug && array_key_exists('request', $variables)) {
+        if (!$slug && array_key_exists('request', $variables) && $variables['request']["currentStage"]) {
             $slug = $variables['request']["currentStage"];
-        } elseif (!$slug) {}{
+        } elseif (!$slug){
             /*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
             $slug = "trouwen";
         }
-        $variables['slug'] = $slug;
 
+        $variables['slug'] = $slug;
 
 
         /*@todo olld skool overwite variabel maken */
@@ -739,6 +719,7 @@ class DefaultController extends AbstractController
         }
         if ($template = $sjabloonService->getOnSlug($slug)) {
             // We want to include the html in our own template
+
             $html = $template['content'];
 
             $template = $this->get('twig')->createTemplate($html);

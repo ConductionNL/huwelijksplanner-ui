@@ -452,9 +452,14 @@ class DefaultController extends AbstractController
         $stageName = $slug;
 
 
+        $requestTypeUuid = $commonGroundService->getUuidFromUrl($variables['requestType']);
+
+        // Hack voor het indienen van sub verzoeken
+        if($requestTypeUuid == "c8704ea6-4962-4b7e-8d4e-69a257aa9577" || $requestTypeUuid == "27f6ecf0-34bb-4100-a375-d14f2d5ee1d0" || $requestTypeUuid == "27f6ecf0-34bb-4100-a375-d14f2d5ee1d0"){
+            return $this->redirect($this->generateUrl('app_default_submitrequest'));
+        }
+
         foreach ($variables['requestType']['stages'] as $stage) {
-
-
             if($stage['slug'] == $slug
                 && ((array_key_exists('completed', $stage) && $stage['completed'])
                     || (array_key_exists('sufficient', $stage) && $stage['sufficient']))

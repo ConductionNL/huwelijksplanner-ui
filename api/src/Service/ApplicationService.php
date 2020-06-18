@@ -103,6 +103,22 @@ class ApplicationService
             $request['$requestType'] = $requestType;
     		$request = $this->requestService->createFromRequestType($requestType, $requestParent);
 
+    		// Hacky tacky in hacky tacky
+            if($requestParent){
+                $requestParentObject =  $this->commonGroundService->getResource($requestParent);
+
+                switch ($requestType['id']) {
+                    case '146cb7c8-46b9-4911-8ad9-3238bab4313e': // Melding voorgenomen huwelijk
+                        foreach($requestParentObject['properties'] as $key => $value){
+
+                            if($key == "getuigen"){$key = "getuige";}
+                            if($key == "partners"){$key = "partner";}
+                            $request['properties'][$key.'-melding'] = $value;
+                        }
+                        break;
+                }
+            }
+
     		// Validate current reqoust type
             $requestType = $this->requestService->checkRequestType($request, $requestType);
 

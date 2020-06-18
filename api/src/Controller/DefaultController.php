@@ -667,7 +667,7 @@ class DefaultController extends AbstractController
                     foreach($requestParent['properties'] as $key => $value){
                         $variables['request']['properties']['melding-'.$key] = $value;
                     }
-                    break;
+                    break; 
             }
         }
 

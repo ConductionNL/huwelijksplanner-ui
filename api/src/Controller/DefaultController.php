@@ -653,6 +653,24 @@ class DefaultController extends AbstractController
     {
         $variables = $applicationService->getVariables();
 
+        // Hacky Tacky overzetten van meldingen data
+        $requestType = $request->query->get('requestType');
+        $requestParent = $request->query->get('requestParent'); https://vtc.huwelijksplanner.online/request_types/
+        if($request && $requestParent) {
+
+            // Laten we eens kijken naar de verschillende request types dan
+            $requestType = $commonGroundService->getUuidFromUrl('requestType');
+            $requestParent = $commonGroundService->getResource('requestParent');
+
+            switch ($requestType) {
+                case '146cb7c8-46b9-4911-8ad9-3238bab4313e': // Melding voorgenomen huwelijk
+                    foreach($requestParent['properties'] as $key => $value){
+                        $variables['request']['properties']['melding-'.$key] = $value;
+                    }
+                    break;
+            }
+        }
+
         /*
          *
             // If we dont have a user requested slug lets go to the current request stage

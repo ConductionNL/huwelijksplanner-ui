@@ -614,7 +614,7 @@ class DefaultController extends AbstractController
             }
         }
         if (!isset($invoice)) {
-            $invoice = $commonGroundService->createResource($order, 'https://bc.huwelijksplanner.online/order');
+            $invoice = $commonGroundService->createResource($order, ['component'=>'bc','type'=>'order']);
             $variables['request']['properties']['invoice'] = $invoice['@id'];
             unset($variables['request']['submitters']);
             unset($variables['request']['children']);
@@ -626,32 +626,39 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/betalen/betaald/{id}")
-     */
-    public function payedAction(Session $session, $id = false, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
-    {
-        if (!$id) {
-            throw new ResourceNotFoundException("There was no invoice defined");
-        }
-
-        $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
-        if($invoice['paid']){
-            $this->addFlash('success','Uw order is betaald!');
-        }else{
-            $this->addFlash('danger', 'De betaling is mislukt');
-        }
-
-        return $this->redirect($this->generateUrl('app_default_index') . '?request=' . $invoice['remark']);
-    }
-
-    /**
+     * @Route("/betalen/betaald/{payment_id}")
      * @Route("/", name="app_default_index")
      * @Route("/{slug}", name="app_default_slug")
      *
      */
-    public function viewAction(Session $session, $slug = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
+    public function viewAction(Session $session, $slug = false, $payment_id = false, $resource = false, SjabloonService $sjabloonService, Request $httpRequest, CommonGroundService $commonGroundService, ApplicationService $applicationService, RequestService $requestService)
     {
         $variables = $applicationService->getVariables();
+
+
+        // Afhandelen betaling
+        if($payment_id){
+            $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
+            if($invoice['paid']){
+                $this->addFlash('success','Uw order is betaald!');
+            }else{
+                $this->addFlash('danger', 'De betaling is mislukt');
+            }
+
+            // Als we geen lopende sessie met een request hebben meoten we er een aanmaken
+            if(!array_key_exists('request',$variables) || !$variables['request']){
+                return $this->redirect($this->generateUrl('app_default_index') . '?request=' . $invoice['remark']);
+            }
+
+            // Hackytacky overwrite om checklist te forceren
+            $slug = 'checklist';
+        }
+
+        // overwrite optie voor slugs
+        if($httpRequest->query->get('stage')){
+            $slug = $httpRequest->query->get('stage');
+            $variables['request']["currentStage"] = $slug;
+        }
 
         /*
          *
@@ -666,14 +673,15 @@ class DefaultController extends AbstractController
         //$variables['request']
 
         // If we have a cuurent stage on the request
-        if (!$slug && array_key_exists('request', $variables)) {
+        if (!$slug && array_key_exists('request', $variables) && $variables['request']["currentStage"]) {
             $slug = $variables['request']["currentStage"];
-        } elseif (!$slug) {
+        } elseif (!$slug){
             /*@todo dit zou uit de standaard settings van de applicatie moeten komen*/
             $slug = "trouwen";
         }
+
         $variables['slug'] = $slug;
-        //var_dump($variables['request']);
+
 
         /*@todo olld skool overwite variabel maken */
         switch ($slug) {
@@ -709,6 +717,7 @@ class DefaultController extends AbstractController
         }
         if ($template = $sjabloonService->getOnSlug($slug)) {
             // We want to include the html in our own template
+
             $html = $template['content'];
 
             $template = $this->get('twig')->createTemplate($html);

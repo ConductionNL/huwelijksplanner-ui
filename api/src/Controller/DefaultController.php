@@ -650,7 +650,7 @@ class DefaultController extends AbstractController
             }
 
             // Als we geen lopende sessie met een request hebben meoten we er een aanmaken
-            if(!$variables['request']){
+            if(!array_key_exists('request',$variables) || !$variables['request']){
                 return $this->redirect($this->generateUrl('app_default_index') . '?request=' . $invoice['remark']);
             }
 
@@ -659,15 +659,15 @@ class DefaultController extends AbstractController
         }
 
         // overwrite optie voor slugs
-        if($request->query->get('stage')){
-            $slug = $request->query->get('stage');
+        if($httpRequest->query->get('stage')){
+            $slug = $httpRequest->query->get('stage');
             $variables['request']["currentStage"] = $slug;
         }
 
         // Hacky Tacky overzetten van meldingen data
-        $requestType = $request->query->get('requestType');
-        $requestParent = $request->query->get('requestParent'); https://vtc.huwelijksplanner.online/request_types/
-        if($request && $requestParent) {
+        $requestType = $httpRequest->query->get('requestType');
+        $requestParent = $httpRequest->query->get('requestParent'); https://vtc.huwelijksplanner.online/request_types/
+        if($requestType && $requestParent) {
 
             // Laten we eens kijken naar de verschillende request types dan
             $requestType = $commonGroundService->getUuidFromUrl('requestType');

@@ -4,6 +4,7 @@
 
 namespace App\Service;
 
+use Conduction\CommonGroundBundle\Service\CommonGroundService;
 use GuzzleHttp\Client;
 use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;

@@ -4,6 +4,7 @@
 
 namespace App\Service;
 
+use Conduction\CommonGroundBundle\Service\CommonGroundService;
 use GuzzleHttp\Client;
 use Symfony\Component\Cache\Adapter\AdapterInterface as CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -53,8 +54,6 @@ class SjabloonService
 //        $response = $this->client->request('GET', $slug);
         $response = $this->commonGroundService->getResource('https://wrc.huwelijksplanner.online/applications/536bfb73-63a5-4719-b535-d835607b88b2/'.$slug);
         //$response = json_decode($response->getBody()->getContents(), true);
-        $response = $response['template'];
-
         $item->set($response);
         $item->expiresAt(new \DateTime('tomorrow'));
         $this->cash->save($item);

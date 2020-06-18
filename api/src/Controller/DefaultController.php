@@ -660,8 +660,6 @@ class DefaultController extends AbstractController
             $variables['request']["currentStage"] = $slug;
         }
 
-        var_dump($variables['request']);
-
         /*
          *
             // If we dont have a user requested slug lets go to the current request stage

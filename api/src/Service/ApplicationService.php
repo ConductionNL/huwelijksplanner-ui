@@ -129,8 +129,6 @@ class ApplicationService
                     $this->commonGroundService->updateResource($temp, $requestParentObject['@id']);
 
                 }
-                var_dump($requestParentObject);
-
             }
 
     		// Validate current reqoust type

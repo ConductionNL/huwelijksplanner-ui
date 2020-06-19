@@ -96,7 +96,9 @@ class ApplicationService
     	if($requestType || $requestType=  $this->request->query->get('requestType')){
 
     		$requestParent = $this->request->request->get('requestParent');
+            $requestParentProperty = $this->request->request->get('requestParentProperty');
     		if(!$requestParent){ $requestParent =  $this->request->query->get('requestParent');}
+            if(!$requestParentProperty){ $requestParentProperty =  $this->request->query->get('requestParentProperty');}
 
     		$requestType = $this->commonGroundService->getResource($requestType);
             $request = [];
@@ -105,6 +107,8 @@ class ApplicationService
 
     		// Hacky tacky in hacky tacky
             if($requestParent){
+
+                // Lets get the parent object
                 $requestParentObject =  $this->commonGroundService->getResource($requestParent);
 
                 switch ($requestType['id']) {
@@ -117,6 +121,16 @@ class ApplicationService
                         }
                         break;
                 }
+
+                // If
+                if($requestParentProperty){
+                    $requestParentObject['properties'][$requestParentProperty] = $request['@id'];
+                    $temp = ['properties'=>$requestParentObject['properties']];
+                    $this->commonGroundService->updateResource($temp, $requestParentObject['@id']);
+
+                }
+                var_dump($requestParentObject);
+
             }
 
     		// Validate current reqoust type

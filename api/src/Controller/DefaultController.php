@@ -392,8 +392,9 @@ class DefaultController extends AbstractController
                 if(array_key_exists(1, $dateArray)){
                     $value = date('d-m-Y H:i', strtotime("$dateArray[1] $dateArray[2] $dateArray[3] $time GMT+0100"));
                 }
-
-                $value = date('d-m-Y H:i');
+                else{
+                    $value = date('d-m-Y H:i');
+                }
             }
             $variables['request'] = $requestService->setPropertyOnSlug($variables['request'], $variables['requestType'], $slug, $value);
 

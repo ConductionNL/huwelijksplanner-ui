@@ -638,7 +638,7 @@ class DefaultController extends AbstractController
 
         // Afhandelen betaling
         if($payment_id){
-            $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$id]);
+            $invoice = $commonGroundService->getResource(['component'=>'bc','type'=>'invoices', 'id'=>$payment_id]);
             if($invoice['paid']){
                 $this->addFlash('success','Uw order is betaald!');
             }else{

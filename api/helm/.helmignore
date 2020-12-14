@@ -21,7 +21,7 @@
 *.tmproj
 .vscode/
 #packages
-*.tgz
+./*.tgz
 #kubeconfigs
 *kubeconfig*
 

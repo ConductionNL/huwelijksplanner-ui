@@ -9,7 +9,7 @@ settings:
   title: Huwelijks Planner
   version: V.0.1
   id: 
-  description: '&#039;Dit is de huwelijksplanner app&#039;'
+  description: 'Dit is de huwelijksplanner app'
   type: application
   repro: https://github.com/ConductionNL/huwelijksplanner-ui
   demo: huwelijksplanner.online

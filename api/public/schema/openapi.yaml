@@ -12,7 +12,7 @@ info:
     - Docker Image: [online](https://hub.docker.com/repository/docker/conduction/hpui-php) 
     - Datamodel: [postman](/schema/hpui.postman_collection.json) / [oas](/schema/openapi.yaml) / [pdf](/schema/datamodel.pdf) / [modelio (zip)](/schema/Datamodel_Modelio.zip) 
     
-    'Dit is de huwelijksplanner app'         
+    Dit is de huwelijksplanner app         
     
 paths:
   '/adresses/{id}/audit_trail':
@@ -2887,12 +2887,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-06-19 08:00:16'
+        example: '2020-12-14 09:32:30'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-06-19 08:00:16'
+        example: '2020-12-14 09:32:30'
     required: []
   AuditTrail-write:
     properties:
@@ -2940,12 +2940,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-06-19 08:00:16'
+        example: '2020-12-14 09:32:30'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-06-19 08:00:16'
+        example: '2020-12-14 09:32:30'
     required: []
   ChangeLog-write:
     properties:

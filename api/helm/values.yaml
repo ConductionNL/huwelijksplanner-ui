@@ -6,16 +6,19 @@ settings:
   registryBase: docker.io/conduction
   projectName: hpui
   name: hpui
-  title: Huwelijks Planner
-  version: V.0.1
+  title: Huwelijks planner ui
+  version: V1.0
+  majorVersion: v1
   id: 
-  description: 'Dit is de huwelijksplanner app'
+  description: 'Naast deze JSON rest API is er ook een [graphql](/graphql) interface beschikbaar.'
   type: application
   repro: https://github.com/ConductionNL/huwelijksplanner-ui
-  demo: huwelijksplanner.online
+  demo: www.zuid-drecht.nl
   container: https://hub.docker.com/repository/docker/conduction/hpui-php
   domain: huwelijksplanner.online
-  subdomain: 
+  subdomain: false
+  subpath: 
+  subpathRouting: true
   organisationName: Conduction
   email: info@conduction.nl
   country: Netherlands
@@ -47,10 +50,10 @@ settings:
   archiveEnabled: false
 
 security:
-  commongroundId: "45c1a4b6-59d3-4a6e-86bf-88a872f35845"
-  commongroundKey: "45c1a4b6-59d3-4a6e-86bf-88a872f35845"
-  applicationKey: "45c1a4b6-59d3-4a6e-86bf-88a872f35845"
-  userKey: "79d5b14c-70ab-41fb-ac02-917e3288870b"
+  commongroundId: "de22599d-b139-439c-8b67-8718815622a1"
+  commongroundKey: "01f0dc1a-0ce5-4ac6-b943-81650b174792"
+  applicationKey: "01f0dc1a-0ce5-4ac6-b943-81650b174792"
+  userKey: "01f0dc1a-0ce5-4ac6-b943-81650b174792"
   authorisationProviderUser: https://uc.zuid-drecht.nl
   authorisationProviderApplication: https://openzaak.dev.zuid-drecht.nl/authorizaties/api/v1
 

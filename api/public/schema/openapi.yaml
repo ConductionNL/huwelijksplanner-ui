@@ -1,18 +1,18 @@
 openapi: 3.0.2
 info:
-  title: 'Huwelijks Planner'
-  version: V.0.1
+  title: 'Huwelijks planner ui'
+  version: V1.0
   description: |
     API Details
-    - Component: Huwelijks Planner
+    - Component: Huwelijks planner ui
     - Reference: hpui
     - Enviroment: dev
-    - Version: V.0.1
+    - Version: V1.0
     - Repository: [online](https://github.com/ConductionNL/huwelijksplanner-ui) / [zip](https://github.com/ConductionNL/huwelijksplanner-ui/archive/master.zip)
     - Docker Image: [online](https://hub.docker.com/repository/docker/conduction/hpui-php) 
-    - Datamodel: [postman](/schema/hpui.postman_collection.json) / [oas](/schema/openapi.yaml) / [pdf](/schema/datamodel.pdf) / [modelio (zip)](/schema/Datamodel_Modelio.zip) 
+    - Datamodel: [postman](schema/hpui.postman_collection.json) / [oas](schema/openapi.yaml) / [pdf](schema/datamodel.pdf) / [modelio (zip)](schema/Datamodel_Modelio.zip) 
     
-    Dit is de huwelijksplanner app         
+    Naast deze JSON rest API is er ook een [graphql](/graphql) interface beschikbaar.         
     
 paths:
   '/adresses/{id}/audit_trail':
@@ -2899,12 +2899,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-12-14 09:32:30'
+        example: '2020-12-14 10:19:42'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-12-14 09:32:30'
+        example: '2020-12-14 10:19:42'
     required: []
   AuditTrail-write:
     properties:
@@ -2952,12 +2952,12 @@ definitions:
         description: 'The moment this request was created'
         type: string
         format: date-time
-        example: '2020-12-14 09:32:30'
+        example: '2020-12-14 10:19:42'
       dateModified:
         description: 'The moment this request last Modified'
         type: string
         format: date-time
-        example: '2020-12-14 09:32:30'
+        example: '2020-12-14 10:19:42'
     required: []
   ChangeLog-write:
     properties:

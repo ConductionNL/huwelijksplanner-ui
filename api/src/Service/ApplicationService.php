@@ -96,12 +96,40 @@ class ApplicationService
     	if($requestType || $requestType=  $this->request->query->get('requestType')){
 
     		$requestParent = $this->request->request->get('requestParent');
+            $requestParentProperty = $this->request->request->get('requestParentProperty');
     		if(!$requestParent){ $requestParent =  $this->request->query->get('requestParent');}
+            if(!$requestParentProperty){ $requestParentProperty =  $this->request->query->get('requestParentProperty');}
 
     		$requestType = $this->commonGroundService->getResource($requestType);
             $request = [];
             $request['$requestType'] = $requestType;
     		$request = $this->requestService->createFromRequestType($requestType, $requestParent);
+
+    		// Hacky tacky in hacky tacky
+            if($requestParent){
+
+                // Lets get the parent object
+                $requestParentObject =  $this->commonGroundService->getResource($requestParent);
+
+                switch ($requestType['id']) {
+                    case '146cb7c8-46b9-4911-8ad9-3238bab4313e': // Melding voorgenomen huwelijk
+                        foreach($requestParentObject['properties'] as $key => $value){
+
+                            if($key == "getuigen"){$key = "getuige";}
+                            if($key == "partners"){$key = "partner";}
+                            $request['properties'][$key.'-melding'] = $value;
+                        }
+                        break;
+                }
+
+                // If
+                if($requestParentProperty){
+                    $requestParentObject['properties'][$requestParentProperty] = $request['@id'];
+                    $temp = ['properties'=>$requestParentObject['properties']];
+                    $this->commonGroundService->updateResource($temp, $requestParentObject['@id']);
+
+                }
+            }
 
     		// Validate current reqoust type
             $requestType = $this->requestService->checkRequestType($request, $requestType);
